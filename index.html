@@ -1451,21 +1451,29 @@
                 } else {
                   // No providers ready to enroll - check if there are already enrolled providers
                   const hasExistingProviders = updatedProviders.some(p =>
-                    p.status === 'Verified - Ready to Add to Group'
+                    p.status === 'Verified - Ready to Add to Group' ||
+                    p.status === 'Enrolled - Ready to be Added to Group'
                   );
 
                   if (hasExistingProviders) {
+                    // Normalize all provider statuses to "Enrolled - Ready to be Added to Group"
+                    updatedProviders.forEach((provider, idx) => {
+                      if (provider.status === 'Verified - Ready to Add to Group') {
+                        updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                      }
+                    });
+
                     // Set provider enrollment type to 'Existing Provider'
                     setFormData(prev => ({
                       ...prev,
                       providerEnrollmentType: 'Existing Provider'
                     }));
 
-                    // Navigate to Step 12 - existing-provider-add-to-group
-                    const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
-                    if (addToGroupIndex !== -1) {
-                      // Initialize the first provider to be added to the group
-                      const firstProviderIndex = enrolledProviders.findIndex(p =>
+                    // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
+                    const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+                    if (openCicsIndex !== -1) {
+                      // Start with the first provider (index 0 = Provider 1)
+                      const firstProviderIndex = updatedProviders.findIndex(p =>
                         p.status === 'Enrolled - Ready to be Added to Group'
                       );
 
@@ -1474,8 +1482,8 @@
                         console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
                       }
 
-                      setCurrentPage(addToGroupIndex);
-                      setVisitedPages(prev => new Set([...prev, addToGroupIndex]));
+                      setCurrentPage(openCicsIndex);
+                      setVisitedPages(prev => new Set([...prev, openCicsIndex]));
                     }
                   }
                 }
@@ -1493,7 +1501,8 @@
           // Find the next provider that is ready to be added to the group
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentAddingProviderIndex &&
-            p.status === 'Enrolled - Ready to be Added to Group'
+            (p.status === 'Enrolled - Ready to be Added to Group' ||
+             p.status === 'Verified - Ready to Add to Group')
           );
 
           if (nextReadyIndex !== -1) {
@@ -1690,6 +1699,16 @@
             // No more providers to enroll, show alert
             await showAlert('No more providers are ready to enroll. You will be directed to complete the existing provider steps.');
 
+            // Normalize all provider statuses to "Enrolled - Ready to be Added to Group" before starting existing provider branch
+            setEnrolledProviders(prev => {
+              return prev.map(provider => {
+                if (provider.status === 'Verified - Ready to Add to Group') {
+                  return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                }
+                return provider;
+              });
+            });
+
             // Transition to existing provider branch
             setFormData(prev => ({
               ...prev,
@@ -1699,9 +1718,10 @@
             // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
-              // Initialize the first provider to be added to the group
+              // Start with the first provider (index 0 = Provider 1)
               const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Enrolled - Ready to be Added to Group'
+                p.status === 'Enrolled - Ready to be Added to Group' ||
+                p.status === 'Verified - Ready to Add to Group'
               );
 
               if (firstProviderIndex !== -1) {
@@ -1729,7 +1749,14 @@
                 };
                 console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
-              return updated;
+
+              // Normalize all other provider statuses to "Enrolled - Ready to be Added to Group"
+              return updated.map(provider => {
+                if (provider.status === 'Verified - Ready to Add to Group') {
+                  return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                }
+                return provider;
+              });
             });
 
             // Clear the current enrolling provider index
@@ -1745,9 +1772,10 @@
           // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
           const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
           if (openCicsIndex !== -1) {
-            // Initialize the first provider to be added to the group
+            // Start with the first provider (index 0 = Provider 1)
             const firstProviderIndex = enrolledProviders.findIndex(p =>
-              p.status === 'Enrolled - Ready to be Added to Group'
+              p.status === 'Enrolled - Ready to be Added to Group' ||
+              p.status === 'Verified - Ready to Add to Group'
             );
 
             if (firstProviderIndex !== -1) {
@@ -1833,7 +1861,8 @@
                 currentAddingProviderIndex === null) {
               // Find the first provider that is ready to be added to the group
               const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Enrolled - Ready to be Added to Group'
+                p.status === 'Enrolled - Ready to be Added to Group' ||
+                p.status === 'Verified - Ready to Add to Group'
               );
 
               if (firstProviderIndex !== -1) {

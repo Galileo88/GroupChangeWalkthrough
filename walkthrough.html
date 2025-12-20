@@ -2422,17 +2422,6 @@
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 page-enter">
               {/* Header */}
               <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-8 text-white relative">
-                {/* Back to Home Button */}
-                <a
-                  href="./index.html"
-                  className="absolute top-4 left-4 flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/30 transition-all duration-200 group"
-                  title="Back to Home"
-                >
-                  <svg className="w-4 h-4 text-white group-hover:translate-x-[-2px] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span className="text-white font-medium text-sm">Back to Home</span>
-                </a>
                 {(currentPageData.id === 'group-practice' || currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'questions-21-23' || currentPageData.id === 'existing-provider-questions-21-23') && (
                   <div
                     className="thumbnail-container"
@@ -3264,18 +3253,23 @@
                 ) : (
                   <>
                     {/* Regular Navigation */}
-                    <button
-                      onClick={handlePrevious}
-                      disabled={currentPage === 0}
-                      className={`flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                        currentPage === 0
-                          ? 'text-slate-400 cursor-not-allowed'
-                          : 'text-slate-700 hover:bg-slate-200'
-                      }`}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
-                    </button>
+                    {currentPage === 0 ? (
+                      <a
+                        href="./index.html"
+                        className="flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Go to Home
+                      </a>
+                    ) : (
+                      <button
+                        onClick={handlePrevious}
+                        className="flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </button>
+                    )}
 
                     <button
                       onClick={() => setShowViewNotesModal(true)}

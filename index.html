@@ -15,7 +15,10 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // Icon Components
+    // ============================================================
+    // ICON COMPONENTS
+    // ============================================================
+
     const ChevronRight = ({ className }) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -46,8 +49,13 @@
       </svg>
     );
 
-    // Main Form Component
+    // ============================================================
+    // MAIN FORM COMPONENT
+    // ============================================================
+
     const WalkthroughForm = () => {
+
+      // -------------------- State Variables --------------------
       const [currentPage, setCurrentPage] = useState(0);
       const [formData, setFormData] = useState({});
       const [showImageModal, setShowImageModal] = useState(false);
@@ -67,7 +75,7 @@
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
 
-      // Group Practice Application reference image
+      // -------------------- Reference Images --------------------
       const groupPracticeAppImage = './images/groupchange_application.jpg';
       const question6Image = './images/question6.jpg';
       const paytoMailtoImage = './images/payto_mailto.jpg';
@@ -99,7 +107,9 @@
       const generateLetterImage = './images/generateletter.png';
       const closeLetterImage = './images/closeletter.png';
 
-      // Helper function to show custom confirmation dialog
+      // -------------------- Helper Functions --------------------
+
+      // Custom confirmation dialog
       const showConfirm = (message) => {
         return new Promise((resolve) => {
           setConfirmDialog({
@@ -117,7 +127,7 @@
         });
       };
 
-      // Helper function to show custom alert dialog
+      // Custom alert dialog
       const showAlert = (message) => {
         return new Promise((resolve) => {
           setAlertDialog({
@@ -131,8 +141,15 @@
         });
       };
 
-      // PAGES CONFIGURATION
+      // ============================================================
+      // PAGES CONFIGURATION (44 Pages)
+      // ============================================================
+      // This section defines all the walkthrough pages and their
+      // fields, validation rules, and conditional display logic.
+      // ============================================================
+
       const pages = [
+        // -------------------- Initial Setup Pages --------------------
         {
           id: 'welcome',
           title: 'Welcome',
@@ -384,6 +401,7 @@
             }
           ]
         },
+        // -------------------- Completion & Special Pages --------------------
         {
           id: 'question-20-unable-to-verify-completion',
           title: 'UNABLE TO VERIFY - OUTREACH REQUIRED',
@@ -401,6 +419,7 @@
           isDuplicateRejection: true,
           fields: []
         },
+        // -------------------- Additional Verification Pages --------------------
         {
           id: 'questions-21-23',
           title: 'Additional Questions (21-23) Verification',
@@ -445,6 +464,7 @@
             }
           ]
         },
+        // -------------------- Provider Type Selection --------------------
         {
           id: 'provider-type-selection',
           title: 'Provider Enrollment Type',
@@ -490,6 +510,8 @@
             }
           ]
         },
+        // ================== EXISTING PROVIDER WORKFLOW ==================
+        // These pages handle adding an already-enrolled provider to a group
         {
           id: 'existing-provider-open-cics',
           title: 'OPEN CICS',
@@ -761,6 +783,8 @@
           instructionText: 'Congratulations! You have successfully completed the group change walkthrough.\n\nAll providers have been enrolled and added to the group.\n\nYou can now:\n- Download your notes and answers\n- Start a new application',
           isCompletionPage: true
         },
+        // ================== NEW PROVIDER WORKFLOW ==================
+        // These pages handle enrolling a new provider into CICS
         {
           id: 'create-enrollment',
           title: 'Create Enrollment in SNOW',
@@ -1165,6 +1189,10 @@
         }
       ];
 
+      // ============================================================
+      // VALIDATION & PAGE LOGIC
+      // ============================================================
+
       // Check if current page requirements are met
       const isPageValid = () => {
         const page = pages[currentPage];
@@ -1233,7 +1261,11 @@
         return formData[page.showWhen.field] === page.showWhen.value;
       };
 
+      // ============================================================
+      // EVENT HANDLERS
+      // ============================================================
 
+      // Handle navigation to next page with complex routing logic
       const handleNext = async () => {
         const currentPageData = pages[currentPage];
 
@@ -2409,8 +2441,13 @@
         return 'Continue';
       };
 
+      // ============================================================
+      // COMPONENT RENDERING
+      // ============================================================
+
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 flex items-center justify-center">
+          {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
 
@@ -3412,6 +3449,8 @@
             </div>
           </div>
 
+          {/* ==================== MODAL COMPONENTS ==================== */}
+
           {/* Image Modal */}
           {showImageModal && (
             <div
@@ -3859,6 +3898,10 @@
         </div>
       );
     };
+
+    // ============================================================
+    // APPLICATION INITIALIZATION
+    // ============================================================
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<WalkthroughForm />);

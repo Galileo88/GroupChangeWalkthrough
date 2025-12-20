@@ -22,7 +22,7 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 | 6 | email-to-snow | 5 | Email to SNOW |
 | 7 | question-20 | 6 | Question 20 verification |
 | 8 | questions-21-23 | 7 | Questions 21-23 verification |
-| 9 | provider-type-selection | 8 | **BRANCH POINT**: New Provider vs Existing Provider |
+| 9 | provider-type-selection | 8 | **BRANCH POINT**: Auto-determined based on provider enrollment status |
 
 ### Existing Provider Path (Steps 11-23)
 
@@ -71,9 +71,9 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 
 ### Main Flow (Steps 1-9)
 1. User completes Steps 1-8 sequentially
-2. At Step 9 (provider-type-selection), user chooses:
-   - **Existing Provider** → Navigate to Step 11 (index 9)
-   - **New Provider** → Navigate to Step 24 (index 22)
+2. At Step 9 (provider-type-selection), the system automatically determines provider type based on enrollment status:
+   - **Existing Provider** (if provider is already enrolled) → Navigate to Step 11 (index 9)
+   - **New Provider** (if provider needs enrollment) → Navigate to Step 24 (index 22)
 
 ### Existing Provider Flow (Steps 11-23)
 - Conditional display based on: `providerEnrollmentType === 'Existing Provider'`
@@ -170,7 +170,7 @@ This is critical because:
 
 The implementation correctly handles:
 - ✅ Sequential flow through Steps 1-9
-- ✅ Branching at Step 9 based on provider type selection
+- ✅ Auto-branching at Step 9 based on provider enrollment status (already enrolled vs needs enrollment)
 - ✅ Existing Provider path (Steps 11-23)
 - ✅ New Provider path (Steps 24-37)
 - ✅ Loop back for additional providers (Step 37 "Yes" → Step 24)

@@ -1827,6 +1827,21 @@
               setFormData(prev => ({ ...prev, providerEnrollmentType: autoSelectedType }));
             }
 
+            // Set currentAddingProviderIndex when entering existing provider branch
+            if (nextPageData.showWhen?.field === 'providerEnrollmentType' &&
+                nextPageData.showWhen?.value === 'Existing Provider' &&
+                currentAddingProviderIndex === null) {
+              // Find the first provider that is ready to be added to the group
+              const firstProviderIndex = enrolledProviders.findIndex(p =>
+                p.status === 'Enrolled - Ready to be Added to Group'
+              );
+
+              if (firstProviderIndex !== -1) {
+                setCurrentAddingProviderIndex(firstProviderIndex);
+                console.log(`Starting existing provider branch - adding provider ${firstProviderIndex + 1} to group`);
+              }
+            }
+
           }
         }
       };

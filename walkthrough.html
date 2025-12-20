@@ -2100,13 +2100,13 @@
           outreachNotes: [duplicateNote]
         };
 
-        setEnrolledProviders(prev => {
-          const updatedProviders = [...prev, providerData];
-          console.log(`Provider saved as duplicate. Total providers: ${updatedProviders.length}`);
-          return updatedProviders;
-        });
-
         if (moreProviders) {
+          // Save the duplicate provider and prepare for the next provider
+          setEnrolledProviders(prev => {
+            const updatedProviders = [...prev, providerData];
+            console.log(`Provider saved as duplicate. Total providers: ${updatedProviders.length}`);
+            return updatedProviders;
+          });
           const clearedData = { ...formData };
 
           delete clearedData.question20Answered;
@@ -2173,6 +2173,9 @@
           );
 
           if (hasUnverifiedItems) {
+            // Save all providers including the current one
+            setEnrolledProviders(allProviders);
+
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -2191,8 +2194,8 @@
               );
 
               if (firstReadyIndex !== -1) {
-                setEnrolledProviders(prev => {
-                  const updated = [...prev, providerData];
+                setEnrolledProviders(() => {
+                  const updated = [...allProviders];
                   updated[firstReadyIndex] = {
                     ...updated[firstReadyIndex],
                     createEnrollmentComplete: false,
@@ -2226,6 +2229,9 @@
                 }
               }
             } else {
+              // Save all providers including the current duplicate
+              setEnrolledProviders(allProviders);
+
               setFormData(prev => ({
                 ...prev,
                 providerEnrollmentType: 'Existing Provider'
@@ -2233,7 +2239,7 @@
 
               const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
               if (addToGroupIndex !== -1) {
-                const firstProviderIndex = enrolledProviders.findIndex(p =>
+                const firstProviderIndex = allProviders.findIndex(p =>
                   p.status === 'Enrolled - Ready to be Added to Group'
                 );
 

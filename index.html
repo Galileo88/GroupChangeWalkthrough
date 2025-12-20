@@ -1523,6 +1523,12 @@
               delete clearedData.additionalExistingProvidersNeeded;
               delete clearedData.existingProviderOpenCicsComplete;
               delete clearedData.existingProviderAddToGroupComplete;
+              delete clearedData.providerNameFormatting02;
+              delete clearedData.mailToPayToAddresses;
+              delete clearedData.cancelCodes;
+              delete clearedData.effectiveDates;
+              delete clearedData.boardCertificationIndicators;
+              delete clearedData.programCode54PA;
               delete clearedData.existingProviderCloseEnrollmentComplete;
               delete clearedData.existingProviderFinishGroupChangeComplete;
               delete clearedData.existingProviderCreateChecklistComplete;
@@ -1535,11 +1541,11 @@
               return clearedData;
             });
 
-            // Loop back to Step 11 - existing-provider-add-to-group
-            const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
-            if (addToGroupIndex !== -1) {
-              setCurrentPage(addToGroupIndex);
-              setVisitedPages(prev => new Set([...prev, addToGroupIndex]));
+            // Loop back to Step 11 - existing-provider-open-cics (start of existing provider branch)
+            const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+            if (openCicsIndex !== -1) {
+              setCurrentPage(openCicsIndex);
+              setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
           } else {
             // No more providers to add, mark current as complete and continue to final completion
@@ -1690,9 +1696,9 @@
               providerEnrollmentType: 'Existing Provider'
             }));
 
-            // Navigate to Step 11 - existing-provider-add-to-group
-            const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
-            if (addToGroupIndex !== -1) {
+            // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
+            const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+            if (openCicsIndex !== -1) {
               // Initialize the first provider to be added to the group
               const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Enrolled - Ready to be Added to Group'
@@ -1703,8 +1709,8 @@
                 console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
-              setCurrentPage(addToGroupIndex);
-              setVisitedPages(prev => new Set([...prev, addToGroupIndex]));
+              setCurrentPage(openCicsIndex);
+              setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
           }
           return;
@@ -1736,9 +1742,9 @@
             providerEnrollmentType: 'Existing Provider'
           }));
 
-          // Navigate to Step 11 - existing-provider-add-to-group
-          const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
-          if (addToGroupIndex !== -1) {
+          // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
+          const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+          if (openCicsIndex !== -1) {
             // Initialize the first provider to be added to the group
             const firstProviderIndex = enrolledProviders.findIndex(p =>
               p.status === 'Enrolled - Ready to be Added to Group'
@@ -1749,8 +1755,8 @@
               console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
             }
 
-            setCurrentPage(addToGroupIndex);
-            setVisitedPages(prev => new Set([...prev, addToGroupIndex]));
+            setCurrentPage(openCicsIndex);
+            setVisitedPages(prev => new Set([...prev, openCicsIndex]));
           }
           return;
         }

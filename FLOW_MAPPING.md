@@ -22,7 +22,7 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 | 6 | email-to-snow | 5 | Email to SNOW |
 | 7 | question-20 | 6 | Question 20 verification |
 | 8 | questions-21-23 | 7 | Questions 21-23 verification |
-| 9 | provider-type-selection | 8 | **BRANCH POINT**: New Provider vs Existing Provider |
+| 9 | provider-type-selection | 8 | **BRANCH POINT**: Auto-determined based on provider enrollment status |
 
 ### Existing Provider Path (Steps 11-23)
 
@@ -71,36 +71,52 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 
 ### Main Flow (Steps 1-9)
 1. User completes Steps 1-8 sequentially
-2. At Step 9 (provider-type-selection), user chooses:
-   - **Existing Provider** → Navigate to Step 11 (index 9)
-   - **New Provider** → Navigate to Step 24 (index 22)
+2. At Step 9 (provider-type-selection), the system automatically determines the workflow based on provider enrollment status:
+   - **New Provider** (if any providers need enrollment) → Navigate to Step 24 (index 22)
+   - **Existing Provider** (if all providers are already enrolled) → Navigate to Step 11 (index 9)
+   - **Mixed Status**: If there's a mix of new and existing providers, the system prioritizes the New Provider workflow first, enrolling all new providers before adding existing providers
 
 ### Existing Provider Flow (Steps 11-23)
 - Conditional display based on: `providerEnrollmentType === 'Existing Provider'`
 - All pages from index 9-21 are shown when this condition is met
-- Flow ends at Step 23 (existing-provider-completion)
+- At Step 23 (existing-provider-completion), user decides:
+  - **Yes** → Save current provider, loop back to Step 11 (existing-provider-open-cics, index 9)
+  - **No** → Navigate to final completion page
 
 ### New Provider Flow (Steps 24-37)
 - Conditional display based on: `providerEnrollmentType === 'New Provider'`
 - All pages from index 22-35 are shown when this condition is met
 - At Step 37 (additional-providers-check), user decides:
   - **Yes** → Save current provider, loop back to Step 24 (create-enrollment, index 22)
-  - **No** → Save current provider, navigate to Step 11 (existing-provider-add-to-group, index 10)
+  - **No** → Save current provider, navigate to Step 11 (existing-provider-open-cics, index 9)
 
-### Additional Provider Loop
+### New Provider Loop (Step 37 "Yes")
 When "Yes" is selected at Step 37:
 1. Current provider data is saved to `enrolledProviders` array
 2. Provider-specific form data is cleared
 3. `providerEnrollmentType` is set to `'New Provider'`
 4. Navigate directly back to Step 24 (create-enrollment, index 22)
-5. Loop repeats: User goes through Steps 24-37 again for each additional provider
+5. Loop repeats: User goes through Steps 24-37 again for each additional new provider
 
-### Completion Flow
-When "No" is selected at Step 37:
+### Existing Provider Loop (Step 23 "Yes")
+When "Yes" is selected at Step 23:
+1. Current provider data is saved to `enrolledProviders` array
+2. Existing provider-specific form data is cleared
+3. `providerEnrollmentType` remains `'Existing Provider'`
+4. Navigate directly back to Step 11 (existing-provider-open-cics, index 9)
+5. Loop repeats: User goes through Steps 11-23 again for each additional existing provider
+
+### Completion Flow (Step 37 "No" or Step 23 "No")
+**From Step 37 "No" (New Provider path):**
 1. Final provider data is saved to `enrolledProviders` array
 2. `providerEnrollmentType` is set to `'Existing Provider'` to enable access to completion steps
-3. Navigate directly to Step 11 (existing-provider-add-to-group, index 10)
-4. Continue through Steps 11-23 to complete the workflow
+3. Navigate directly to Step 11 (existing-provider-open-cics, index 9)
+4. Continue through Steps 11-23 to add all providers to the group
+
+**From Step 23 "No" (Existing Provider path):**
+1. Final provider data is saved to `enrolledProviders` array
+2. Navigate to final completion page
+3. Workflow complete
 
 ## Code Organization
 
@@ -118,39 +134,57 @@ The implementation in index.html is organized into clearly labeled sections:
 
 The main navigation logic is located in the **EVENT HANDLERS** section of index.html:
 
+### New Provider Loop Handlers
+
 1. **Step 37 "Yes" Handler** (additional-providers-check with "Yes")
    - Saves provider data to enrolledProviders
    - Clears provider-specific form fields
    - Sets `providerEnrollmentType` to `'New Provider'`
    - Navigates directly to create-enrollment (Step 24, index 22)
-   - This implements the "Repeat Steps 24-36" loop shown in the flowchart
+   - This implements the "Repeat Steps 24-36" loop for additional new providers
 
 2. **Step 37 "No" Handler** (additional-providers-check with "No")
    - Saves final provider data to enrolledProviders
    - Sets `providerEnrollmentType` to `'Existing Provider'`
-   - Navigates to existing-provider-add-to-group (Step 12, index 10)
+   - Navigates to existing-provider-open-cics (Step 11, index 9)
    - Enables access to completion steps (Steps 11-23)
+
+### Existing Provider Loop Handlers
+
+3. **Step 23 "Yes" Handler** (existing-provider-completion with "Yes")
+   - Saves provider data to enrolledProviders
+   - Clears existing provider-specific form fields
+   - Keeps `providerEnrollmentType` as `'Existing Provider'`
+   - Navigates directly to existing-provider-open-cics (Step 11, index 9)
+   - This implements the loop for adding multiple existing providers to the group
+
+4. **Step 23 "No" Handler** (existing-provider-completion with "No")
+   - Saves final provider data to enrolledProviders
+   - Navigates to final completion page
+   - Completes the entire workflow
 
 ## Flowchart Alignment
 
 The implementation correctly matches the flowchart:
 - Steps 1-9: Sequential initial steps ✅
-- Step 9: Branch to "New Provider" or "Existing Provider" ✅
+- Step 9: Auto-branch to "New Provider" or "Existing Provider" based on enrollment status ✅
 - New Provider: Steps 24-37 ✅
 - Existing Provider: Steps 11-23 ✅
-- Step 37 Decision:
+- Step 37 Decision (New Provider path):
   - **Yes** → "Repeat Steps 24-36" (loop back to Step 24) ✅
-  - **No** → "Step 11" (navigate to existing-provider-add-to-group) ✅
+  - **No** → "Navigate to Step 11" (transition to Existing Provider workflow) ✅
+- Step 23 Decision (Existing Provider path):
+  - **Yes** → "Repeat Steps 11-22" (loop back to Step 11) ✅
+  - **No** → "Final Completion" (workflow complete) ✅
 
 ### Implementation Details
 
-The implementation correctly handles the flowchart's loop behavior:
-1. When "Yes" is selected at Step 37, the flow loops directly back to Step 24 (create-enrollment)
-2. This assumes all additional providers will go through the New Provider enrollment flow (Steps 24-37)
-3. Provider data is saved before looping, allowing multiple providers to be enrolled
-4. When "No" is selected at Step 37, all enrolled providers are processed through the completion steps (Steps 11-23)
-
-### Implementation Details
+The implementation correctly handles the flowchart's loop behavior with prioritized workflow:
+1. **Priority Logic**: If providers need enrollment, the system automatically routes to New Provider workflow first
+2. When "Yes" is selected at Step 37, the flow loops directly back to Step 24 (create-enrollment)
+3. All new providers are enrolled through the New Provider flow (Steps 24-37) before any existing providers are added
+4. Provider data is saved before looping, allowing multiple providers to be enrolled
+5. When "No" is selected at Step 37, the system transitions to Existing Provider workflow (Steps 11-23) to add all providers (both newly enrolled and pre-existing) to the group
 
 **Step 37 "Yes" Loop:**
 When "Yes" is selected at Step 37, the code:
@@ -170,10 +204,14 @@ This is critical because:
 
 The implementation correctly handles:
 - ✅ Sequential flow through Steps 1-9
-- ✅ Branching at Step 9 based on provider type selection
+- ✅ Auto-branching at Step 9 based on provider enrollment status with priority logic:
+  - New Provider workflow takes priority if any providers need enrollment
+  - All new providers are enrolled before existing providers are added
 - ✅ Existing Provider path (Steps 11-23)
 - ✅ New Provider path (Steps 24-37)
-- ✅ Loop back for additional providers (Step 37 "Yes" → Step 24)
-- ✅ Transition to completion steps (Step 37 "No" → Step 11)
+- ✅ New Provider loop (Step 37 "Yes" → Step 24)
+- ✅ Existing Provider loop (Step 23 "Yes" → Step 11)
+- ✅ Transition from New Provider to Existing Provider workflow (Step 37 "No" → Step 11)
+- ✅ Final completion from Existing Provider workflow (Step 23 "No" → Final completion)
 - ✅ Provider enrollment data tracking in `enrolledProviders` array
 - ✅ Proper `providerEnrollmentType` management for conditional page display

@@ -1466,7 +1466,8 @@
                     if (addToGroupIndex !== -1) {
                       // Initialize the first provider to be added to the group
                       const firstProviderIndex = enrolledProviders.findIndex(p =>
-                        p.status === 'Enrolled - Ready to be Added to Group'
+                        p.status === 'Enrolled - Ready to be Added to Group' ||
+                        p.status === 'Verified - Ready to Add to Group'
                       );
 
                       if (firstProviderIndex !== -1) {
@@ -1493,7 +1494,8 @@
           // Find the next provider that is ready to be added to the group
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentAddingProviderIndex &&
-            p.status === 'Enrolled - Ready to be Added to Group'
+            (p.status === 'Enrolled - Ready to be Added to Group' ||
+             p.status === 'Verified - Ready to Add to Group')
           );
 
           if (nextReadyIndex !== -1) {
@@ -1701,7 +1703,8 @@
             if (openCicsIndex !== -1) {
               // Initialize the first provider to be added to the group
               const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Enrolled - Ready to be Added to Group'
+                p.status === 'Enrolled - Ready to be Added to Group' ||
+                p.status === 'Verified - Ready to Add to Group'
               );
 
               if (firstProviderIndex !== -1) {
@@ -1747,7 +1750,8 @@
           if (openCicsIndex !== -1) {
             // Initialize the first provider to be added to the group
             const firstProviderIndex = enrolledProviders.findIndex(p =>
-              p.status === 'Enrolled - Ready to be Added to Group'
+              p.status === 'Enrolled - Ready to be Added to Group' ||
+              p.status === 'Verified - Ready to Add to Group'
             );
 
             if (firstProviderIndex !== -1) {
@@ -1833,7 +1837,8 @@
                 currentAddingProviderIndex === null) {
               // Find the first provider that is ready to be added to the group
               const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Enrolled - Ready to be Added to Group'
+                p.status === 'Enrolled - Ready to be Added to Group' ||
+                p.status === 'Verified - Ready to Add to Group'
               );
 
               if (firstProviderIndex !== -1) {

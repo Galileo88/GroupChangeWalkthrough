@@ -15,7 +15,10 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // Icon Components
+    // ============================================================
+    // ICON COMPONENTS
+    // ============================================================
+
     const ChevronRight = ({ className }) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -46,8 +49,13 @@
       </svg>
     );
 
-    // Main Form Component
+    // ============================================================
+    // MAIN FORM COMPONENT
+    // ============================================================
+
     const WalkthroughForm = () => {
+
+      // -------------------- State Variables --------------------
       const [currentPage, setCurrentPage] = useState(0);
       const [formData, setFormData] = useState({});
       const [showImageModal, setShowImageModal] = useState(false);
@@ -67,7 +75,7 @@
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
 
-      // Group Practice Application reference image
+      // -------------------- Reference Images --------------------
       const groupPracticeAppImage = './images/groupchange_application.jpg';
       const question6Image = './images/question6.jpg';
       const paytoMailtoImage = './images/payto_mailto.jpg';
@@ -99,7 +107,9 @@
       const generateLetterImage = './images/generateletter.png';
       const closeLetterImage = './images/closeletter.png';
 
-      // Helper function to show custom confirmation dialog
+      // -------------------- Helper Functions --------------------
+
+      // Custom confirmation dialog
       const showConfirm = (message) => {
         return new Promise((resolve) => {
           setConfirmDialog({
@@ -117,7 +127,7 @@
         });
       };
 
-      // Helper function to show custom alert dialog
+      // Custom alert dialog
       const showAlert = (message) => {
         return new Promise((resolve) => {
           setAlertDialog({
@@ -131,8 +141,15 @@
         });
       };
 
-      // PAGES CONFIGURATION
+      // ============================================================
+      // PAGES CONFIGURATION (44 Pages)
+      // ============================================================
+      // This section defines all the walkthrough pages and their
+      // fields, validation rules, and conditional display logic.
+      // ============================================================
+
       const pages = [
+        // -------------------- Initial Setup Pages --------------------
         {
           id: 'welcome',
           title: 'Welcome',
@@ -384,6 +401,7 @@
             }
           ]
         },
+        // -------------------- Completion & Special Pages --------------------
         {
           id: 'question-20-unable-to-verify-completion',
           title: 'UNABLE TO VERIFY - OUTREACH REQUIRED',
@@ -401,6 +419,7 @@
           isDuplicateRejection: true,
           fields: []
         },
+        // -------------------- Additional Verification Pages --------------------
         {
           id: 'questions-21-23',
           title: 'Additional Questions (21-23) Verification',
@@ -445,17 +464,16 @@
             }
           ]
         },
+        // -------------------- Provider Type Selection --------------------
         {
           id: 'provider-type-selection',
           title: 'Provider Enrollment Type',
           description: (formData) => {
-            // Check if provider is already enrolled from any of the previous steps
             const isAlreadyEnrolled =
               formData.nextProviderAlreadyEnrolled === 'Yes' ||
               formData.finalProviderAlreadyEnrolled === 'Yes' ||
               formData.providerAlreadyEnrolled === 'Yes';
 
-            // Dynamic description based on enrollment status
             const providerType = isAlreadyEnrolled ? 'Existing Provider' : 'New Provider';
             return `Based on previous answers, you are adding a${providerType === 'New Provider' ? '' : 'n'} ${providerType}`;
           },
@@ -463,33 +481,30 @@
             {
               name: 'providerEnrollmentType',
               label: (formData) => {
-                // Check if provider is already enrolled from any of the previous steps
                 const isAlreadyEnrolled =
                   formData.nextProviderAlreadyEnrolled === 'Yes' ||
                   formData.finalProviderAlreadyEnrolled === 'Yes' ||
                   formData.providerAlreadyEnrolled === 'Yes';
 
-                // Dynamic label based on enrollment status
                 const providerType = isAlreadyEnrolled ? 'Existing Provider' : 'New Provider';
                 return `Based on previous answers, you are adding a${providerType === 'New Provider' ? '' : 'n'} ${providerType}`;
               },
               type: 'radio',
               required: true,
               options: (formData) => {
-                // Check if provider is already enrolled from any of the previous steps
                 const isAlreadyEnrolled =
                   formData.nextProviderAlreadyEnrolled === 'Yes' ||
                   formData.finalProviderAlreadyEnrolled === 'Yes' ||
                   formData.providerAlreadyEnrolled === 'Yes';
 
-                // If already enrolled, only show "Existing Provider"
-                // If not enrolled, only show "New Provider"
                 return isAlreadyEnrolled ? ['Existing Provider'] : ['New Provider'];
               },
               validation: (value) => value === 'New Provider' || value === 'Existing Provider'
             }
           ]
         },
+        // ================== EXISTING PROVIDER WORKFLOW ==================
+        // These pages handle adding an already-enrolled provider to a group
         {
           id: 'existing-provider-open-cics',
           title: 'OPEN CICS',
@@ -761,6 +776,8 @@
           instructionText: 'Congratulations! You have successfully completed the group change walkthrough.\n\nAll providers have been enrolled and added to the group.\n\nYou can now:\n- Download your notes and answers\n- Start a new application',
           isCompletionPage: true
         },
+        // ================== NEW PROVIDER WORKFLOW ==================
+        // These pages handle enrolling a new provider into CICS
         {
           id: 'create-enrollment',
           title: 'Create Enrollment in SNOW',
@@ -1165,6 +1182,10 @@
         }
       ];
 
+      // ============================================================
+      // VALIDATION & PAGE LOGIC
+      // ============================================================
+
       // Check if current page requirements are met
       const isPageValid = () => {
         const page = pages[currentPage];
@@ -1180,7 +1201,6 @@
           }
           if (!field.required) return true;
 
-          // Skip validation for fields marked as unable to verify
           if (unableToVerifyFields.has(field.name)) return true;
 
           const value = formData[field.name];
@@ -1191,7 +1211,6 @@
       const handleFieldChange = (fieldName, value) => {
         setFormData(prev => ({ ...prev, [fieldName]: value }));
 
-        // Update enrollment details for current provider in real-time
         const enrollmentFields = [
           'createEnrollmentComplete',
           'providerInfoComplete',
@@ -1211,7 +1230,6 @@
           'enrollOnMainframeComplete'
         ];
 
-        // If we're tracking a current enrolling provider and this is an enrollment field, update it
         if (currentEnrollingProviderIndex !== null && enrollmentFields.includes(fieldName)) {
           setEnrolledProviders(prev => {
             const updated = [...prev];
@@ -1233,20 +1251,21 @@
         return formData[page.showWhen.field] === page.showWhen.value;
       };
 
+      // ============================================================
+      // EVENT HANDLERS
+      // ============================================================
 
+      // Handle navigation to next page with complex routing logic
       const handleNext = async () => {
         const currentPageData = pages[currentPage];
 
-        // Check if we're on question-20 (Step 7 - Provider Info Verification)
         if (currentPageData.id === 'question-20') {
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          // Check if there are unable-to-verify items
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           if (hasUnableToVerify) {
-            // Save current provider with unable-to-verify items
             const providerData = {
               status: 'Unable to Verify - Requires Outreach',
               question20Answered: formData.question20Answered,
@@ -1269,8 +1288,6 @@
               return updatedProviders;
             });
           } else if (moreProviders) {
-            // Save fully verified provider when user wants to verify more providers
-            // Determine status based on provider enrollment state
             let providerStatus = 'Verified - Ready to Enroll';
             if (formData.providerAlreadyEnrolled === 'Yes') {
               if (formData.providerInGroup === 'Yes') {
@@ -1304,7 +1321,6 @@
           }
 
           if (moreProviders) {
-            // Yes - more providers: Clear Step 7 fields and stay on question-20
             const clearedData = { ...formData };
             delete clearedData.question20Answered;
             delete clearedData.providerAlreadyEnrolled;
@@ -1318,27 +1334,21 @@
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
 
-            // Update expected count to prevent duplicate saves if user navigates back
             clearedData.expectedProviderCount = enrolledProviders.length + 1;
 
             setFormData(clearedData);
 
-            // Clear unable-to-verify fields for question-20
             setUnableToVerifyFields(prev => {
               const newSet = new Set(prev);
               question20VerifyFields.forEach(field => newSet.delete(field));
               return newSet;
             });
 
-            // Scroll to top so user can see the first question for the next provider
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Stay on question-20 (don't advance)
             return;
           } else {
-            // No - no more providers
             if (hasUnableToVerify) {
-              // Save provider with unable-to-verify items if not already saved
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
@@ -1361,7 +1371,6 @@
                 return updatedProviders;
               });
 
-              // Navigate to completion page for unable-to-verify scenario
               const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
               if (completionIndex !== -1) {
                 setCurrentPage(completionIndex);
@@ -1369,8 +1378,6 @@
               }
               return;
             } else {
-              // Save the last fully verified provider
-              // Determine status based on provider enrollment state
               let providerStatus = 'Verified - Ready to Enroll';
               if (formData.providerAlreadyEnrolled === 'Yes') {
                 if (formData.providerInGroup === 'Yes') {
@@ -1400,21 +1407,18 @@
                 const updatedProviders = [...prev, providerData];
                 console.log(`Final verified provider saved. Total providers: ${updatedProviders.length}`);
 
-                // Check if any providers need enrollment
                 const needsEnrollment = updatedProviders.some(p =>
                   p.status === 'Verified - Ready to Enroll' &&
                   p.providerAlreadyEnrolled === 'No'
                 );
 
                 if (needsEnrollment) {
-                  // Find the first provider that is ready to enroll
                   const firstReadyIndex = updatedProviders.findIndex(p =>
                     p.status === 'Verified - Ready to Enroll' &&
                     p.providerAlreadyEnrolled === 'No'
                   );
 
                   if (firstReadyIndex !== -1) {
-                    // Initialize enrollment detail fields for this provider
                     updatedProviders[firstReadyIndex] = {
                       ...updatedProviders[firstReadyIndex],
                       createEnrollmentComplete: false,
@@ -1435,44 +1439,36 @@
                       enrollOnMainframeComplete: false
                     };
 
-                    // Set this as the current enrolling provider
                     setCurrentEnrollingProviderIndex(firstReadyIndex);
                     console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${updatedProviders.length}`);
 
-                    // Navigate to New Provider enrollment flow (create-enrollment)
                     const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                     if (createEnrollmentIndex !== -1) {
-                      // Set provider enrollment type to enable New Provider path
                       setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
                       setCurrentPage(createEnrollmentIndex);
                       setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
                     }
                   }
                 } else {
-                  // No providers ready to enroll - check if there are already enrolled providers
                   const hasExistingProviders = updatedProviders.some(p =>
                     p.status === 'Verified - Ready to Add to Group' ||
                     p.status === 'Enrolled - Ready to be Added to Group'
                   );
 
                   if (hasExistingProviders) {
-                    // Normalize all provider statuses to "Enrolled - Ready to be Added to Group"
                     updatedProviders.forEach((provider, idx) => {
                       if (provider.status === 'Verified - Ready to Add to Group') {
                         updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
                       }
                     });
 
-                    // Set provider enrollment type to 'Existing Provider'
                     setFormData(prev => ({
                       ...prev,
                       providerEnrollmentType: 'Existing Provider'
                     }));
 
-                    // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
                     const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
                     if (openCicsIndex !== -1) {
-                      // Start with the first provider (index 0 = Provider 1)
                       const firstProviderIndex = updatedProviders.findIndex(p =>
                         p.status === 'Enrolled - Ready to be Added to Group'
                       );
@@ -1491,14 +1487,11 @@
                 return updatedProviders;
               });
 
-              // If no providers need enrollment, continue to next page (will be handled by normal flow below)
             }
           }
         }
 
-        // Check if we're on the existing provider completion page with "Yes" selected
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {
-          // Find the next provider that is ready to be added to the group
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
@@ -1506,11 +1499,9 @@
           );
 
           if (nextReadyIndex !== -1) {
-            // Update current provider status and initialize next provider
             setEnrolledProviders(prev => {
               const updated = [...prev];
 
-              // Mark current provider as complete
               if (currentAddingProviderIndex !== null && updated[currentAddingProviderIndex]) {
                 updated[currentAddingProviderIndex] = {
                   ...updated[currentAddingProviderIndex],
@@ -1522,11 +1513,9 @@
               return updated;
             });
 
-            // Set the next provider as current
             setCurrentAddingProviderIndex(nextReadyIndex);
             console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
-            // Clear the existing provider fields for the next provider
             setFormData(prev => {
               const clearedData = { ...prev };
               delete clearedData.additionalExistingProvidersNeeded;
@@ -1550,14 +1539,12 @@
               return clearedData;
             });
 
-            // Loop back to Step 11 - existing-provider-open-cics (start of existing provider branch)
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
               setCurrentPage(openCicsIndex);
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
           } else {
-            // No more providers to add, mark current as complete and continue to final completion
             if (currentAddingProviderIndex !== null) {
               setEnrolledProviders(prev => {
                 const updated = [...prev];
@@ -1571,16 +1558,13 @@
                 return updated;
               });
 
-              // Clear the current adding provider index
               setCurrentAddingProviderIndex(null);
             }
           }
           return;
         }
 
-        // Check if we're on the existing provider completion page with "No" selected
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'No') {
-          // Update the current provider's status to "Complete - Enrolled and Added to Group"
           if (currentAddingProviderIndex !== null) {
             setEnrolledProviders(prev => {
               const updated = [...prev];
@@ -1594,11 +1578,9 @@
               return updated;
             });
 
-            // Clear the current adding provider index
             setCurrentAddingProviderIndex(null);
           }
 
-          // Continue to final completion page
           const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
           if (finalCompletionIndex !== -1) {
             setCurrentPage(finalCompletionIndex);
@@ -1607,9 +1589,7 @@
           return;
         }
 
-        // Check if we're on the additional providers check page with "Yes" selected
         if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'Yes') {
-          // Find the next provider that is ready to enroll
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentEnrollingProviderIndex &&
             p.status === 'Verified - Ready to Enroll' &&
@@ -1617,11 +1597,9 @@
           );
 
           if (nextReadyIndex !== -1) {
-            // Update current provider status and initialize next provider in one go
             setEnrolledProviders(prev => {
               const updated = [...prev];
 
-              // Mark current provider as complete
               if (currentEnrollingProviderIndex !== null && updated[currentEnrollingProviderIndex]) {
                 updated[currentEnrollingProviderIndex] = {
                   ...updated[currentEnrollingProviderIndex],
@@ -1630,7 +1608,6 @@
                 console.log(`Provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
 
-              // Initialize enrollment fields for next provider
               if (updated[nextReadyIndex]) {
                 updated[nextReadyIndex] = {
                   ...updated[nextReadyIndex],
@@ -1656,11 +1633,9 @@
               return updated;
             });
 
-            // Set the next provider as current
             setCurrentEnrollingProviderIndex(nextReadyIndex);
             console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
-            // Clear provider-specific form data (keep enrollment type and previous steps)
             const clearedData = { ...formData };
             delete clearedData.createEnrollmentComplete;
             delete clearedData.providerInfoComplete;
@@ -1681,25 +1656,20 @@
             delete clearedData.additionalProvidersNeeded;
             delete clearedData.duplicateProviderSaved;
 
-            // Set providerEnrollmentType to 'New Provider' for the loop back to Step 24
             clearedData.providerEnrollmentType = 'New Provider';
 
             setFormData(clearedData);
 
-            // Clear unable to verify fields for the new provider
             setUnableToVerifyFields(new Set());
 
-            // Loop back to Step 24 (create-enrollment) to repeat Steps 24-36
             const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
             if (createEnrollmentIndex !== -1) {
               setCurrentPage(createEnrollmentIndex);
               setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
             }
           } else {
-            // No more providers to enroll, show alert
             await showAlert('No more providers are ready to enroll. You will be directed to complete the existing provider steps.');
 
-            // Normalize all provider statuses to "Enrolled - Ready to be Added to Group" before starting existing provider branch
             setEnrolledProviders(prev => {
               return prev.map(provider => {
                 if (provider.status === 'Verified - Ready to Add to Group') {
@@ -1709,16 +1679,13 @@
               });
             });
 
-            // Transition to existing provider branch
             setFormData(prev => ({
               ...prev,
               providerEnrollmentType: 'Existing Provider'
             }));
 
-            // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
-              // Start with the first provider (index 0 = Provider 1)
               const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Enrolled - Ready to be Added to Group' ||
                 p.status === 'Verified - Ready to Add to Group'
@@ -1736,9 +1703,7 @@
           return;
         }
 
-        // Check if we're on the additional providers check page with "No" selected
         if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'No') {
-          // Update the current provider's status to "Enrolled - Ready to be Added to Group"
           if (currentEnrollingProviderIndex !== null) {
             setEnrolledProviders(prev => {
               const updated = [...prev];
@@ -1750,7 +1715,6 @@
                 console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
 
-              // Normalize all other provider statuses to "Enrolled - Ready to be Added to Group"
               return updated.map(provider => {
                 if (provider.status === 'Verified - Ready to Add to Group') {
                   return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
@@ -1759,20 +1723,16 @@
               });
             });
 
-            // Clear the current enrolling provider index
             setCurrentEnrollingProviderIndex(null);
           }
 
-          // Update providerEnrollmentType to 'Existing Provider' to enable navigation to existing provider completion steps
           setFormData(prev => ({
             ...prev,
             providerEnrollmentType: 'Existing Provider'
           }));
 
-          // Navigate to Step 11 - existing-provider-open-cics (start of existing provider branch)
           const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
           if (openCicsIndex !== -1) {
-            // Start with the first provider (index 0 = Provider 1)
             const firstProviderIndex = enrolledProviders.findIndex(p =>
               p.status === 'Enrolled - Ready to be Added to Group' ||
               p.status === 'Verified - Ready to Add to Group'
@@ -1789,12 +1749,9 @@
           return;
         }
 
-        // Check if we're on the next provider ready check page
         if (currentPageData.id === 'next-provider-ready-check') {
-          // Navigate to provider-type-selection (Step 10) for additional providers
           const providerTypeIndex = pages.findIndex(page => page.id === 'provider-type-selection');
           if (providerTypeIndex !== -1) {
-            // Auto-select provider type based on enrollment status
             const isAlreadyEnrolled = formData.nextProviderAlreadyEnrolled === 'Yes';
             const autoSelectedType = isAlreadyEnrolled ? 'Existing Provider' : 'New Provider';
             setFormData(prev => ({ ...prev, providerEnrollmentType: autoSelectedType }));
@@ -1805,9 +1762,7 @@
           return;
         }
 
-        // Clear next provider fields when moving past provider-type-selection
         if (currentPageData.id === 'provider-type-selection' && formData.nextProviderFinalVerificationConfirm) {
-          // Clear the next provider checklist fields after they've been used
           const clearedData = { ...formData };
           delete clearedData.nextProviderFinalVerificationConfirm;
           delete clearedData.nextProviderAlreadyEnrolled;
@@ -1823,7 +1778,6 @@
 
           setFormData(clearedData);
 
-          // Clear unable to verify fields for next provider fields
           const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'];
           setUnableToVerifyFields(prev => {
             const newSet = new Set(prev);
@@ -1834,16 +1788,13 @@
 
         if (isPageValid() && currentPage < pages.length - 1) {
           let nextPage = currentPage + 1;
-          // Skip pages that don't meet their showWhen condition
           while (nextPage < pages.length && !shouldShowPage(nextPage)) {
             nextPage++;
           }
           if (nextPage < pages.length) {
             setCurrentPage(nextPage);
-            // Track this page as visited
             setVisitedPages(prev => new Set([...prev, nextPage]));
 
-            // Auto-select provider type when arriving at provider-type-selection
             const nextPageData = pages[nextPage];
             if (nextPageData.id === 'provider-type-selection') {
               const isAlreadyEnrolled =
@@ -1855,11 +1806,9 @@
               setFormData(prev => ({ ...prev, providerEnrollmentType: autoSelectedType }));
             }
 
-            // Set currentAddingProviderIndex when entering existing provider branch
             if (nextPageData.showWhen?.field === 'providerEnrollmentType' &&
                 nextPageData.showWhen?.value === 'Existing Provider' &&
                 currentAddingProviderIndex === null) {
-              // Find the first provider that is ready to be added to the group
               const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Enrolled - Ready to be Added to Group' ||
                 p.status === 'Verified - Ready to Add to Group'
@@ -1878,7 +1827,6 @@
       const handlePrevious = () => {
         if (currentPage > 0) {
           let prevPage = currentPage - 1;
-          // Skip pages that don't meet their showWhen condition
           while (prevPage >= 0 && !shouldShowPage(prevPage)) {
             prevPage--;
           }
@@ -1896,7 +1844,6 @@
       };
 
       const handleDownloadNotes = () => {
-        // Create a readable text format for download
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -1910,7 +1857,6 @@
         textContent += `Generated: ${dateStr}\n`;
         textContent += `${'='.repeat(80)}\n\n`;
 
-        // Add enrolled providers section
         if (enrolledProviders.length > 0) {
           textContent += `ENROLLED PROVIDERS (${enrolledProviders.length} total)\n`;
           textContent += `${'-'.repeat(80)}\n\n`;
@@ -1937,13 +1883,11 @@
             textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
             textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
 
-            // Add manual notes if they exist
             if (providerManualNotes[index]) {
               textContent += `\nManual Notes:\n`;
               textContent += `  ${providerManualNotes[index].split('\n').join('\n  ')}\n`;
             }
 
-            // Add outreach notes if they exist
             if (provider.outreachNotes && provider.outreachNotes.length > 0) {
               textContent += `\nnotes:\n`;
               provider.outreachNotes.forEach((note, noteIndex) => {
@@ -1957,7 +1901,6 @@
           textContent += `No providers enrolled yet.\n\n`;
         }
 
-        // Add current outreach notes section (if any are active)
         if (outreachNotes.length > 0) {
           textContent += `CURRENT OUTREACH NOTES (${outreachNotes.length})\n`;
           textContent += `${'-'.repeat(80)}\n`;
@@ -1970,7 +1913,6 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        // Create a downloadable text file
         const dataBlob = new Blob([textContent], { type: 'text/plain' });
         const url = URL.createObjectURL(dataBlob);
         const link = document.createElement('a');
@@ -2128,7 +2070,6 @@
           const duplicateNote = `[${stepInfo}] Rejected as a duplicate - provider is already in the group`;
           setOutreachNotes(prev => [...prev, duplicateNote]);
 
-          // Navigate to duplicate rejection completion page
           const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
           if (completionIndex !== -1) {
             setCurrentPage(completionIndex);
@@ -2138,8 +2079,6 @@
       };
 
       const handleNextProvider = async () => {
-        // Check if provider has already been saved to prevent duplicates on back navigation
-        // Use enrolledProviders count to track if we've already saved this duplicate provider
         const expectedProviderCount = formData.expectedProviderCount || 0;
         if (enrolledProviders.length > expectedProviderCount) {
           await showAlert('This provider has already been saved. Please proceed to the next step.');
@@ -2148,7 +2087,6 @@
 
         const moreProviders = await showConfirm('Are there additional providers in this application to process?\n\nThis will save the current provider as "already enrolled and in group" and reset the form for the next provider.');
 
-        // Save current duplicate provider
         const duplicateNote = 'Provider already enrolled and in group - no action needed';
 
         const providerData = {
@@ -2156,7 +2094,6 @@
           question20Answered: formData.question20Answered,
           providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
           providerInGroup: formData.providerInGroup,
-          // For next provider flow
           nextProviderFinalVerificationConfirm: formData.nextProviderFinalVerificationConfirm,
           nextProviderAlreadyEnrolled: formData.nextProviderAlreadyEnrolled,
           nextProviderInGroup: formData.nextProviderInGroup,
@@ -2170,10 +2107,8 @@
         });
 
         if (moreProviders) {
-          // Yes - more providers: Clear fields and stay on current page for next provider
           const clearedData = { ...formData };
 
-          // Clear question-20 fields
           delete clearedData.question20Answered;
           delete clearedData.providerAlreadyEnrolled;
           delete clearedData.providerInGroup;
@@ -2186,7 +2121,6 @@
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
 
-          // Clear next-provider-ready-check fields
           delete clearedData.nextProviderFinalVerificationConfirm;
           delete clearedData.nextProviderAlreadyEnrolled;
           delete clearedData.nextProviderInGroup;
@@ -2199,12 +2133,10 @@
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
 
-          // Update expected count to prevent duplicate saves if user navigates back
           clearedData.expectedProviderCount = enrolledProviders.length + 1;
 
           setFormData(clearedData);
 
-          // Clear unable to verify fields for next provider fields
           const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'];
           setUnableToVerifyFields(prev => {
             const newSet = new Set(prev);
@@ -2212,15 +2144,11 @@
             return newSet;
           });
 
-          // Show confirmation
           await showAlert('Provider saved. You can now enter information for the next provider.');
         } else {
-          // No - no more providers: Route to appropriate branch based on remaining providers
           const allProviders = [...enrolledProviders, providerData];
 
-          // Check if this is the ONLY provider and it's a duplicate
           if (allProviders.length === 1 && providerData.status === 'Already Enrolled and In Group') {
-            // Save the duplicate provider with rejection note
             const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
             const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only provider is already enrolled and in group`;
             const updatedProviderData = {
@@ -2231,7 +2159,6 @@
             setEnrolledProviders([updatedProviderData]);
             setOutreachNotes(prev => [...prev, rejectionNote]);
 
-            // Navigate to duplicate rejection completion page
             const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -2240,35 +2167,30 @@
             return;
           }
 
-          // Check if any providers have unverified items
           const hasUnverifiedItems = allProviders.some(provider =>
             provider.outreachNotes && provider.outreachNotes.length > 0 &&
             provider.status === 'Unable to Verify - Requires Outreach'
           );
 
           if (hasUnverifiedItems) {
-            // Navigate to outreach completion page
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
               setVisitedPages(prev => new Set([...prev, completionIndex]));
             }
           } else {
-            // No unverified items - check if there are providers ready to enroll
             const needsEnrollment = allProviders.some(p =>
               p.status === 'Verified - Ready to Enroll' &&
               p.providerAlreadyEnrolled === 'No'
             );
 
             if (needsEnrollment) {
-              // Find the first provider that is ready to enroll
               const firstReadyIndex = allProviders.findIndex(p =>
                 p.status === 'Verified - Ready to Enroll' &&
                 p.providerAlreadyEnrolled === 'No'
               );
 
               if (firstReadyIndex !== -1) {
-                // Update enrolledProviders with initialized enrollment fields
                 setEnrolledProviders(prev => {
                   const updated = [...prev, providerData];
                   updated[firstReadyIndex] = {
@@ -2293,31 +2215,24 @@
                   return updated;
                 });
 
-                // Set this as the current enrolling provider
                 setCurrentEnrollingProviderIndex(firstReadyIndex);
                 console.log(`Starting enrollment for provider ${firstReadyIndex + 1}`);
 
-                // Navigate to New Provider enrollment flow (create-enrollment)
                 const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                 if (createEnrollmentIndex !== -1) {
-                  // Set provider enrollment type to enable New Provider path
                   setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
                   setCurrentPage(createEnrollmentIndex);
                   setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
                 }
               }
             } else {
-              // No providers ready to enroll - navigate to Existing Provider branch
-              // Set provider enrollment type to 'Existing Provider'
               setFormData(prev => ({
                 ...prev,
                 providerEnrollmentType: 'Existing Provider'
               }));
 
-              // Navigate to Step 11 - existing-provider-add-to-group
               const addToGroupIndex = pages.findIndex(page => page.id === 'existing-provider-add-to-group');
               if (addToGroupIndex !== -1) {
-                // Initialize the first provider to be added to the group
                 const firstProviderIndex = enrolledProviders.findIndex(p =>
                   p.status === 'Enrolled - Ready to be Added to Group'
                 );
@@ -2341,7 +2256,6 @@
         setCurrentOutreachReason(noteWithStep);
         setShowOutreachModal(true);
 
-        // Store the field name temporarily - will be added to unableToVerifyFields only if user confirms
         if (fieldName) {
           setPendingUnableToVerifyField(fieldName);
         }
@@ -2352,7 +2266,6 @@
           setOutreachNotes(prev => [...prev, currentOutreachReason]);
         }
 
-        // If this was an "Unable to Verify" action, now mark the field
         if (pendingUnableToVerifyField) {
           setUnableToVerifyFields(prev => new Set([...prev, pendingUnableToVerifyField]));
           setPendingUnableToVerifyField(null);
@@ -2365,7 +2278,6 @@
       const cancelAddOutreachNote = () => {
         setShowOutreachModal(false);
         setCurrentOutreachReason('');
-        // Clear the pending field if user cancelled
         setPendingUnableToVerifyField(null);
       };
 
@@ -2383,24 +2295,19 @@
       const currentPageData = pages[currentPage];
       const isLastPage = currentPage === pages.length - 1;
 
-      // Disable continue button if provider is marked as already in group (duplicate)
       const canProceed = isPageValid() &&
         !(currentPageData.id === 'question-20' && formData.providerInGroup === 'Yes') &&
         !(currentPageData.id === 'next-provider-ready-check' && formData.nextProviderInGroup === 'Yes');
 
-      // Determine button text based on current page and selection
       const getNextButtonText = () => {
-        // Check for existing provider completion page with "Yes" selected
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {
           return 'Add Next Provider';
         }
 
-        // Check for additional providers page with "Yes" selected
         if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'Yes') {
           return 'Start New Provider';
         }
 
-        // Check if we're on question-20 (Step 7 - Provider Info Verification)
         if (currentPageData.id === 'question-20') {
           return 'Next Provider';
         }
@@ -2409,8 +2316,13 @@
         return 'Continue';
       };
 
+      // ============================================================
+      // COMPONENT RENDERING
+      // ============================================================
+
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 flex items-center justify-center">
+          {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
 
@@ -2674,17 +2586,14 @@
                 )}
 
                 {currentPageData.fields.map((field, index) => {
-                  // Skip checkboxes on question-20 page - they'll be rendered in Requirements section
                   if (currentPageData.id === 'question-20' && field.type === 'checkbox') {
                     return null;
                   }
 
-                  // Skip checkboxes on next-provider-ready-check page - they'll be rendered in Requirements section
                   if (currentPageData.id === 'next-provider-ready-check' && field.type === 'checkbox') {
                     return null;
                   }
 
-                  // Skip all fields on questions-21-23 page - they'll be rendered in Requirements section
                   if (currentPageData.id === 'questions-21-23') {
                     return null;
                   }
@@ -3021,7 +2930,6 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          // Check if this field should have an "Unable to Verify" button
                           const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
@@ -3411,6 +3319,8 @@
               </div>
             </div>
           </div>
+
+          {/* ==================== MODAL COMPONENTS ==================== */}
 
           {/* Image Modal */}
           {showImageModal && (
@@ -3859,6 +3769,10 @@
         </div>
       );
     };
+
+    // ============================================================
+    // APPLICATION INITIALIZATION
+    // ============================================================
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<WalkthroughForm />);

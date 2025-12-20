@@ -2,6 +2,8 @@
 
 This document maps the flowchart to the actual implementation in index.html.
 
+**Code Organization:** The index.html file has been organized with clear section headers and cleaned of verbose inline comments. All functionality remains intact, with improved readability through structured sections (see Code Organization section below).
+
 **Note:** The flowchart does not include a Step 10. The flow goes directly from Step 9 (provider-type-selection) to either:
 - Step 11 (existing-provider-open-cics) for Existing Provider path
 - Step 24 (create-enrollment) for New Provider path
@@ -100,18 +102,30 @@ When "No" is selected at Step 37:
 3. Navigate directly to Step 11 (existing-provider-add-to-group, index 10)
 4. Continue through Steps 11-23 to complete the workflow
 
+## Code Organization
+
+The implementation in index.html is organized into clearly labeled sections:
+- **ICON COMPONENTS** - SVG icon components used throughout the UI
+- **MAIN FORM COMPONENT** - Main WalkthroughForm with state variables, reference images, and helper functions
+- **PAGES CONFIGURATION (44 Pages)** - All walkthrough pages organized by workflow section
+- **VALIDATION & PAGE LOGIC** - Page validation and conditional display functions
+- **EVENT HANDLERS** - Navigation and form event handling functions
+- **COMPONENT RENDERING** - Main JSX rendering logic
+- **MODAL COMPONENTS** - All modal dialogs (Image, Outreach Notes, Enrolled Providers, etc.)
+- **APPLICATION INITIALIZATION** - Root DOM rendering
+
 ## Key Navigation Points
 
-### Line References in index.html
+The main navigation logic is located in the **EVENT HANDLERS** section of index.html:
 
-1. **Step 37 "Yes" Handler** (Lines 1108-1169)
+1. **Step 37 "Yes" Handler** (additional-providers-check with "Yes")
    - Saves provider data to enrolledProviders
    - Clears provider-specific form fields
    - Sets `providerEnrollmentType` to `'New Provider'`
    - Navigates directly to create-enrollment (Step 24, index 22)
    - This implements the "Repeat Steps 24-36" loop shown in the flowchart
 
-2. **Step 37 "No" Handler** (Lines 1173-1209)
+2. **Step 37 "No" Handler** (additional-providers-check with "No")
    - Saves final provider data to enrolledProviders
    - Sets `providerEnrollmentType` to `'Existing Provider'`
    - Navigates to existing-provider-add-to-group (Step 12, index 10)
@@ -136,35 +150,18 @@ The implementation correctly handles the flowchart's loop behavior:
 3. Provider data is saved before looping, allowing multiple providers to be enrolled
 4. When "No" is selected at Step 37, all enrolled providers are processed through the completion steps (Steps 11-23)
 
-### Implementation Fixes Applied
+### Implementation Details
 
-**Bug Fix 1 - Step 37 "Yes" Loop (Lines 1156-1168):**
-When "Yes" is selected at Step 37, the code now:
+**Step 37 "Yes" Loop:**
+When "Yes" is selected at Step 37, the code:
 1. Sets `providerEnrollmentType` to `'New Provider'` in the cleared form data
 2. Navigates directly to Step 24 (create-enrollment) instead of going through intermediate pages
+3. This ensures the flowchart's "Repeat Steps 24-36" instruction is followed exactly
 
-```javascript
-// Set providerEnrollmentType to 'New Provider' for the loop back to Step 24
-clearedData.providerEnrollmentType = 'New Provider';
+**Step 37 "No" Transition:**
+When transitioning from New Provider path (Step 37 "No") to existing provider completion steps, the code updates `providerEnrollmentType` to `'Existing Provider'` before navigation.
 
-// Loop back to Step 24 (create-enrollment) to repeat Steps 24-36
-const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
-if (createEnrollmentIndex !== -1) {
-  setCurrentPage(createEnrollmentIndex);
-}
-```
-
-This ensures the flowchart's "Repeat Steps 24-36" instruction is followed exactly.
-
-**Bug Fix 2 - Step 37 "No" Transition (Lines 1201-1202):**
-When transitioning from New Provider path (Step 37 "No") to existing provider completion steps, the code updates `providerEnrollmentType` to `'Existing Provider'` before navigation:
-
-```javascript
-// Update providerEnrollmentType to 'Existing Provider' to enable navigation to existing provider completion steps
-setFormData(prev => ({ ...prev, providerEnrollmentType: 'Existing Provider' }));
-```
-
-This fix is critical because:
+This is critical because:
 1. All existing provider pages (indices 9-21) have `showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' }`
 2. Without updating this field, users coming from the New Provider path would be blocked from accessing these pages
 3. The existing provider completion steps (adding to group, creating checklist, generating letters, etc.) are shared final steps regardless of enrollment type

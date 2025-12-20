@@ -3602,6 +3602,8 @@
                       <div key={index} className={`bg-gradient-to-br ${
                         index === currentEnrollingProviderIndex
                           ? 'from-blue-50 to-indigo-50 border-2 border-blue-400 ring-2 ring-blue-300'
+                          : index === currentAddingProviderIndex
+                          ? 'from-purple-50 to-violet-50 border-2 border-purple-400 ring-2 ring-purple-300'
                           : 'from-green-50 to-emerald-50 border-2 border-green-200'
                       } rounded-lg p-6 hover:border-green-300 transition-all`}>
                         <div className="mb-4">
@@ -3609,6 +3611,8 @@
                             <div className={`${
                               index === currentEnrollingProviderIndex
                                 ? 'bg-blue-500'
+                                : index === currentAddingProviderIndex
+                                ? 'bg-purple-500'
                                 : 'bg-green-500'
                             } text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold`}>
                               {index + 1}
@@ -3619,7 +3623,7 @@
                                 <span className="ml-2 text-sm font-normal text-blue-600">(Currently Enrolling)</span>
                               )}
                               {index === currentAddingProviderIndex && (
-                                <span className="ml-2 text-sm font-normal text-green-600">(Currently Being Added to Group)</span>
+                                <span className="ml-2 text-sm font-normal text-purple-600">(Currently Being Added to Group)</span>
                               )}
                             </h3>
                           </div>

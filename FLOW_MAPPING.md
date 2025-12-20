@@ -71,9 +71,10 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 
 ### Main Flow (Steps 1-9)
 1. User completes Steps 1-8 sequentially
-2. At Step 9 (provider-type-selection), the system automatically determines provider type based on enrollment status:
-   - **Existing Provider** (if provider is already enrolled) → Navigate to Step 11 (index 9)
-   - **New Provider** (if provider needs enrollment) → Navigate to Step 24 (index 22)
+2. At Step 9 (provider-type-selection), the system automatically determines the workflow based on provider enrollment status:
+   - **New Provider** (if any providers need enrollment) → Navigate to Step 24 (index 22)
+   - **Existing Provider** (if all providers are already enrolled) → Navigate to Step 11 (index 9)
+   - **Mixed Status**: If there's a mix of new and existing providers, the system prioritizes the New Provider workflow first, enrolling all new providers before adding existing providers
 
 ### Existing Provider Flow (Steps 11-23)
 - Conditional display based on: `providerEnrollmentType === 'Existing Provider'`
@@ -144,13 +145,12 @@ The implementation correctly matches the flowchart:
 
 ### Implementation Details
 
-The implementation correctly handles the flowchart's loop behavior:
-1. When "Yes" is selected at Step 37, the flow loops directly back to Step 24 (create-enrollment)
-2. This assumes all additional providers will go through the New Provider enrollment flow (Steps 24-37)
-3. Provider data is saved before looping, allowing multiple providers to be enrolled
-4. When "No" is selected at Step 37, all enrolled providers are processed through the completion steps (Steps 11-23)
-
-### Implementation Details
+The implementation correctly handles the flowchart's loop behavior with prioritized workflow:
+1. **Priority Logic**: If providers need enrollment, the system automatically routes to New Provider workflow first
+2. When "Yes" is selected at Step 37, the flow loops directly back to Step 24 (create-enrollment)
+3. All new providers are enrolled through the New Provider flow (Steps 24-37) before any existing providers are added
+4. Provider data is saved before looping, allowing multiple providers to be enrolled
+5. When "No" is selected at Step 37, the system transitions to Existing Provider workflow (Steps 11-23) to add all providers (both newly enrolled and pre-existing) to the group
 
 **Step 37 "Yes" Loop:**
 When "Yes" is selected at Step 37, the code:
@@ -170,7 +170,9 @@ This is critical because:
 
 The implementation correctly handles:
 - ✅ Sequential flow through Steps 1-9
-- ✅ Auto-branching at Step 9 based on provider enrollment status (already enrolled vs needs enrollment)
+- ✅ Auto-branching at Step 9 based on provider enrollment status with priority logic:
+  - New Provider workflow takes priority if any providers need enrollment
+  - All new providers are enrolled before existing providers are added
 - ✅ Existing Provider path (Steps 11-23)
 - ✅ New Provider path (Steps 24-37)
 - ✅ Loop back for additional providers (Step 37 "Yes" → Step 24)

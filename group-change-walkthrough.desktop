@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Group Change Walkthrough
+Comment=Interactive walkthrough form for group change procedures
+Exec=/home/user/GroupChangeWalkthrough/launch-app.sh
+Icon=/home/user/GroupChangeWalkthrough/images/groupchange_application.jpg
+Terminal=false
+Categories=Office;Documentation;
+StartupNotify=true

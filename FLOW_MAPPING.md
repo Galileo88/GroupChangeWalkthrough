@@ -1,15 +1,5 @@
 # Application Flow Mapping
 
-This document maps the flowchart to the actual implementation in index.html.
-
-**Code Organization:** The index.html file has been organized with clear section headers and cleaned of verbose inline comments. All functionality remains intact, with improved readability through structured sections (see Code Organization section below).
-
-**Note:** The flowchart does not include a Step 10. The flow goes directly from Step 9 (provider-type-selection) to either:
-- Step 11 (existing-provider-open-cics) for Existing Provider path
-- Step 24 (create-enrollment) for New Provider path
-
-A previously existing Step 10 (existing-provider-questions-21-23) has been removed to match the flowchart exactly.
-
 ## Page Index Reference
 
 | Step # | Page ID | Array Index | Description |
@@ -60,12 +50,6 @@ A previously existing Step 10 (existing-provider-questions-21-23) has been remov
 | 35 | license-dea-tab | 33 | License/DEA tab |
 | 36 | enroll-on-mainframe | 34 | Enroll on mainframe |
 | 37 | additional-providers-check | 35 | **DECISION POINT**: Additional providers needed? |
-
-### Additional Pages
-
-| Page ID | Array Index | Description | Usage |
-|---------|-------------|-------------|-------|
-| next-provider-ready-check | 36 | Next provider verification checklist | Currently unused in main flow |
 
 ## Flow Logic
 
@@ -162,43 +146,6 @@ The main navigation logic is located in the **EVENT HANDLERS** section of index.
    - Saves final provider data to enrolledProviders
    - Navigates to final completion page
    - Completes the entire workflow
-
-## Flowchart Alignment
-
-The implementation correctly matches the flowchart:
-- Steps 1-9: Sequential initial steps ✅
-- Step 9: Auto-branch to "New Provider" or "Existing Provider" based on enrollment status ✅
-- New Provider: Steps 24-37 ✅
-- Existing Provider: Steps 11-23 ✅
-- Step 37 Decision (New Provider path):
-  - **Yes** → "Repeat Steps 24-36" (loop back to Step 24) ✅
-  - **No** → "Navigate to Step 11" (transition to Existing Provider workflow) ✅
-- Step 23 Decision (Existing Provider path):
-  - **Yes** → "Repeat Steps 11-22" (loop back to Step 11) ✅
-  - **No** → "Final Completion" (workflow complete) ✅
-
-### Implementation Details
-
-The implementation correctly handles the flowchart's loop behavior with prioritized workflow:
-1. **Priority Logic**: If providers need enrollment, the system automatically routes to New Provider workflow first
-2. When "Yes" is selected at Step 37, the flow loops directly back to Step 24 (create-enrollment)
-3. All new providers are enrolled through the New Provider flow (Steps 24-37) before any existing providers are added
-4. Provider data is saved before looping, allowing multiple providers to be enrolled
-5. When "No" is selected at Step 37, the system transitions to Existing Provider workflow (Steps 11-23) to add all providers (both newly enrolled and pre-existing) to the group
-
-**Step 37 "Yes" Loop:**
-When "Yes" is selected at Step 37, the code:
-1. Sets `providerEnrollmentType` to `'New Provider'` in the cleared form data
-2. Navigates directly to Step 24 (create-enrollment) instead of going through intermediate pages
-3. This ensures the flowchart's "Repeat Steps 24-36" instruction is followed exactly
-
-**Step 37 "No" Transition:**
-When transitioning from New Provider path (Step 37 "No") to existing provider completion steps, the code updates `providerEnrollmentType` to `'Existing Provider'` before navigation.
-
-This is critical because:
-1. All existing provider pages (indices 9-21) have `showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' }`
-2. Without updating this field, users coming from the New Provider path would be blocked from accessing these pages
-3. The existing provider completion steps (adding to group, creating checklist, generating letters, etc.) are shared final steps regardless of enrollment type
 
 ### Flow Validation
 

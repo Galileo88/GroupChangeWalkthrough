@@ -213,10 +213,10 @@
           enrolled_providers: enrolledProviders,
           outreach_notes: outreachNotes,
           provider_manual_notes: providerManualNotes,
-          unable_to_verify_fields: Array.from(unableToVerifyFields),
-          visited_pages: Array.from(visitedPages),
-          current_enrolling_provider_index: currentEnrollingProviderIndex || -1,
-          current_adding_provider_index: currentAddingProviderIndex || -1,
+          unable_to_verify_fields: Array.from(unableToVerifyFields).map(f => String(f)),
+          visited_pages: Array.from(visitedPages).map(p => String(p)),
+          current_enrolling_provider_index: currentEnrollingProviderIndex ?? -1,
+          current_adding_provider_index: currentAddingProviderIndex ?? -1,
           last_saved: new Date().toISOString(),
           has_outreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
         };
@@ -261,7 +261,7 @@
               outreachNotes: state.outreach_notes,
               providerManualNotes: state.provider_manual_notes,
               unableToVerifyFields: state.unable_to_verify_fields,
-              visitedPages: state.visited_pages,
+              visitedPages: state.visited_pages.map(p => parseInt(p)),
               currentEnrollingProviderIndex: state.current_enrolling_provider_index,
               currentAddingProviderIndex: state.current_adding_provider_index,
               lastSaved: state.last_saved,

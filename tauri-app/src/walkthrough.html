@@ -2153,18 +2153,24 @@
       };
 
       const handlePrevious = () => {
-        // Prevent going back if user has started either New Provider or Existing Provider branch
-        if (formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider') {
-          console.log('Navigation blocked: Cannot go back after starting provider enrollment workflow');
-          return;
-        }
-
         if (currentPage > 0) {
           let prevPage = currentPage - 1;
-          while (prevPage >= 0 && !shouldShowPage(prevPage)) {
+
+          // Find the minimum page index for the current branch
+          let minPageIndex = 0;
+          if (formData.providerEnrollmentType === 'New Provider') {
+            minPageIndex = pages.findIndex(page => page.id === 'create-enrollment');
+          } else if (formData.providerEnrollmentType === 'Existing Provider') {
+            minPageIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+          }
+
+          // Find the previous visible page, but don't go below the branch starting page
+          while (prevPage >= minPageIndex && !shouldShowPage(prevPage)) {
             prevPage--;
           }
-          if (prevPage >= 0) {
+
+          // Only navigate if we found a valid page within the allowed range
+          if (prevPage >= minPageIndex) {
             setCurrentPage(prevPage);
 
             // Auto-save application state after navigation
@@ -2175,6 +2181,8 @@
                 console.log('Auto-saved application state for PWO#:', pwoNumber);
               }
             }, 100);
+          } else {
+            console.log('Navigation blocked: Cannot go back before the start of the provider enrollment workflow');
           }
         }
       };
@@ -3610,9 +3618,13 @@
                     ) : (
                       <button
                         onClick={handlePrevious}
-                        disabled={formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider'}
+                        disabled={
+                          (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
+                          (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
+                        }
                         className={`flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                          formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider'
+                          (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
+                          (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                             ? 'text-slate-400 cursor-not-allowed bg-slate-100'
                             : 'text-slate-700 hover:bg-slate-200'
                         }`}

@@ -1686,8 +1686,9 @@
 
           if (!questionsAnswered) {
             console.log('Questions 21-23 not yet answered, showing the page to user');
-            // Let the normal page flow continue - user needs to answer questions
-            // Don't return here, let it fall through to normal navigation
+            // CRITICAL: Return here to prevent the general navigation logic from auto-advancing
+            // This ensures the user actually sees and answers the questions
+            return;
           } else {
             // Questions have been answered, now do the automatic routing
             // Debug: Log all provider statuses

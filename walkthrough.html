@@ -1590,6 +1590,20 @@
 
         // Handler for questions-21-23: Route to appropriate provider workflow
         if (currentPageData.id === 'questions-21-23') {
+          // Only proceed with automatic routing if the questions have been answered
+          // This prevents skipping the page when first navigating to it
+          const questionsAnswered = formData.question21Answered &&
+                                   formData.question22Answered &&
+                                   formData.question23Answered;
+
+          if (!questionsAnswered) {
+            console.log('Questions 21-23 not yet answered, showing the page to user');
+            // CRITICAL: Return here to prevent the general navigation logic from auto-advancing
+            // This ensures the user actually sees and answers the questions
+            return;
+          }
+
+          // Questions have been answered, now do the automatic routing
           // Debug: Log all provider statuses
           console.log('=== Questions 21-23 Routing Decision ===');
           console.log('Total providers:', enrolledProviders.length);

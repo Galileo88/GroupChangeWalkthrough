@@ -1823,6 +1823,10 @@
                   setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
                   setCurrentPage(createEnrollmentIndex);
                   setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 }
               }
               return;
@@ -2050,6 +2054,10 @@
             if (createEnrollmentIndex !== -1) {
               setCurrentPage(createEnrollmentIndex);
               setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
+              // Scroll to top after navigation
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
             }
           } else {
             await showAlert('No more providers are ready to enroll. You will be directed to complete the existing provider steps.');
@@ -2644,6 +2652,10 @@
                   setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
                   setCurrentPage(createEnrollmentIndex);
                   setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 }
               }
             } else {

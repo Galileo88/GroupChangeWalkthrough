@@ -1382,20 +1382,10 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
-          console.log('=== Question 20 Save Check ===');
-          console.log('Expected provider count:', expectedProviderCount);
-          console.log('Current enrolled providers length:', enrolledProviders.length);
-          console.log('Provider already saved?', providerAlreadySaved);
-
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
-
-          // Debug: Log unable to verify check
-          console.log('=== Question 20 Verification Check ===');
-          console.log('Unable to verify fields:', Array.from(unableToVerifyFields));
-          console.log('Has unable to verify:', hasUnableToVerify);
 
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
@@ -1478,11 +1468,6 @@
             // +1 for the provider just saved (if not already saved), +1 for the next expected provider
             const providerJustSaved = !providerAlreadySaved ? 1 : 0;
             clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
-
-            console.log('=== Setting Expected Provider Count ===');
-            console.log('enrolledProviders.length:', enrolledProviders.length);
-            console.log('providerJustSaved:', providerJustSaved);
-            console.log('New expectedProviderCount:', clearedData.expectedProviderCount);
 
             setFormData(clearedData);
 

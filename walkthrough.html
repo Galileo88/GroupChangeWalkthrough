@@ -74,6 +74,7 @@
       const [pendingUnableToVerifyField, setPendingUnableToVerifyField] = useState(null);
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
+      const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'saved'
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -2264,6 +2265,26 @@
         }
       };
 
+      const handleSaveProgress = () => {
+        const pwoNumber = formData.pwoNumber;
+        if (!pwoNumber) {
+          showAlert('Please enter a PWO# on the welcome page before saving.');
+          return;
+        }
+
+        setSaveStatus('saving');
+        saveApplicationState(pwoNumber);
+        console.log('Manually saved application state for PWO#:', pwoNumber);
+
+        // Show "Saved" feedback for 2 seconds
+        setTimeout(() => {
+          setSaveStatus('saved');
+          setTimeout(() => {
+            setSaveStatus('idle');
+          }, 2000);
+        }, 300);
+      };
+
       const handleRejectDuplicate = async () => {
         if (await showConfirm('Are you sure you want to reject this application as a duplicate? This provider is already in the group and does not need to be enrolled.')) {
           const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
@@ -3509,6 +3530,43 @@
                         </span>
                       )}
                     </button>
+
+                    {formData.pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup' && (
+                      <button
+                        onClick={handleSaveProgress}
+                        disabled={saveStatus === 'saving'}
+                        className={`relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-lg ${
+                          saveStatus === 'saved'
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                            : saveStatus === 'saving'
+                            ? 'bg-gradient-to-r from-blue-400 to-blue-500 text-white cursor-wait'
+                            : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'
+                        }`}
+                      >
+                        {saveStatus === 'saving' ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Saving...
+                          </>
+                        ) : saveStatus === 'saved' ? (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Saved!
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            Save Progress
+                          </>
+                        )}
+                      </button>
+                    )}
 
                     {enrolledProviders.length > 0 && (
                       <button

@@ -58,6 +58,22 @@ tauri-app\src-tauri\target\release\bundle\msi\Provider Enrollment Walkthrough_1.
 
 Just double-click the `.msi` file to install!
 
+## Windows SmartScreen Warning
+
+When you run the installer, you may see a warning:
+```
+Windows Defender SmartScreen prevented an unrecognized app from starting.
+```
+
+**This is normal!** The application is safe but not digitally signed. To install:
+
+1. Click **"More info"**
+2. Click **"Run anyway"**
+
+For detailed information, see:
+- [SMARTSCREEN_BYPASS.md](SMARTSCREEN_BYPASS.md) - User guide for bypassing the warning
+- [CODE_SIGNING_GUIDE.md](CODE_SIGNING_GUIDE.md) - Developer guide for signing your app
+
 ## Where Are My PWO Files Saved?
 
 After installing, your PWO files will be saved at:
@@ -97,6 +113,11 @@ You'll see folders like:
 ### "WebView2 not found"
 - Download WebView2 Runtime from Microsoft
 - Install and restart your computer
+
+### Windows SmartScreen Warning
+- Click "More info" then "Run anyway"
+- See [SMARTSCREEN_BYPASS.md](SMARTSCREEN_BYPASS.md) for detailed instructions
+- This is normal for unsigned applications
 
 ## Next Steps
 

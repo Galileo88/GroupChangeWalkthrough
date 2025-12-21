@@ -1314,6 +1314,9 @@
               return newSet;
             });
 
+            // Clear outreach notes after saving provider so next provider starts fresh
+            setOutreachNotes([]);
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             return;
@@ -2126,6 +2129,9 @@
             fieldsToRemove.forEach(field => newSet.delete(field));
             return newSet;
           });
+
+          // Clear outreach notes after saving provider so next provider starts fresh
+          setOutreachNotes([]);
 
           await showAlert('Provider saved. You can now enter information for the next provider.');
         } else {

@@ -2122,7 +2122,55 @@
         }
       };
 
-      const handleDownloadNotes = () => {
+      // Helper function to save file (works in both Tauri and browser)
+      const saveFile = async (content, defaultFilename) => {
+        if (tauriInvoke) {
+          // Tauri desktop app - use dialog and filesystem
+          try {
+            // Get the dialog API
+            const dialog = window.__TAURI__?.dialog || window.__TAURI_INTERNALS__?.dialog;
+            if (!dialog || !dialog.save) {
+              throw new Error('Dialog API not available');
+            }
+
+            // Show save dialog
+            const filePath = await dialog.save({
+              defaultPath: defaultFilename,
+              filters: [{
+                name: 'Text Files',
+                extensions: ['txt']
+              }]
+            });
+
+            if (filePath) {
+              // Write file using Tauri filesystem
+              const fs = window.__TAURI__?.fs || window.__TAURI_INTERNALS__?.fs;
+              if (!fs || !fs.writeTextFile) {
+                throw new Error('Filesystem API not available');
+              }
+
+              await fs.writeTextFile(filePath, content);
+              await showAlert('File saved successfully!');
+            }
+          } catch (error) {
+            console.error('Tauri save failed:', error);
+            await showAlert('Failed to save file: ' + error.message);
+          }
+        } else {
+          // Browser fallback
+          const dataBlob = new Blob([content], { type: 'text/plain' });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = defaultFilename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      const handleDownloadNotes = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2192,18 +2240,11 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `provider-enrollment-notes-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const filename = `provider-enrollment-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
-      const handleDownloadOutreachNotes = () => {
+      const handleDownloadOutreachNotes = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2231,18 +2272,11 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const filename = `outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
-      const handleDownloadEnrolledProviders = () => {
+      const handleDownloadEnrolledProviders = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2319,15 +2353,8 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `enrolled-providers-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const filename = `enrolled-providers-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
       const handleStartNewApplication = async () => {

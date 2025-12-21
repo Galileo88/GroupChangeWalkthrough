@@ -2053,6 +2053,9 @@
           }
         }
 
+        // Scroll to top of page on navigation
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
         // Auto-save application state after navigation
         // Wait for state updates to complete
         setTimeout(() => {
@@ -2084,6 +2087,9 @@
           // Only navigate if we found a valid page within the allowed range
           if (prevPage >= minPageIndex) {
             setCurrentPage(prevPage);
+
+            // Scroll to top of page on navigation
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             // Auto-save application state after navigation
             setTimeout(() => {

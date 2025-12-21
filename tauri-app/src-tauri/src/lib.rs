@@ -28,7 +28,8 @@ fn get_app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
 
 fn get_pwo_folder_path(app: &tauri::AppHandle, pwo_number: &str) -> Result<PathBuf, String> {
     let app_data_dir = get_app_data_dir(app)?;
-    let pwo_folder = app_data_dir.join(format!("PWO_{}", pwo_number));
+    // PWO numbers already include "PWO" prefix, so use them as-is for folder names
+    let pwo_folder = app_data_dir.join(pwo_number);
     Ok(pwo_folder)
 }
 

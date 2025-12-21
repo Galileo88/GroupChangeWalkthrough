@@ -2648,9 +2648,7 @@
       const currentPageData = pages[currentPage];
       const isLastPage = currentPage === pages.length - 1;
 
-      const canProceed = isPageValid() &&
-        !(currentPageData.id === 'question-20' && formData.providerInGroup === 'Yes') &&
-        !(currentPageData.id === 'next-provider-ready-check' && formData.nextProviderInGroup === 'Yes');
+      const canProceed = isPageValid();
 
       const getNextButtonText = () => {
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {

@@ -303,8 +303,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -329,8 +334,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -1331,6 +1341,10 @@
       };
 
       const handleFieldChange = (fieldName, value) => {
+        // Auto-format PWO number fields to uppercase
+        if (fieldName === 'pwoNumber' || fieldName === 'resumePwoNumber') {
+          value = value.toUpperCase();
+        }
         setFormData(prev => ({ ...prev, [fieldName]: value }));
 
         const enrollmentFields = [

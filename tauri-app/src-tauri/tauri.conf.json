@@ -5,7 +5,6 @@
   "identifier": "com.providerenrollment.walkthrough",
   "build": {
     "beforeDevCommand": "",
-    "devUrl": "../src",
     "beforeBuildCommand": "",
     "frontendDist": "../src"
   },

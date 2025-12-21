@@ -1678,138 +1678,151 @@
 
         // Handler for questions-21-23: Route to appropriate provider workflow
         if (currentPageData.id === 'questions-21-23') {
-          // Debug: Log all provider statuses
-          console.log('=== Questions 21-23 Routing Decision ===');
-          console.log('Total providers:', enrolledProviders.length);
-          console.log('Outreach notes:', outreachNotes);
-          enrolledProviders.forEach((p, idx) => {
-            console.log(`Provider ${idx + 1} status:`, p.status);
-            console.log(`Provider ${idx + 1} outreach notes:`, p.outreachNotes);
-          });
+          // Only proceed with automatic routing if the questions have been answered
+          // This prevents skipping the page when first navigating to it
+          const questionsAnswered = formData.question21Answered &&
+                                   formData.question22Answered &&
+                                   formData.question23Answered;
 
-          // Check if any provider requires outreach OR if outreach notes were added
-          const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
-            p.status === 'Unable to Verify - Requires Outreach'
-          );
+          if (!questionsAnswered) {
+            console.log('Questions 21-23 not yet answered, showing the page to user');
+            // Let the normal page flow continue - user needs to answer questions
+            // Don't return here, let it fall through to normal navigation
+          } else {
+            // Questions have been answered, now do the automatic routing
+            // Debug: Log all provider statuses
+            console.log('=== Questions 21-23 Routing Decision ===');
+            console.log('Total providers:', enrolledProviders.length);
+            console.log('Outreach notes:', outreachNotes);
+            enrolledProviders.forEach((p, idx) => {
+              console.log(`Provider ${idx + 1} status:`, p.status);
+              console.log(`Provider ${idx + 1} outreach notes:`, p.outreachNotes);
+            });
 
-          // Check if any provider has outreach notes from verification steps
-          const hasProviderOutreachNotes = enrolledProviders.some(p =>
-            p.outreachNotes && p.outreachNotes.length > 0
-          );
+            // Check if any provider requires outreach OR if outreach notes were added
+            const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
+              p.status === 'Unable to Verify - Requires Outreach'
+            );
 
-          // Check if general outreach notes were added
-          const hasGeneralOutreachNotes = outreachNotes.length > 0;
+            // Check if any provider has outreach notes from verification steps
+            const hasProviderOutreachNotes = enrolledProviders.some(p =>
+              p.outreachNotes && p.outreachNotes.length > 0
+            );
 
-          const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
+            // Check if general outreach notes were added
+            const hasGeneralOutreachNotes = outreachNotes.length > 0;
 
-          console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
-          console.log('Has provider outreach notes:', hasProviderOutreachNotes);
-          console.log('Has general outreach notes:', hasGeneralOutreachNotes);
-          console.log('Requires outreach:', requiresOutreach);
+            const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
-          if (requiresOutreach) {
-            console.log('Routing to outreach completion page due to outreach requirements');
-            const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
-            if (completionIndex !== -1) {
-              setCurrentPage(completionIndex);
-              setVisitedPages(prev => new Set([...prev, completionIndex]));
+            console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
+            console.log('Has provider outreach notes:', hasProviderOutreachNotes);
+            console.log('Has general outreach notes:', hasGeneralOutreachNotes);
+            console.log('Requires outreach:', requiresOutreach);
+
+            if (requiresOutreach) {
+              console.log('Routing to outreach completion page due to outreach requirements');
+              const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
+              if (completionIndex !== -1) {
+                setCurrentPage(completionIndex);
+                setVisitedPages(prev => new Set([...prev, completionIndex]));
+              }
+              return;
             }
-            return;
-          }
 
-          const needsEnrollment = enrolledProviders.some(p =>
-            p.status === 'Verified - Ready to Enroll' &&
-            p.providerAlreadyEnrolled === 'No'
-          );
-
-          if (needsEnrollment) {
-            const firstReadyIndex = enrolledProviders.findIndex(p =>
+            const needsEnrollment = enrolledProviders.some(p =>
               p.status === 'Verified - Ready to Enroll' &&
               p.providerAlreadyEnrolled === 'No'
             );
 
-            if (firstReadyIndex !== -1) {
+            if (needsEnrollment) {
+              const firstReadyIndex = enrolledProviders.findIndex(p =>
+                p.status === 'Verified - Ready to Enroll' &&
+                p.providerAlreadyEnrolled === 'No'
+              );
+
+              if (firstReadyIndex !== -1) {
+                setEnrolledProviders(prev => {
+                  const updatedProviders = [...prev];
+                  updatedProviders[firstReadyIndex] = {
+                    ...updatedProviders[firstReadyIndex],
+                    createEnrollmentComplete: false,
+                    providerInfoComplete: false,
+                    groupSpecialtiesChecked: false,
+                    enrollmentTabComplete: false,
+                    providerNameCorrect: false,
+                    providerTypeCorrect: false,
+                    applicationDateAdded: false,
+                    cancelReasonCode: false,
+                    providerAddressComplete: false,
+                    paymentMailingAddressComplete: false,
+                    providerInfoTabComplete: false,
+                    npiTabComplete: false,
+                    specialtyTabComplete: false,
+                    claimTypeTabComplete: false,
+                    licenseDeaTabComplete: false,
+                    enrollOnMainframeComplete: false
+                  };
+                  return updatedProviders;
+                });
+
+                setCurrentEnrollingProviderIndex(firstReadyIndex);
+                console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
+
+                const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
+                if (createEnrollmentIndex !== -1) {
+                  setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
+                  setCurrentPage(createEnrollmentIndex);
+                  setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
+                }
+              }
+              return;
+            }
+
+            const hasExistingProviders = enrolledProviders.some(p =>
+              p.status === 'Verified - Ready to Add to Group' ||
+              p.status === 'Enrolled - Ready to be Added to Group'
+            );
+
+            if (hasExistingProviders) {
+              console.log('Routing to existing provider workflow');
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev];
-                updatedProviders[firstReadyIndex] = {
-                  ...updatedProviders[firstReadyIndex],
-                  createEnrollmentComplete: false,
-                  providerInfoComplete: false,
-                  groupSpecialtiesChecked: false,
-                  enrollmentTabComplete: false,
-                  providerNameCorrect: false,
-                  providerTypeCorrect: false,
-                  applicationDateAdded: false,
-                  cancelReasonCode: false,
-                  providerAddressComplete: false,
-                  paymentMailingAddressComplete: false,
-                  providerInfoTabComplete: false,
-                  npiTabComplete: false,
-                  specialtyTabComplete: false,
-                  claimTypeTabComplete: false,
-                  licenseDeaTabComplete: false,
-                  enrollOnMainframeComplete: false
-                };
+                updatedProviders.forEach((provider, idx) => {
+                  if (provider.status === 'Verified - Ready to Add to Group') {
+                    updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                  }
+                });
                 return updatedProviders;
               });
 
-              setCurrentEnrollingProviderIndex(firstReadyIndex);
-              console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
+              setFormData(prev => ({
+                ...prev,
+                providerEnrollmentType: 'Existing Provider'
+              }));
 
-              const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
-              if (createEnrollmentIndex !== -1) {
-                setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
-                setCurrentPage(createEnrollmentIndex);
-                setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
-              }
-            }
-            return;
-          }
+              const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+              if (openCicsIndex !== -1) {
+                const firstProviderIndex = enrolledProviders.findIndex(p =>
+                  p.status === 'Verified - Ready to Add to Group' ||
+                  p.status === 'Enrolled - Ready to be Added to Group'
+                );
 
-          const hasExistingProviders = enrolledProviders.some(p =>
-            p.status === 'Verified - Ready to Add to Group' ||
-            p.status === 'Enrolled - Ready to be Added to Group'
-          );
-
-          if (hasExistingProviders) {
-            console.log('Routing to existing provider workflow');
-            setEnrolledProviders(prev => {
-              const updatedProviders = [...prev];
-              updatedProviders.forEach((provider, idx) => {
-                if (provider.status === 'Verified - Ready to Add to Group') {
-                  updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                if (firstProviderIndex !== -1) {
+                  setCurrentAddingProviderIndex(firstProviderIndex);
+                  console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
                 }
-              });
-              return updatedProviders;
-            });
 
-            setFormData(prev => ({
-              ...prev,
-              providerEnrollmentType: 'Existing Provider'
-            }));
-
-            const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
-            if (openCicsIndex !== -1) {
-              const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Verified - Ready to Add to Group' ||
-                p.status === 'Enrolled - Ready to be Added to Group'
-              );
-
-              if (firstProviderIndex !== -1) {
-                setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
+                setCurrentPage(openCicsIndex);
+                setVisitedPages(prev => new Set([...prev, openCicsIndex]));
               }
-
-              setCurrentPage(openCicsIndex);
-              setVisitedPages(prev => new Set([...prev, openCicsIndex]));
+              return;
             }
-            return;
-          }
 
-          // Fallback: If no routing condition matched, log error
-          console.error('ERROR: No routing condition matched at questions-21-23!');
-          console.error('Enrolled providers:', enrolledProviders);
-          console.error('This should not happen - please check provider statuses');
+            // Fallback: If no routing condition matched, log error
+            console.error('ERROR: No routing condition matched at questions-21-23!');
+            console.error('Enrolled providers:', enrolledProviders);
+            console.error('This should not happen - please check provider statuses');
+          }
         }
 
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {

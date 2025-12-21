@@ -2134,23 +2134,31 @@
             textContent += `PROVIDER ${index + 1}\n`;
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
-            textContent += `Enrollment Details:\n`;
-            textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Group Specialties Checked: ${provider.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
-            textContent += `  • Enrollment Tab Complete: ${provider.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Name Correct: ${provider.providerNameCorrect ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Type Correct: ${provider.providerTypeCorrect ? 'Yes' : 'No'}\n`;
-            textContent += `  • Application Date Added: ${provider.applicationDateAdded ? 'Yes' : 'No'}\n`;
-            textContent += `  • Cancel Reason Code: ${provider.cancelReasonCode ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Address Complete: ${provider.providerAddressComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Payment/Mailing Address Complete: ${provider.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Info Tab Complete: ${provider.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • NPI Tab Complete: ${provider.npiTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Specialty Tab Complete: ${provider.specialtyTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+            // Check if this is an existing provider (being added to group)
+            const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
+                                       provider.status === 'Enrolled - Ready to be Added to Group';
+
+            if (isExistingProvider) {
+              textContent += `Enrollment Details: Existing Provider\n`;
+            } else {
+              textContent += `Enrollment Details:\n`;
+              textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Specialties Checked: ${provider.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
+              textContent += `  • Enrollment Tab Complete: ${provider.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Name Correct: ${provider.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Type Correct: ${provider.providerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Application Date Added: ${provider.applicationDateAdded ? 'Yes' : 'No'}\n`;
+              textContent += `  • Cancel Reason Code: ${provider.cancelReasonCode ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Address Complete: ${provider.providerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Payment/Mailing Address Complete: ${provider.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Info Tab Complete: ${provider.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • NPI Tab Complete: ${provider.npiTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Specialty Tab Complete: ${provider.specialtyTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+            }
 
             if (providerManualNotes[index]) {
               textContent += `\nManual Notes:\n`;
@@ -2255,23 +2263,31 @@
             textContent += `PROVIDER ${index + 1}\n`;
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
-            textContent += `Enrollment Details:\n`;
-            textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Group Specialties Checked: ${provider.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
-            textContent += `  • Enrollment Tab Complete: ${provider.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Name Correct: ${provider.providerNameCorrect ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Type Correct: ${provider.providerTypeCorrect ? 'Yes' : 'No'}\n`;
-            textContent += `  • Application Date Added: ${provider.applicationDateAdded ? 'Yes' : 'No'}\n`;
-            textContent += `  • Cancel Reason Code: ${provider.cancelReasonCode ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Address Complete: ${provider.providerAddressComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Payment/Mailing Address Complete: ${provider.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Info Tab Complete: ${provider.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • NPI Tab Complete: ${provider.npiTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Specialty Tab Complete: ${provider.specialtyTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
-            textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+            // Check if this is an existing provider (being added to group)
+            const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
+                                       provider.status === 'Enrolled - Ready to be Added to Group';
+
+            if (isExistingProvider) {
+              textContent += `Enrollment Details: Existing Provider\n`;
+            } else {
+              textContent += `Enrollment Details:\n`;
+              textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Specialties Checked: ${provider.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
+              textContent += `  • Enrollment Tab Complete: ${provider.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Name Correct: ${provider.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Type Correct: ${provider.providerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Application Date Added: ${provider.applicationDateAdded ? 'Yes' : 'No'}\n`;
+              textContent += `  • Cancel Reason Code: ${provider.cancelReasonCode ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Address Complete: ${provider.providerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Payment/Mailing Address Complete: ${provider.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Info Tab Complete: ${provider.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • NPI Tab Complete: ${provider.npiTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Specialty Tab Complete: ${provider.specialtyTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+            }
 
             if (providerManualNotes[index]) {
               textContent += `\nManual Notes:\n`;

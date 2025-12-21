@@ -75,6 +75,35 @@
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
 
+      // -------------------- Auto-save Effect --------------------
+      // Debounced auto-save when critical state changes
+      const saveTimeoutRef = React.useRef(null);
+
+      React.useEffect(() => {
+        // Clear any existing timeout
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
+
+        // Set a new timeout for auto-save
+        saveTimeoutRef.current = setTimeout(() => {
+          const pwoNumber = formData.pwoNumber;
+          const currentPageId = pages[currentPage]?.id;
+
+          if (pwoNumber && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
+            saveApplicationState(pwoNumber);
+            console.log('Auto-saved application state (debounced) for PWO#:', pwoNumber);
+          }
+        }, 1000); // 1 second debounce
+
+        // Cleanup timeout on unmount
+        return () => {
+          if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+          }
+        };
+      }, [formData, enrolledProviders, outreachNotes, providerManualNotes, unableToVerifyFields, currentPage, currentEnrollingProviderIndex, currentAddingProviderIndex]);
+
       // -------------------- Reference Images --------------------
       const groupPracticeAppImage = './images/groupchange_application.jpg';
       const question6Image = './images/question6.jpg';
@@ -141,19 +170,107 @@
         });
       };
 
+      // -------------------- LocalStorage Utilities --------------------
+
+      const STORAGE_PREFIX = 'pwo-application-';
+
+      const saveApplicationState = (pwoNumber) => {
+        if (!pwoNumber) return;
+
+        const stateToSave = {
+          pwoNumber,
+          userName: formData.userName,
+          currentPage,
+          formData,
+          enrolledProviders,
+          outreachNotes,
+          providerManualNotes,
+          unableToVerifyFields: Array.from(unableToVerifyFields),
+          visitedPages: Array.from(visitedPages),
+          currentEnrollingProviderIndex,
+          currentAddingProviderIndex,
+          lastSaved: new Date().toISOString(),
+          hasOutreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
+        };
+
+        try {
+          localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
+        } catch (error) {
+          console.error('Failed to save application state:', error);
+        }
+      };
+
+      const loadApplicationState = (pwoNumber) => {
+        if (!pwoNumber) return null;
+
+        try {
+          const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          return saved ? JSON.parse(saved) : null;
+        } catch (error) {
+          console.error('Failed to load application state:', error);
+          return null;
+        }
+      };
+
+      const deleteApplicationState = (pwoNumber) => {
+        if (!pwoNumber) return;
+
+        try {
+          localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
+        } catch (error) {
+          console.error('Failed to delete application state:', error);
+        }
+      };
+
       // ============================================================
-      // PAGES CONFIGURATION (44 Pages)
+      // PAGES CONFIGURATION (46 Pages - Added Start Choice & Resume Lookup)
       // ============================================================
       // This section defines all the walkthrough pages and their
       // fields, validation rules, and conditional display logic.
       // ============================================================
 
       const pages = [
+        // -------------------- Save/Resume Pages --------------------
+        {
+          id: 'start-choice',
+          title: 'Provider Enrollment Walkthrough',
+          description: 'Would you like to start a new application or continue a saved one?',
+          fields: [
+            {
+              name: 'applicationChoice',
+              label: 'Choose an option',
+              type: 'radio',
+              required: true,
+              options: [
+                'Start New Application',
+                'Continue Saved Application'
+              ]
+            }
+          ]
+        },
+        {
+          id: 'resume-lookup',
+          title: 'Continue Saved Application',
+          description: 'Enter your PWO# to load your saved application',
+          showWhen: { field: 'applicationChoice', value: 'Continue Saved Application' },
+          fields: [
+            {
+              name: 'resumePwoNumber',
+              label: 'PWO #',
+              type: 'text',
+              required: true,
+              placeholder: 'Enter PWO number',
+              validation: (value) => value && value.trim().length > 0
+            }
+          ]
+        },
+
         // -------------------- Initial Setup Pages --------------------
         {
           id: 'welcome',
           title: 'Welcome',
           description: 'Let\'s get started with your walkthrough',
+          showWhen: { field: 'applicationChoice', value: 'Start New Application' },
           fields: [
             {
               name: 'userName',
@@ -1220,6 +1337,46 @@
       const handleNext = async () => {
         const currentPageData = pages[currentPage];
 
+        // Handle resume-lookup page: Load saved application
+        if (currentPageData.id === 'resume-lookup') {
+          const pwoToResume = formData.resumePwoNumber;
+          const savedState = loadApplicationState(pwoToResume);
+
+          if (!savedState) {
+            await showAlert(`No saved application found for PWO# ${pwoToResume}. Please check the PWO# and try again, or start a new application.`);
+            return;
+          }
+
+          // Check if application was outreached
+          if (savedState.hasOutreach) {
+            await showAlert(`PWO# ${pwoToResume} requires outreach and cannot be continued. The application has been marked for outreach, and you will need to begin a new application to process it.`);
+            // Clear the choice and reset to start-choice page
+            setFormData({ applicationChoice: '' });
+            setCurrentPage(0);
+            setVisitedPages(new Set([0]));
+            return;
+          }
+
+          // Restore all saved state
+          console.log('Restoring saved application for PWO#:', pwoToResume);
+          setFormData(savedState.formData);
+          setEnrolledProviders(savedState.enrolledProviders);
+          setOutreachNotes(savedState.outreachNotes);
+          setProviderManualNotes(savedState.providerManualNotes);
+          setUnableToVerifyFields(new Set(savedState.unableToVerifyFields));
+          setVisitedPages(new Set(savedState.visitedPages));
+          setCurrentEnrollingProviderIndex(savedState.currentEnrollingProviderIndex);
+          setCurrentAddingProviderIndex(savedState.currentAddingProviderIndex);
+
+          // Navigate to the saved page
+          setTimeout(() => {
+            setCurrentPage(savedState.currentPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
+
+          return;
+        }
+
         if (currentPageData.id === 'question-20') {
           // Check if this provider has already been saved (prevents duplicates when navigating backwards)
           const expectedProviderCount = formData.expectedProviderCount || 0;
@@ -1837,6 +1994,16 @@
 
           }
         }
+
+        // Auto-save application state after navigation
+        // Wait for state updates to complete
+        setTimeout(() => {
+          const pwoNumber = formData.pwoNumber;
+          if (pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup') {
+            saveApplicationState(pwoNumber);
+            console.log('Auto-saved application state for PWO#:', pwoNumber);
+          }
+        }, 100);
       };
 
       const handlePrevious = () => {
@@ -1847,6 +2014,15 @@
           }
           if (prevPage >= 0) {
             setCurrentPage(prevPage);
+
+            // Auto-save application state after navigation
+            setTimeout(() => {
+              const pwoNumber = formData.pwoNumber;
+              if (pwoNumber) {
+                saveApplicationState(pwoNumber);
+                console.log('Auto-saved application state for PWO#:', pwoNumber);
+              }
+            }, 100);
           }
         }
       };
@@ -2068,6 +2244,13 @@
 
       const handleStartNewApplication = async () => {
         if (await showConfirm('Are you sure you want to start a new application? All current data will be lost.')) {
+          // Delete saved application state if it exists
+          const currentPwoNumber = formData.pwoNumber;
+          if (currentPwoNumber) {
+            deleteApplicationState(currentPwoNumber);
+            console.log('Deleted saved application state for PWO#:', currentPwoNumber);
+          }
+
           setFormData({});
           setOutreachNotes([]);
           setEnrolledProviders([]);

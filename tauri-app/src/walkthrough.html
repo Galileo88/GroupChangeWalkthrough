@@ -185,10 +185,22 @@
       ) : null;
 
       // Debug: Log what's available
-      if (isTauri) {
-        console.log('Tauri detected. Available keys:', Object.keys(window.__TAURI__ || {}));
-        console.log('Invoke function found:', !!tauriInvoke);
-      }
+      React.useEffect(() => {
+        if (isTauri) {
+          const tauriKeys = Object.keys(window.__TAURI__ || {});
+          console.log('Tauri detected. Available keys:', tauriKeys);
+          console.log('Invoke function found:', !!tauriInvoke);
+
+          // Show debug alert if invoke not found
+          if (!tauriInvoke) {
+            alert('Tauri Debug Info:\n\n' +
+                  'Tauri detected: Yes\n' +
+                  'Available __TAURI__ keys: ' + tauriKeys.join(', ') + '\n' +
+                  'Invoke function found: No\n\n' +
+                  'Using localStorage fallback for saves.');
+          }
+        }
+      }, []);
 
       const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;

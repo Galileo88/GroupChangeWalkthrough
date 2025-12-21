@@ -133,9 +133,35 @@
   </style>
   <script>
     function navigateToWalkthrough() {
-      console.log('Attempting to navigate to walkthrough.html');
-      window.location.href = 'walkthrough.html';
+      console.log('Click detected! Attempting navigation...');
+
+      // Try multiple navigation methods
+      try {
+        console.log('Method 1: window.location.href');
+        window.location.href = 'walkthrough.html';
+      } catch(e) {
+        console.error('Method 1 failed:', e);
+        try {
+          console.log('Method 2: window.location.replace');
+          window.location.replace('walkthrough.html');
+        } catch(e2) {
+          console.error('Method 2 failed:', e2);
+          try {
+            console.log('Method 3: absolute path');
+            window.location.href = window.location.origin + '/walkthrough.html';
+          } catch(e3) {
+            console.error('Method 3 failed:', e3);
+            alert('Navigation failed. Please check console for errors.');
+          }
+        }
+      }
     }
+
+    // Test: Log when page loads to confirm JavaScript is working
+    window.addEventListener('DOMContentLoaded', function() {
+      console.log('Landing page loaded successfully');
+      console.log('Current location:', window.location.href);
+    });
   </script>
 </head>
 <body>

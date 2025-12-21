@@ -8,15 +8,28 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module">
-    // Import Tauri API
-    import { invoke } from 'https://unpkg.com/@tauri-apps/api@2/core';
-    // Make it available globally
-    window.__TAURI__ = { invoke };
-  </script>
 </head>
 <body>
   <div id="root"></div>
+
+  <script>
+    // Tauri API wrapper - will be populated by Tauri runtime
+    window.__TAURI__ = window.__TAURI__ || {};
+
+    // For Tauri 2.x, the invoke function is available at window.__TAURI__.core.invoke
+    if (window.__TAURI__.core && window.__TAURI__.core.invoke) {
+      window.__TAURI__.invoke = window.__TAURI__.core.invoke;
+    } else if (window.__TAURI_INVOKE__) {
+      // Fallback for older versions
+      window.__TAURI__.invoke = window.__TAURI_INVOKE__;
+    } else {
+      // Fallback for development/testing
+      window.__TAURI__.invoke = function(cmd, args) {
+        console.warn('Tauri API not fully loaded yet. Command:', cmd, 'Args:', args);
+        return Promise.reject('Tauri API not available');
+      };
+    }
+  </script>
 
   <script type="text/babel">
     const { useState } = React;

@@ -2716,11 +2716,9 @@
                                 style={value === option ? {borderColor: 'var(--gainwell-cyan)'} : {}}
                               >
                                 <input
-                                  type="radio"
-                                  name={field.name}
-                                  value={option}
+                                  type="checkbox"
                                   checked={value === option}
-                                  onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                                  onChange={() => handleFieldChange(field.name, option)}
                                   className="w-5 h-5"
                                   style={{accentColor: 'var(--gainwell-cyan)'}}
                                 />

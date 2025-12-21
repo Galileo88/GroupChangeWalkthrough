@@ -131,6 +131,12 @@
       }
     }
   </style>
+  <script>
+    function navigateToWalkthrough() {
+      console.log('Attempting to navigate to walkthrough.html');
+      window.location.href = 'walkthrough.html';
+    }
+  </script>
 </head>
 <body>
   <div class="container mx-auto px-4 py-8 max-w-7xl">
@@ -145,7 +151,7 @@
     <!-- 4x4 Grid of Tiles -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       <!-- Tile 1: Active - Full Group Change Application -->
-      <div class="tile active" onclick="window.location.href='walkthrough.html'">
+      <div class="tile active" onclick="navigateToWalkthrough()">
         <div class="tile-title">Full Group Change Application - FD23</div>
       </div>
 

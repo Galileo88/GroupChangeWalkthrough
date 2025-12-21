@@ -4022,13 +4022,17 @@
                           </div>
                         </div>
 
-                        {(provider.status === 'Verified - Ready to Add to Group' || provider.status === 'Enrolled - Ready to be Added to Group') ? (
+                        {(provider.status === 'Verified - Ready to Add to Group' || provider.status === 'Enrolled - Ready to be Added to Group' || provider.status === 'Verified - Already in the Group') ? (
                           <div className="mt-4 p-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
                             <div className="flex items-center gap-2">
                               <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                              <span className="text-sm font-semibold text-indigo-800">Enrollment Details: Existing Provider</span>
+                              <span className="text-sm font-semibold text-indigo-800">
+                                {provider.status === 'Verified - Already in the Group'
+                                  ? 'Provider is already enrolled and in the group'
+                                  : 'Enrollment Details: Existing Provider'}
+                              </span>
                             </div>
                           </div>
                         ) : (

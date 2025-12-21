@@ -1557,7 +1557,10 @@
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
 
-            clearedData.expectedProviderCount = enrolledProviders.length + 1;
+            // Account for the provider we just saved (state update is async, so use +1 if we saved)
+            // +1 for the provider just saved (if not already saved), +1 for the next expected provider
+            const providerJustSaved = !providerAlreadySaved ? 1 : 0;
+            clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
 
             setFormData(clearedData);
 
@@ -2480,7 +2483,9 @@
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
 
-          clearedData.expectedProviderCount = enrolledProviders.length + 1;
+          // Account for the duplicate provider we just saved (state update is async)
+          // +1 for the provider just saved, +1 for the next expected provider
+          clearedData.expectedProviderCount = enrolledProviders.length + 2;
 
           setFormData(clearedData);
 

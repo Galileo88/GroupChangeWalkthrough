@@ -1607,23 +1607,53 @@
           // Debug: Log all provider statuses
           console.log('=== Questions 21-23 Routing Decision ===');
           console.log('Total providers:', enrolledProviders.length);
+          console.log('Outreach notes:', outreachNotes);
           enrolledProviders.forEach((p, idx) => {
             console.log(`Provider ${idx + 1} status:`, p.status);
+            console.log(`Provider ${idx + 1} outreach notes:`, p.outreachNotes);
           });
 
-          // Check if any provider requires outreach before proceeding with enrollment
+          // Check if any provider requires outreach OR if outreach notes were added
           const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
             p.status === 'Unable to Verify - Requires Outreach'
           );
 
-          console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
+          // Check if any provider has outreach notes from verification steps
+          const hasProviderOutreachNotes = enrolledProviders.some(p =>
+            p.outreachNotes && p.outreachNotes.length > 0
+          );
 
-          if (hasProvidersRequiringOutreach) {
-            console.log('Routing to outreach completion page');
+          // Check if general outreach notes were added
+          const hasGeneralOutreachNotes = outreachNotes.length > 0;
+
+          const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
+
+          console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
+          console.log('Has provider outreach notes:', hasProviderOutreachNotes);
+          console.log('Has general outreach notes:', hasGeneralOutreachNotes);
+          console.log('Requires outreach:', requiresOutreach);
+
+          if (requiresOutreach) {
+            console.log('Routing to outreach completion page due to outreach requirements');
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
               setVisitedPages(prev => new Set([...prev, completionIndex]));
+            }
+            return;
+          }
+
+          // Check for duplicate application (Application 3 scenario)
+          // If only 1 provider AND that provider is already in the group, reject as duplicate
+          const isDuplicateApplication = enrolledProviders.length === 1 &&
+                                         enrolledProviders[0].status === 'Verified - Already in the Group';
+
+          if (isDuplicateApplication) {
+            console.log('Duplicate application detected - only provider is already enrolled and in group');
+            const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+            if (duplicateIndex !== -1) {
+              setCurrentPage(duplicateIndex);
+              setVisitedPages(prev => new Set([...prev, duplicateIndex]));
             }
             return;
           }

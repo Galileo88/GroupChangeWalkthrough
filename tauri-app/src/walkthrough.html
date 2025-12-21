@@ -1730,6 +1730,21 @@
               return;
             }
 
+            // Check for duplicate application (Application 3 scenario)
+            // If only 1 provider AND that provider is already in the group, reject as duplicate
+            const isDuplicateApplication = enrolledProviders.length === 1 &&
+                                           enrolledProviders[0].status === 'Verified - Already in the Group';
+
+            if (isDuplicateApplication) {
+              console.log('Duplicate application detected - only provider is already enrolled and in group');
+              const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+              if (duplicateIndex !== -1) {
+                setCurrentPage(duplicateIndex);
+                setVisitedPages(prev => new Set([...prev, duplicateIndex]));
+              }
+              return;
+            }
+
             const needsEnrollment = enrolledProviders.some(p =>
               p.status === 'Verified - Ready to Enroll' &&
               p.providerAlreadyEnrolled === 'No'

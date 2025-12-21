@@ -175,8 +175,20 @@
 
       const STORAGE_PREFIX = 'pwo-application-';
 
-      // Check if we're running in Tauri
+      // Check if we're running in Tauri and get the invoke function
       const isTauri = typeof window !== 'undefined' && window.__TAURI__;
+      const tauriInvoke = isTauri ? (
+        window.__TAURI__.invoke ||
+        window.__TAURI__.tauri?.invoke ||
+        window.__TAURI_INTERNALS__?.invoke ||
+        null
+      ) : null;
+
+      // Debug: Log what's available
+      if (isTauri) {
+        console.log('Tauri detected. Available keys:', Object.keys(window.__TAURI__ || {}));
+        console.log('Invoke function found:', !!tauriInvoke);
+      }
 
       const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
@@ -200,14 +212,15 @@
         try {
           setSaveStatus({ saving: true, lastSaved: null, error: null });
 
-          if (isTauri) {
+          if (tauriInvoke) {
             // Use Tauri's invoke to save to filesystem
             console.log('Attempting to save state for PWO:', pwoNumber);
-            const result = await window.__TAURI__.invoke('save_pwo_state', { state: stateToSave });
+            const result = await tauriInvoke('save_pwo_state', { state: stateToSave });
             console.log('Save successful:', result);
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           } else {
             // Fallback to localStorage for web version
+            console.log('Using localStorage fallback');
             localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           }
@@ -222,10 +235,10 @@
         if (!pwoNumber) return null;
 
         try {
-          if (isTauri) {
+          if (tauriInvoke) {
             // Use Tauri's invoke to load from filesystem
             console.log('Attempting to load state for PWO:', pwoNumber);
-            const state = await window.__TAURI__.invoke('load_pwo_state', { pwoNumber });
+            const state = await tauriInvoke('load_pwo_state', { pwoNumber });
             console.log('Load successful');
             return {
               pwoNumber: state.pwo_number,
@@ -257,10 +270,10 @@
         if (!pwoNumber) return;
 
         try {
-          if (isTauri) {
+          if (tauriInvoke) {
             // Use Tauri's invoke to delete from filesystem
             console.log('Attempting to delete state for PWO:', pwoNumber);
-            const result = await window.__TAURI__.invoke('delete_pwo_state', { pwoNumber });
+            const result = await tauriInvoke('delete_pwo_state', { pwoNumber });
             console.log('Delete successful:', result);
           } else {
             // Fallback to localStorage for web version

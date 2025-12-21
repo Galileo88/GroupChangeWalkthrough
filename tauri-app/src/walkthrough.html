@@ -1610,6 +1610,10 @@
                 if (completionIndex !== -1) {
                   setCurrentPage(completionIndex);
                   setVisitedPages(prev => new Set([...prev, completionIndex]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 }
                 return;
               } else {
@@ -1657,6 +1661,10 @@
                   console.log('>>> ROUTING TO QUESTIONS-21-23 at index', questions2123Index);
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 } else {
                   console.error('>>> ERROR: questions-21-23 page not found in pages array!');
                 }
@@ -1673,6 +1681,10 @@
                 if (completionIndex !== -1) {
                   setCurrentPage(completionIndex);
                   setVisitedPages(prev => new Set([...prev, completionIndex]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 }
                 return;
               } else {
@@ -1682,6 +1694,10 @@
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
+                  // Scroll to top after navigation
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
                 }
                 return;  // CRITICAL: Prevent general navigation logic from overriding this routing
               }
@@ -1725,6 +1741,10 @@
               if (duplicateIndex !== -1) {
                 setCurrentPage(duplicateIndex);
                 setVisitedPages(prev => new Set([...prev, duplicateIndex]));
+                // Scroll to top after navigation
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
               }
               return;
             }

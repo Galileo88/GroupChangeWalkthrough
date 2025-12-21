@@ -1613,7 +1613,23 @@
             console.log(`Provider ${idx + 1} outreach notes:`, p.outreachNotes);
           });
 
-          // Check if any provider requires outreach OR if outreach notes were added
+          // PRIORITY 1: Check for duplicate application first (Applications 3, 10)
+          // If only 1 provider AND that provider is already in the group, reject as duplicate
+          // This takes priority over outreach - no point doing outreach for a duplicate application
+          const isDuplicateApplication = enrolledProviders.length === 1 &&
+                                         enrolledProviders[0].status === 'Verified - Already in the Group';
+
+          if (isDuplicateApplication) {
+            console.log('Duplicate application detected - only provider is already enrolled and in group');
+            const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+            if (duplicateIndex !== -1) {
+              setCurrentPage(duplicateIndex);
+              setVisitedPages(prev => new Set([...prev, duplicateIndex]));
+            }
+            return;
+          }
+
+          // PRIORITY 2: Check if any provider requires outreach OR if outreach notes were added
           const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
             p.status === 'Unable to Verify - Requires Outreach'
           );
@@ -1639,21 +1655,6 @@
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
               setVisitedPages(prev => new Set([...prev, completionIndex]));
-            }
-            return;
-          }
-
-          // Check for duplicate application (Application 3 scenario)
-          // If only 1 provider AND that provider is already in the group, reject as duplicate
-          const isDuplicateApplication = enrolledProviders.length === 1 &&
-                                         enrolledProviders[0].status === 'Verified - Already in the Group';
-
-          if (isDuplicateApplication) {
-            console.log('Duplicate application detected - only provider is already enrolled and in group');
-            const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
-            if (duplicateIndex !== -1) {
-              setCurrentPage(duplicateIndex);
-              setVisitedPages(prev => new Set([...prev, duplicateIndex]));
             }
             return;
           }

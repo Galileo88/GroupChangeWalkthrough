@@ -1470,6 +1470,11 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
+          console.log('=== Question 20 Save Check ===');
+          console.log('Expected provider count:', expectedProviderCount);
+          console.log('Current enrolled providers length:', enrolledProviders.length);
+          console.log('Provider already saved?', providerAlreadySaved);
+
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
@@ -1557,7 +1562,15 @@
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
 
-            clearedData.expectedProviderCount = enrolledProviders.length + 1;
+            // Account for the provider we just saved (state update is async, so use +1 if we saved)
+            // +1 for the provider just saved (if not already saved), +1 for the next expected provider
+            const providerJustSaved = !providerAlreadySaved ? 1 : 0;
+            clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
+
+            console.log('=== Setting Expected Provider Count ===');
+            console.log('enrolledProviders.length:', enrolledProviders.length);
+            console.log('providerJustSaved:', providerJustSaved);
+            console.log('New expectedProviderCount:', clearedData.expectedProviderCount);
 
             setFormData(clearedData);
 
@@ -2480,7 +2493,9 @@
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
 
-          clearedData.expectedProviderCount = enrolledProviders.length + 1;
+          // Account for the duplicate provider we just saved (state update is async)
+          // +1 for the provider just saved, +1 for the next expected provider
+          clearedData.expectedProviderCount = enrolledProviders.length + 2;
 
           setFormData(clearedData);
 

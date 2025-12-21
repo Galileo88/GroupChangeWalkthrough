@@ -74,6 +74,7 @@
       const [pendingUnableToVerifyField, setPendingUnableToVerifyField] = useState(null);
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
+      const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -170,53 +171,96 @@
         });
       };
 
-      // -------------------- LocalStorage Utilities --------------------
+      // -------------------- Save/Load Utilities --------------------
 
       const STORAGE_PREFIX = 'pwo-application-';
 
-      const saveApplicationState = (pwoNumber) => {
+      // Check if we're running in Tauri
+      const isTauri = typeof window !== 'undefined' && window.__TAURI__;
+
+      const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
 
         const stateToSave = {
-          pwoNumber,
-          userName: formData.userName,
-          currentPage,
-          formData,
-          enrolledProviders,
-          outreachNotes,
-          providerManualNotes,
-          unableToVerifyFields: Array.from(unableToVerifyFields),
-          visitedPages: Array.from(visitedPages),
-          currentEnrollingProviderIndex,
-          currentAddingProviderIndex,
-          lastSaved: new Date().toISOString(),
-          hasOutreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
+          pwo_number: pwoNumber,
+          user_name: formData.userName || '',
+          current_page: currentPage.toString(),
+          form_data: formData,
+          enrolled_providers: enrolledProviders,
+          outreach_notes: outreachNotes,
+          provider_manual_notes: providerManualNotes,
+          unable_to_verify_fields: Array.from(unableToVerifyFields),
+          visited_pages: Array.from(visitedPages),
+          current_enrolling_provider_index: currentEnrollingProviderIndex || -1,
+          current_adding_provider_index: currentAddingProviderIndex || -1,
+          last_saved: new Date().toISOString(),
+          has_outreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
         };
 
         try {
-          localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
+          setSaveStatus({ saving: true, lastSaved: null, error: null });
+
+          if (isTauri) {
+            // Use Tauri's invoke to save to filesystem
+            const result = await window.__TAURI__.core.invoke('save_pwo_state', { state: stateToSave });
+            console.log('Save result:', result);
+            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
+          } else {
+            // Fallback to localStorage for web version
+            localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
+            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
+          }
         } catch (error) {
           console.error('Failed to save application state:', error);
+          setSaveStatus({ saving: false, lastSaved: null, error: error.message || 'Save failed' });
         }
       };
 
-      const loadApplicationState = (pwoNumber) => {
+      const loadApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return null;
 
         try {
-          const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
-          return saved ? JSON.parse(saved) : null;
+          if (isTauri) {
+            // Use Tauri's invoke to load from filesystem
+            const state = await window.__TAURI__.core.invoke('load_pwo_state', { pwoNumber });
+            return {
+              pwoNumber: state.pwo_number,
+              userName: state.user_name,
+              currentPage: parseInt(state.current_page),
+              formData: state.form_data,
+              enrolledProviders: state.enrolled_providers,
+              outreachNotes: state.outreach_notes,
+              providerManualNotes: state.provider_manual_notes,
+              unableToVerifyFields: state.unable_to_verify_fields,
+              visitedPages: state.visited_pages,
+              currentEnrollingProviderIndex: state.current_enrolling_provider_index,
+              currentAddingProviderIndex: state.current_adding_provider_index,
+              lastSaved: state.last_saved,
+              hasOutreach: state.has_outreach
+            };
+          } else {
+            // Fallback to localStorage for web version
+            const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
+            return saved ? JSON.parse(saved) : null;
+          }
         } catch (error) {
           console.error('Failed to load application state:', error);
           return null;
         }
       };
 
-      const deleteApplicationState = (pwoNumber) => {
+      const deleteApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
 
         try {
-          localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          if (isTauri) {
+            // Use Tauri's invoke to delete from filesystem
+            const result = await window.__TAURI__.core.invoke('delete_pwo_state', { pwoNumber });
+            console.log('Delete result:', result);
+          } else {
+            // Fallback to localStorage for web version
+            localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          }
         } catch (error) {
           console.error('Failed to delete application state:', error);
         }
@@ -259,8 +303,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -285,8 +334,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -1287,6 +1341,10 @@
       };
 
       const handleFieldChange = (fieldName, value) => {
+        // Auto-format PWO number fields to uppercase
+        if (fieldName === 'pwoNumber' || fieldName === 'resumePwoNumber') {
+          value = value.toUpperCase();
+        }
         setFormData(prev => ({ ...prev, [fieldName]: value }));
 
         const enrollmentFields = [
@@ -1340,7 +1398,7 @@
         // Handle resume-lookup page: Load saved application
         if (currentPageData.id === 'resume-lookup') {
           const pwoToResume = formData.resumePwoNumber;
-          const savedState = loadApplicationState(pwoToResume);
+          const savedState = await loadApplicationState(pwoToResume);
 
           if (!savedState) {
             await showAlert(`No saved application found for PWO# ${pwoToResume}. Please check the PWO# and try again, or start a new application.`);
@@ -2247,7 +2305,7 @@
           // Delete saved application state if it exists
           const currentPwoNumber = formData.pwoNumber;
           if (currentPwoNumber) {
-            deleteApplicationState(currentPwoNumber);
+            await deleteApplicationState(currentPwoNumber);
             console.log('Deleted saved application state for PWO#:', currentPwoNumber);
           }
 
@@ -2669,6 +2727,34 @@
                 <p className="text-cyan-100 text-lg">
                   {typeof currentPageData.description === 'function' ? currentPageData.description(formData) : currentPageData.description}
                 </p>
+                {/* Save Status Indicator */}
+                {formData.pwoNumber && (
+                  <div className="mt-3 flex items-center gap-2 text-sm">
+                    {saveStatus.saving ? (
+                      <div className="flex items-center gap-2 text-cyan-100">
+                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Saving...</span>
+                      </div>
+                    ) : saveStatus.error ? (
+                      <div className="flex items-center gap-2 text-red-200">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Save failed</span>
+                      </div>
+                    ) : saveStatus.lastSaved ? (
+                      <div className="flex items-center gap-2 text-cyan-100">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Saved at {saveStatus.lastSaved.toLocaleTimeString()}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
                 {/* Current Provider Indicator */}
                 {currentEnrollingProviderIndex !== null && formData.providerEnrollmentType === 'New Provider' && (
                   <div className="mt-4 inline-block bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2">

@@ -2153,6 +2153,12 @@
       };
 
       const handlePrevious = () => {
+        // Prevent going back if user has started either New Provider or Existing Provider branch
+        if (formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider') {
+          console.log('Navigation blocked: Cannot go back after starting provider enrollment workflow');
+          return;
+        }
+
         if (currentPage > 0) {
           let prevPage = currentPage - 1;
           while (prevPage >= 0 && !shouldShowPage(prevPage)) {
@@ -3604,7 +3610,12 @@
                     ) : (
                       <button
                         onClick={handlePrevious}
-                        className="flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all"
+                        disabled={formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider'}
+                        className={`flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                          formData.providerEnrollmentType === 'New Provider' || formData.providerEnrollmentType === 'Existing Provider'
+                            ? 'text-slate-400 cursor-not-allowed bg-slate-100'
+                            : 'text-slate-700 hover:bg-slate-200'
+                        }`}
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Previous

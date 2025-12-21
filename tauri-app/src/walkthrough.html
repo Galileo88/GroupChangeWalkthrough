@@ -1741,6 +1741,10 @@
               if (duplicateIndex !== -1) {
                 setCurrentPage(duplicateIndex);
                 setVisitedPages(prev => new Set([...prev, duplicateIndex]));
+                // Scroll to top after navigation
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
               }
               return;
             }

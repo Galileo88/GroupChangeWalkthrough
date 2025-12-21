@@ -102,11 +102,15 @@ async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filena
 
     match file_path {
         Some(path) => {
+            // Convert FilePath to PathBuf
+            let path_buf = path.as_path()
+                .ok_or_else(|| "Failed to get file path".to_string())?;
+
             // Write content to file
-            fs::write(&path, content)
+            fs::write(path_buf, content)
                 .map_err(|e| format!("Failed to write file: {}", e))?;
 
-            Ok(format!("File saved to: {}", path.display()))
+            Ok(format!("File saved to: {}", path_buf.display()))
         }
         None => Err("User cancelled save dialog".to_string())
     }

@@ -2125,36 +2125,23 @@
       // Helper function to save file (works in both Tauri and browser)
       const saveFile = async (content, defaultFilename) => {
         if (tauriInvoke) {
-          // Tauri desktop app - use dialog and filesystem
+          // Tauri desktop app - use custom command
           try {
-            // Get the dialog API
-            const dialog = window.__TAURI__?.dialog || window.__TAURI_INTERNALS__?.dialog;
-            if (!dialog || !dialog.save) {
-              throw new Error('Dialog API not available');
-            }
-
-            // Show save dialog
-            const filePath = await dialog.save({
-              defaultPath: defaultFilename,
-              filters: [{
-                name: 'Text Files',
-                extensions: ['txt']
-              }]
+            console.log('Attempting to save file with Tauri...');
+            const result = await tauriInvoke('save_file_dialog', {
+              content: content,
+              defaultFilename: defaultFilename
             });
-
-            if (filePath) {
-              // Write file using Tauri filesystem
-              const fs = window.__TAURI__?.fs || window.__TAURI_INTERNALS__?.fs;
-              if (!fs || !fs.writeTextFile) {
-                throw new Error('Filesystem API not available');
-              }
-
-              await fs.writeTextFile(filePath, content);
-              await showAlert('File saved successfully!');
-            }
+            console.log('File saved:', result);
+            await showAlert('File saved successfully!');
           } catch (error) {
             console.error('Tauri save failed:', error);
-            await showAlert('Failed to save file: ' + error.message);
+            const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Unknown error');
+            if (errorMsg.includes('cancelled')) {
+              // User cancelled, don't show error
+              return;
+            }
+            await showAlert('Failed to save file: ' + errorMsg);
           }
         } else {
           // Browser fallback

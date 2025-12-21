@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
+use tauri_plugin_dialog::DialogExt;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct PwoState {
@@ -90,6 +91,27 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
     Ok(app_data_dir.to_string_lossy().to_string())
 }
 
+#[tauri::command]
+async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filename: String) -> Result<String, String> {
+    // Show save file dialog
+    let file_path = app.dialog()
+        .file()
+        .set_file_name(&default_filename)
+        .add_filter("Text Files", &["txt"])
+        .blocking_save_file();
+
+    match file_path {
+        Some(path) => {
+            // Write content to file
+            fs::write(&path, content)
+                .map_err(|e| format!("Failed to write file: {}", e))?;
+
+            Ok(format!("File saved to: {}", path.display()))
+        }
+        None => Err("User cancelled save dialog".to_string())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -99,7 +121,8 @@ pub fn run() {
             save_pwo_state,
             load_pwo_state,
             delete_pwo_state,
-            get_save_location
+            get_save_location,
+            save_file_dialog
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -2141,12 +2141,12 @@
           }
         }
 
-        // Scroll to top of page on navigation
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Auto-save application state after navigation
+        // Auto-save and scroll after navigation
         // Wait for state updates to complete
         setTimeout(() => {
+          // Scroll to top of page after DOM update
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
           const pwoNumber = formData.pwoNumber;
           if (pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
@@ -2176,11 +2176,11 @@
           if (prevPage >= minPageIndex) {
             setCurrentPage(prevPage);
 
-            // Scroll to top of page on navigation
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Auto-save application state after navigation
+            // Auto-save and scroll after navigation
             setTimeout(() => {
+              // Scroll to top of page after DOM update
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+
               const pwoNumber = formData.pwoNumber;
               if (pwoNumber) {
                 saveApplicationState(pwoNumber);

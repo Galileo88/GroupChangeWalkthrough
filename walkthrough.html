@@ -1230,9 +1230,15 @@
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
+          // Debug: Log unable to verify check
+          console.log('=== Question 20 Verification Check ===');
+          console.log('Unable to verify fields:', Array.from(unableToVerifyFields));
+          console.log('Has unable to verify:', hasUnableToVerify);
+
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
             if (hasUnableToVerify) {
+              console.log('Saving provider with OUTREACH status');
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
@@ -1263,6 +1269,8 @@
                   providerStatus = 'Verified - Ready to Add to Group';
                 }
               }
+
+              console.log('Saving provider with VERIFIED status:', providerStatus);
 
               const providerData = {
                 status: providerStatus,
@@ -1308,11 +1316,8 @@
 
             setFormData(clearedData);
 
-            setUnableToVerifyFields(prev => {
-              const newSet = new Set(prev);
-              question20VerifyFields.forEach(field => newSet.delete(field));
-              return newSet;
-            });
+            // Clear ALL verification fields, not just question20 fields
+            setUnableToVerifyFields(new Set());
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -1359,6 +1364,8 @@
                   }
                 }
 
+                console.log('Saving FINAL provider with VERIFIED status:', providerStatus);
+
                 const providerData = {
                   status: providerStatus,
                   question20Answered: formData.question20Answered,
@@ -1380,6 +1387,9 @@
                   console.log(`Final verified provider saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
+
+                // Clear unable to verify fields after saving final provider
+                setUnableToVerifyFields(new Set());
 
                 // Navigate to questions-21-23 after saving final provider
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
@@ -1415,12 +1425,22 @@
 
         // Handler for questions-21-23: Route to appropriate provider workflow
         if (currentPageData.id === 'questions-21-23') {
+          // Debug: Log all provider statuses
+          console.log('=== Questions 21-23 Routing Decision ===');
+          console.log('Total providers:', enrolledProviders.length);
+          enrolledProviders.forEach((p, idx) => {
+            console.log(`Provider ${idx + 1} status:`, p.status);
+          });
+
           // Check if any provider requires outreach before proceeding with enrollment
           const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
             p.status === 'Unable to Verify - Requires Outreach'
           );
 
+          console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
+
           if (hasProvidersRequiringOutreach) {
+            console.log('Routing to outreach completion page');
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -1484,6 +1504,7 @@
           );
 
           if (hasExistingProviders) {
+            console.log('Routing to existing provider workflow');
             setEnrolledProviders(prev => {
               const updatedProviders = [...prev];
               updatedProviders.forEach((provider, idx) => {
@@ -1516,6 +1537,11 @@
             }
             return;
           }
+
+          // Fallback: If no routing condition matched, log error
+          console.error('ERROR: No routing condition matched at questions-21-23!');
+          console.error('Enrolled providers:', enrolledProviders);
+          console.error('This should not happen - please check provider statuses');
         }
 
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {

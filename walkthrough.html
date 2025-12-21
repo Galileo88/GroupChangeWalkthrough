@@ -1415,6 +1415,20 @@
 
         // Handler for questions-21-23: Route to appropriate provider workflow
         if (currentPageData.id === 'questions-21-23') {
+          // Check if any provider requires outreach before proceeding with enrollment
+          const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
+            p.status === 'Unable to Verify - Requires Outreach'
+          );
+
+          if (hasProvidersRequiringOutreach) {
+            const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
+            if (completionIndex !== -1) {
+              setCurrentPage(completionIndex);
+              setVisitedPages(prev => new Set([...prev, completionIndex]));
+            }
+            return;
+          }
+
           const needsEnrollment = enrolledProviders.some(p =>
             p.status === 'Verified - Ready to Enroll' &&
             p.providerAlreadyEnrolled === 'No'
@@ -2026,6 +2040,8 @@
           setProviderManualNotes({});
           setUnableToVerifyFields(new Set());
           setPendingUnableToVerifyField(null);
+          setCurrentEnrollingProviderIndex(null);
+          setCurrentAddingProviderIndex(null);
           setVisitedPages(new Set([0]));
           setCurrentPage(0);
         }

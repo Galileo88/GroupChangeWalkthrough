@@ -1392,11 +1392,17 @@
                 setUnableToVerifyFields(new Set());
 
                 // Navigate to questions-21-23 after saving final provider
+                console.log('>>> ATTEMPTING TO ROUTE TO QUESTIONS-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
+                console.log('questions2123Index:', questions2123Index);
                 if (questions2123Index !== -1) {
+                  console.log('>>> ROUTING TO QUESTIONS-21-23 at index', questions2123Index);
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
+                } else {
+                  console.error('>>> ERROR: questions-21-23 page not found in pages array!');
                 }
+                return;  // CRITICAL: Prevent general navigation logic from overriding this routing
 
               }
             } else {
@@ -1413,11 +1419,13 @@
                 return;
               } else {
                 // Navigate to questions-21-23 (navigating back case)
+                console.log('>>> NAVIGATING BACK: Routing to questions-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
                 }
+                return;  // CRITICAL: Prevent general navigation logic from overriding this routing
               }
             }
           }

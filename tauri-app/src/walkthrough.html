@@ -113,7 +113,6 @@
       const emailFieldImage = './images/emailfield.png';
       const practitionersImage = './images/practitioners.jpg';
       const questions21to24Image = './images/21_24.jpg';
-      const question25Image = './images/question25.jpg';
       const createEnrollmentImage = './images/CreateEnrollment.png';
       const newProviderWindowImage = './images/newproviderwindow.png';
       const groupSpecialtyImage = './images/groupspecialty.png';
@@ -685,7 +684,7 @@
               ]
             }
           ],
-          displayImage: question25Image
+          displayImage: questions21to24Image
         },
         // -------------------- Required Forms Verification --------------------
         {
@@ -1861,178 +1860,147 @@
           }
         }
 
-        // Handler for questions-21-23: Route to appropriate provider workflow
-        if (currentPageData.id === 'questions-21-23') {
-          // Only proceed with automatic routing if the questions have been answered
-          // This prevents skipping the page when first navigating to it
-          const questionsAnswered = formData.question21Answered &&
-                                   formData.question22Answered &&
-                                   formData.question23Answered;
+        // Handler for request-for-paper-updates: Route to appropriate provider workflow
+        if (currentPageData.id === 'request-for-paper-updates') {
+          // PRIORITY 1: Check for duplicate application first
+          const isDuplicateApplication = enrolledProviders.length === 1 &&
+                                        enrolledProviders[0].status === 'Verified - Already in the Group';
 
-          if (!questionsAnswered) {
-            console.log('Questions 21-23 not yet answered, showing the page to user');
-            // CRITICAL: Return here to prevent the general navigation logic from auto-advancing
-            // This ensures the user actually sees and answers the questions
+          if (isDuplicateApplication) {
+            console.log('Duplicate application detected - only provider is already enrolled and in group');
+            const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+            if (duplicateIndex !== -1) {
+              setCurrentPage(duplicateIndex);
+              setVisitedPages(prev => new Set([...prev, duplicateIndex]));
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
+            }
             return;
-          } else {
-            // Questions have been answered, now do the automatic routing
-            // Debug: Log all provider statuses
-            console.log('=== Questions 21-23 Routing Decision ===');
-            console.log('Total providers:', enrolledProviders.length);
-            console.log('Outreach notes:', outreachNotes);
-            enrolledProviders.forEach((p, idx) => {
-              console.log(`Provider ${idx + 1} status:`, p.status);
-              console.log(`Provider ${idx + 1} outreach notes:`, p.outreachNotes);
-            });
+          }
 
-            // PRIORITY 1: Check for duplicate application first (Applications 3, 10)
-            // If only 1 provider AND that provider is already in the group, reject as duplicate
-            // This takes priority over outreach - no point doing outreach for a duplicate application
-            const isDuplicateApplication = enrolledProviders.length === 1 &&
-                                           enrolledProviders[0].status === 'Verified - Already in the Group';
+          // PRIORITY 2: Check if any provider requires outreach OR if outreach notes were added
+          const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
+            p.status === 'Unable to Verify - Requires Outreach'
+          );
+          const hasProviderOutreachNotes = enrolledProviders.some(p =>
+            p.outreachNotes && p.outreachNotes.length > 0
+          );
+          const hasGeneralOutreachNotes = outreachNotes.length > 0;
+          const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
-            if (isDuplicateApplication) {
-              console.log('Duplicate application detected - only provider is already enrolled and in group');
-              const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
-              if (duplicateIndex !== -1) {
-                setCurrentPage(duplicateIndex);
-                setVisitedPages(prev => new Set([...prev, duplicateIndex]));
-                // Scroll to top after navigation
-                setTimeout(() => {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 100);
-              }
-              return;
+          if (requiresOutreach) {
+            console.log('Routing to outreach completion page due to outreach requirements');
+            const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
+            if (completionIndex !== -1) {
+              setCurrentPage(completionIndex);
+              setVisitedPages(prev => new Set([...prev, completionIndex]));
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
             }
+            return;
+          }
 
-            // PRIORITY 2: Check if any provider requires outreach OR if outreach notes were added
-            const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
-              p.status === 'Unable to Verify - Requires Outreach'
-            );
+          const needsEnrollment = enrolledProviders.some(p =>
+            p.status === 'Verified - Ready to Enroll' &&
+            p.providerAlreadyEnrolled === 'No'
+          );
 
-            // Check if any provider has outreach notes from verification steps
-            const hasProviderOutreachNotes = enrolledProviders.some(p =>
-              p.outreachNotes && p.outreachNotes.length > 0
-            );
-
-            // Check if general outreach notes were added
-            const hasGeneralOutreachNotes = outreachNotes.length > 0;
-
-            const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
-
-            console.log('Has providers requiring outreach:', hasProvidersRequiringOutreach);
-            console.log('Has provider outreach notes:', hasProviderOutreachNotes);
-            console.log('Has general outreach notes:', hasGeneralOutreachNotes);
-            console.log('Requires outreach:', requiresOutreach);
-
-            if (requiresOutreach) {
-              console.log('Routing to outreach completion page due to outreach requirements');
-              const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
-              if (completionIndex !== -1) {
-                setCurrentPage(completionIndex);
-                setVisitedPages(prev => new Set([...prev, completionIndex]));
-              }
-              return;
-            }
-
-            const needsEnrollment = enrolledProviders.some(p =>
+          if (needsEnrollment) {
+            const firstReadyIndex = enrolledProviders.findIndex(p =>
               p.status === 'Verified - Ready to Enroll' &&
               p.providerAlreadyEnrolled === 'No'
             );
 
-            if (needsEnrollment) {
-              const firstReadyIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Verified - Ready to Enroll' &&
-                p.providerAlreadyEnrolled === 'No'
-              );
-
-              if (firstReadyIndex !== -1) {
-                setEnrolledProviders(prev => {
-                  const updatedProviders = [...prev];
-                  updatedProviders[firstReadyIndex] = {
-                    ...updatedProviders[firstReadyIndex],
-                    createEnrollmentComplete: false,
-                    providerInfoComplete: false,
-                    groupSpecialtiesChecked: false,
-                    enrollmentTabComplete: false,
-                    providerNameCorrect: false,
-                    providerTypeCorrect: false,
-                    applicationDateAdded: false,
-                    cancelReasonCode: false,
-                    providerAddressComplete: false,
-                    paymentMailingAddressComplete: false,
-                    providerInfoTabComplete: false,
-                    npiTabComplete: false,
-                    specialtyTabComplete: false,
-                    claimTypeTabComplete: false,
-                    licenseDeaTabComplete: false,
-                    enrollOnMainframeComplete: false
-                  };
-                  return updatedProviders;
-                });
-
-                setCurrentEnrollingProviderIndex(firstReadyIndex);
-                console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
-
-                const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
-                if (createEnrollmentIndex !== -1) {
-                  setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
-                  setCurrentPage(createEnrollmentIndex);
-                  setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
-                  // Scroll to top after navigation
-                  setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }, 100);
-                }
-              }
-              return;
-            }
-
-            const hasExistingProviders = enrolledProviders.some(p =>
-              p.status === 'Verified - Ready to Add to Group' ||
-              p.status === 'Enrolled - Ready to be Added to Group'
-            );
-
-            if (hasExistingProviders) {
-              console.log('Routing to existing provider workflow');
+            if (firstReadyIndex !== -1) {
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev];
-                updatedProviders.forEach((provider, idx) => {
-                  if (provider.status === 'Verified - Ready to Add to Group') {
-                    updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
-                  }
-                });
+                updatedProviders[firstReadyIndex] = {
+                  ...updatedProviders[firstReadyIndex],
+                  createEnrollmentComplete: false,
+                  providerInfoComplete: false,
+                  groupSpecialtiesChecked: false,
+                  enrollmentTabComplete: false,
+                  providerNameCorrect: false,
+                  providerTypeCorrect: false,
+                  applicationDateAdded: false,
+                  cancelReasonCode: false,
+                  providerAddressComplete: false,
+                  paymentMailingAddressComplete: false,
+                  providerInfoTabComplete: false,
+                  npiTabComplete: false,
+                  specialtyTabComplete: false,
+                  claimTypeTabComplete: false,
+                  licenseDeaTabComplete: false,
+                  enrollOnMainframeComplete: false
+                };
                 return updatedProviders;
               });
 
-              setFormData(prev => ({
-                ...prev,
-                providerEnrollmentType: 'Existing Provider'
-              }));
+              setCurrentEnrollingProviderIndex(firstReadyIndex);
+              console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
 
-              const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
-              if (openCicsIndex !== -1) {
-                const firstProviderIndex = enrolledProviders.findIndex(p =>
-                  p.status === 'Verified - Ready to Add to Group' ||
-                  p.status === 'Enrolled - Ready to be Added to Group'
-                );
-
-                if (firstProviderIndex !== -1) {
-                  setCurrentAddingProviderIndex(firstProviderIndex);
-                  console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
-                }
-
-                setCurrentPage(openCicsIndex);
-                setVisitedPages(prev => new Set([...prev, openCicsIndex]));
+              const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
+              if (createEnrollmentIndex !== -1) {
+                setFormData(prev => ({ ...prev, providerEnrollmentType: 'New Provider' }));
+                setCurrentPage(createEnrollmentIndex);
+                setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
               }
-              return;
             }
-
-            // Fallback: If no routing condition matched, log error
-            console.error('ERROR: No routing condition matched at questions-21-23!');
-            console.error('Enrolled providers:', enrolledProviders);
-            console.error('This should not happen - please check provider statuses');
+            return;
           }
+
+          const hasExistingProviders = enrolledProviders.some(p =>
+            p.status === 'Verified - Ready to Add to Group' ||
+            p.status === 'Enrolled - Ready to be Added to Group'
+          );
+
+          if (hasExistingProviders) {
+            console.log('Routing to existing provider workflow');
+            setEnrolledProviders(prev => {
+              const updatedProviders = [...prev];
+              updatedProviders.forEach((provider, idx) => {
+                if (provider.status === 'Verified - Ready to Add to Group') {
+                  updatedProviders[idx] = { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                }
+              });
+              return updatedProviders;
+            });
+
+            setFormData(prev => ({
+              ...prev,
+              providerEnrollmentType: 'Existing Provider'
+            }));
+
+            const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
+            if (openCicsIndex !== -1) {
+              const firstProviderIndex = enrolledProviders.findIndex(p =>
+                p.status === 'Verified - Ready to Add to Group' ||
+                p.status === 'Enrolled - Ready to be Added to Group'
+              );
+
+              if (firstProviderIndex !== -1) {
+                setCurrentAddingProviderIndex(firstProviderIndex);
+                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
+              }
+
+              setCurrentPage(openCicsIndex);
+              setVisitedPages(prev => new Set([...prev, openCicsIndex]));
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
+            }
+            return;
+          }
+
+          // Fallback: If no routing condition matched, log error
+          console.error('ERROR: No routing condition matched at request-for-paper-updates!');
+          console.error('Enrolled providers:', enrolledProviders);
+          console.error('This should not happen - please check provider statuses');
         }
 
         if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {
@@ -3685,7 +3653,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No') && (
+                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">
@@ -3699,37 +3667,8 @@
                                 Outreach group and request a revised application with the missing responses to required questions.
                               </p>
                               <button
-                                onClick={() => handleAddOutreachNote('Outreach group and request a revised application with the missing responses to required questions (Questions 21-23).')}
+                                onClick={() => handleAddOutreachNote('Outreach group and request a revised application with the missing responses to required questions (Questions 21-23 & 25).')}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                                Add to Notes
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {formData.question25Signed === 'No' && (
-                        <div className="border-2 rounded-lg p-4 mt-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
-                          <div className="flex items-start gap-3">
-                            <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
-                              <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
-                                Outreach the group and request a date and signature for question 25 of the Group Practice Application.
-                              </p>
-                              <button
-                                onClick={() => handleAddOutreachNote('Outreach the group and request a date and signature for question 25 of the Group Practice Application.')}
-                                className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
-                                style={{backgroundColor: 'var(--gainwell-teal)'}}
-                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
-                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

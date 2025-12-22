@@ -93,7 +93,7 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
-    use tauri_plugin_shell::ShellExt;
+    use tauri_plugin_opener::OpenerExt;
 
     // Check if this is a relative path to a bundled resource (PDF)
     let resolved_url = if url.starts_with("./") || url.starts_with("../") {
@@ -112,8 +112,8 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         url
     };
 
-    app.shell()
-        .open(resolved_url, None)
+    app.opener()
+        .open_url(resolved_url, None::<String>)
         .map_err(|e| format!("Failed to open URL: {}", e))
 }
 
@@ -147,6 +147,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             save_pwo_state,
             load_pwo_state,

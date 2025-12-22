@@ -1,203 +1,98 @@
-# Provider Enrollment Walkthrough - Desktop Application
+# Provider Group Change Walkthrough
 
-A Tauri-based desktop application for managing provider enrollment workflows with persistent file-based storage.
+## What It Does
 
-## Features
+A step-by-step walkthrough tool for Gainwell provider group change processes. This application guides users through complex workflows across multiple systems (CICS, SNOW, mainframe) without gathering any provider information - it's purely an interactive guide showing what steps to take and in what order.
 
-- ✅ **File-based PWO storage** - Each PWO# gets its own folder with a save file
-- ✅ **Persistent across sessions** - Survives browser cache clearing
-- ✅ **Desktop application** - Standalone app, no browser required
-- ✅ **Cross-platform** - Works on Windows, macOS, and Linux
-- ✅ **Auto-save** - Automatically saves your progress
-- ✅ **Resume capability** - Continue where you left off
+The app provides a structured walkthrough for adding providers to groups with intelligent branching:
+- **Existing Provider Path**: For providers already enrolled in the system who need to be added to a group
+- **New Provider Path**: For providers who need to be enrolled first, then added to a group
+- **Auto-detection**: Automatically routes users through the correct workflow based on provider enrollment status
+- **State Persistence**: Tracks progress through the workflow and allows resuming exactly where you left off, even after system restarts
 
-## Where are PWO files saved?
+## Tech Stack
 
-The app stores each PWO# in its own folder at:
+**Desktop Application (Tauri)**:
+- **Frontend**: HTML, CSS (Tailwind CSS), Vanilla JavaScript for the interactive walkthrough UI
+- **Backend**: Rust with Tauri framework for native OS integration and file system operations
+- **Storage**: File-based state persistence using Tauri's filesystem API (no databases, no browser localStorage)
+- **Platform**: Cross-platform desktop application supporting Windows, macOS, and Linux
+- **Architecture**: Frontend-backend communication via Tauri's IPC bridge using `window.__TAURI__.invoke()`
 
-- **Windows**: `C:\Users\<YourName>\AppData\Roaming\com.providerenrollment.walkthrough\PWO_<PWO#>\state.json`
-- **macOS**: `~/Library/Application Support/com.providerenrollment.walkthrough/PWO_<PWO#>/state.json`
-- **Linux**: `~/.local/share/com.providerenrollment.walkthrough/PWO_<PWO#>/state.json`
+## Flow Logic
 
-Each PWO# gets a dedicated folder named `PWO_<number>` containing a `state.json` file.
+### Sequential Steps (1-9)
+Initial verification and data gathering phase:
+- Welcome page with user name and PWO# entry
+- Group Practice Application verification
+- Question 6 verification
+- Pay To/Mail To information
+- Questions 9-17 verification
+- Email to SNOW
+- Question 20 verification
+- Questions 21-23 verification
+- Provider type selection (automatic branch point)
 
-## Prerequisites
+### Branch Point (Step 9)
+System automatically determines the workflow path based on provider enrollment status:
 
-Before building the app, you need to install:
+**New Provider Path (Steps 24-37)**:
+- Create new enrollment in the system
+- Fill complete provider information across multiple tabs (address, payment/mailing, NPI, specialty, license/DEA, claim types)
+- Verify enrollment application
+- Enroll on mainframe
+- Decision point: Additional new providers needed?
+  - **Yes**: Loop back to Step 24 for next provider
+  - **No**: Transition to existing provider workflow
 
-### 1. Node.js and npm
-- Download from: https://nodejs.org/
-- Verify installation: `node --version` and `npm --version`
+**Existing Provider Path (Steps 11-23)**:
+- Open CICS and add provider to group
+- Verify provider information
+- Close enrollment task and finish group change
+- Create checklist and approve group change
+- Complete letter generation workflow (open task, select letter, add provider, finish letter, close task)
+- Completion page with decision: Additional existing providers?
+  - **Yes**: Loop back to Step 11 for next provider
+  - **No**: Final completion
 
-### 2. Rust
-- Download from: https://www.rust-lang.org/tools/install
-- Verify installation: `rustc --version` and `cargo --version`
+### Workflow Priority
+The system enforces a specific order:
+1. All new providers must be enrolled first (Steps 24-37 loop)
+2. Only after new provider enrollment is complete, existing providers are added to the group (Steps 11-23 loop)
+3. Final completion when all providers (new and existing) have been processed
 
-### 3. System Dependencies
+## Impact
 
-#### Windows
-Install WebView2 (usually pre-installed on Windows 10/11):
-- Download: https://developer.microsoft.com/microsoft-edge/webview2/
+### Problem Statement
+Provider group changes involve complex, multi-step processes spanning multiple disconnected systems:
+- **CICS**: Legacy mainframe system for provider enrollment
+- **SNOW**: ServiceNow for task and checklist management
+- **Mainframe**: Core enrollment database
+- **Letter Generation System**: Provider correspondence
 
-#### macOS
-Install Xcode Command Line Tools:
-```bash
-xcode-select --install
-```
+Without structured guidance, staff frequently:
+- Miss critical steps in the process
+- Perform steps out of order, causing errors
+- Lose progress when systems disconnect or browsers crash
+- Struggle to remember which providers have been processed
+- Require constant reference to external documentation
 
-#### Linux (Ubuntu/Debian)
-```bash
-sudo apt update
-sudo apt install libwebkit2gtk-4.1-dev \
-  build-essential \
-  curl \
-  wget \
-  file \
-  libssl-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev
-```
+### Solution Benefits
 
-#### Linux (Fedora)
-```bash
-sudo dnf install webkit2gtk4.1-devel \
-  openssl-devel \
-  libappindicator-gtk3-devel \
-  librsvg2-devel
-```
+**Operational Excellence**:
+- Ensures all steps are completed in the correct order, every time
+- Eliminates manual tracking of which providers have been processed
+- Standardizes the process across all staff members
+- Reduces training time for new employees
 
-#### Linux (Arch)
-```bash
-sudo pacman -S webkit2gtk-4.1 \
-  base-devel \
-  openssl \
-  libappindicator-gtk3 \
-  librsvg
-```
+**Reliability**:
+- File-based storage survives browser crashes and system restarts
+- Each PWO# gets its own dedicated save file
+- Auto-save functionality means no manual "save" required
+- Can resume mid-workflow without losing any progress
 
-## Installation & Build
-
-### 1. Install Dependencies
-```bash
-cd tauri-app
-npm install
-```
-
-### 2. Development Mode (Hot Reload)
-```bash
-npm run dev
-```
-
-This will start the app in development mode with hot-reload enabled.
-
-### 3. Build Production App
-```bash
-npm run build
-```
-
-The built application will be in:
-- **Windows**: `src-tauri/target/release/provider-enrollment-walkthrough.exe`
-- **macOS**: `src-tauri/target/release/bundle/macos/Provider Enrollment Walkthrough.app`
-- **Linux**: `src-tauri/target/release/provider-enrollment-walkthrough`
-
-The installer packages will be in:
-- **Windows**: `src-tauri/target/release/bundle/msi/` or `nsis/`
-- **macOS**: `src-tauri/target/release/bundle/dmg/`
-- **Linux**: `src-tauri/target/release/bundle/deb/` or `appimage/`
-
-## How It Works
-
-### File Storage System
-
-Instead of browser localStorage, the app uses Rust backend commands to save PWO state to the file system:
-
-1. **Save**: When you work on a PWO, it auto-saves to `PWO_<number>/state.json`
-2. **Load**: When you resume, it reads from that PWO's folder
-3. **Delete**: When you start new, it removes the old PWO folder
-
-### Backend Commands (Rust)
-
-The app provides these Tauri commands:
-- `save_pwo_state` - Saves complete application state to file
-- `load_pwo_state` - Loads saved state from file
-- `delete_pwo_state` - Removes saved state
-- `get_save_location` - Shows where files are stored
-
-### Frontend Integration
-
-The walkthrough HTML now uses `window.__TAURI__.invoke()` instead of `localStorage`:
-```javascript
-// Save state
-await window.__TAURI__.invoke('save_pwo_state', { state: stateData });
-
-// Load state
-const state = await window.__TAURI__.invoke('load_pwo_state', { pwoNumber });
-
-// Delete state
-await window.__TAURI__.invoke('delete_pwo_state', { pwoNumber });
-```
-
-## Troubleshooting
-
-### App won't build
-- Ensure all prerequisites are installed
-- On Linux, make sure you installed the webkit2gtk libraries
-- Try `cargo clean` in src-tauri directory and rebuild
-
-### Can't find saved files
-- The app uses the OS-specific app data directory
-- Use the Tauri command `get_save_location` to see the exact path
-- On Windows, check AppData\Roaming
-- On macOS, check ~/Library/Application Support
-- On Linux, check ~/.local/share
-
-### Development mode not working
-- Check that port 1420 isn't in use
-- Try `npm run dev` from the tauri-app directory
-- Check browser console for errors
-
-## Project Structure
-
-```
-tauri-app/
-├── src/                      # Frontend files
-│   ├── index.html           # Main walkthrough (formerly walkthrough.html)
-│   └── images/              # Image assets
-├── src-tauri/               # Rust backend
-│   ├── src/
-│   │   ├── lib.rs          # Main Tauri commands
-│   │   └── main.rs         # App entry point
-│   ├── icons/              # App icons (auto-generated)
-│   ├── Cargo.toml          # Rust dependencies
-│   └── tauri.conf.json     # Tauri configuration
-├── package.json            # Node dependencies
-└── README.md               # This file
-```
-
-## Updating the Application
-
-To modify the walkthrough:
-1. Edit `src/index.html`
-2. The app will auto-reload in dev mode
-3. Rebuild for production: `npm run build`
-
-To modify backend (file operations):
-1. Edit `src-tauri/src/lib.rs`
-2. The app will auto-rebuild in dev mode
-3. Rebuild for production: `npm run build`
-
-## Distribution
-
-After building, you can distribute:
-- **Windows**: The `.msi` or `.exe` installer from `bundle/msi/` or `bundle/nsis/`
-- **macOS**: The `.dmg` from `bundle/dmg/`
-- **Linux**: The `.deb`, `.rpm`, or `.AppImage` from respective bundle folders
-
-Users just run the installer - no need for Node.js, Rust, or any dependencies!
-
-## Support
-
-For issues or questions about:
-- Tauri framework: https://tauri.app/
-- Building/installing: Check prerequisites above
-- App functionality: Check the original walkthrough.html documentation
+**Efficiency**:
+- No need to reference external documentation during processing
+- Clear visual indicators of current step and progress
+- Intelligent branching eliminates unnecessary steps
+- Works completely offline - no internet connection required

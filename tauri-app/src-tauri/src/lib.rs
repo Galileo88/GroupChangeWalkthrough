@@ -95,18 +95,20 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     use tauri_plugin_opener::OpenerExt;
 
-    // Handle PDF paths - they're bundled with frontend in src/
+    // Handle PDF paths - they're bundled as resources
     if url.starts_with("./") && url.ends_with(".pdf") {
-        // Get the resource directory and go up to find the src directory
+        let pdf_filename = url.trim_start_matches("./");
+
+        // Get the resource directory where bundled PDFs are stored
         let resource_dir = app.path()
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        // PDF is in the same directory as the frontend (src/)
-        let pdf_path = resource_dir.join(url.trim_start_matches("./"));
+        // PDFs are bundled at the root of the resource directory
+        let pdf_path = resource_dir.join(pdf_filename);
 
         if !pdf_path.exists() {
-            return Err(format!("PDF not found: {}", pdf_path.display()));
+            return Err(format!("PDF not found: {}. Please ensure the application was built with bundled resources.", pdf_filename));
         }
 
         // Use opener plugin's open_path for local files

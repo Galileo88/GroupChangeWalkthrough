@@ -104,9 +104,13 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         let possible_paths = vec![
             // Production: bundled resources
             app.path().resource_dir().ok().map(|p| p.join("resources").join(filename)),
-            // Development: src/assets folder
+            // Development: src/assets folder (from src-tauri, go up one level)
+            std::env::current_dir().ok().and_then(|p| {
+                p.parent().map(|parent| parent.join("src").join("assets").join(filename))
+            }),
+            // Alternative: if running from tauri-app root
             std::env::current_dir().ok().map(|p| p.join("src").join("assets").join(filename)),
-            // Alternative: assets in current dir
+            // Last resort: assets in current dir
             std::env::current_dir().ok().map(|p| p.join("assets").join(filename)),
         ];
 
@@ -114,9 +118,17 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         let pdf_path = possible_paths
             .into_iter()
             .flatten()
-            .find(|p| p.exists())
-            .ok_or_else(|| format!("PDF not found: {}", filename))?;
+            .find(|p| {
+                let exists = p.exists();
+                println!("Checking path: {} - exists: {}", p.display(), exists);
+                exists
+            })
+            .ok_or_else(|| {
+                let cwd = std::env::current_dir().unwrap_or_default();
+                format!("PDF not found: {} (searched from working dir: {})", filename, cwd.display())
+            })?;
 
+        println!("Opening PDF at: {}", pdf_path.display());
         pdf_path.to_string_lossy().to_string()
     } else if url.starts_with("http://") || url.starts_with("https://") {
         // External URL - use as-is

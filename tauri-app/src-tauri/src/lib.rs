@@ -132,6 +132,25 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
                     error_msg.push_str("  (Could not read directory)\n");
                 }
 
+                // Check what's IN the resources subdirectory
+                let resources_subdir = resource_dir.join("resources");
+                error_msg.push_str(&format!("\nResources subdirectory: {}\n", resources_subdir.display()));
+                if resources_subdir.exists() {
+                    if let Ok(entries) = std::fs::read_dir(&resources_subdir) {
+                        let items: Vec<_> = entries.flatten().collect();
+                        if items.is_empty() {
+                            error_msg.push_str("  (EMPTY - Files not bundled!)\n");
+                        } else {
+                            error_msg.push_str("Contents:\n");
+                            for entry in items {
+                                error_msg.push_str(&format!("  {}\n", entry.file_name().to_string_lossy()));
+                            }
+                        }
+                    }
+                } else {
+                    error_msg.push_str("  (Does not exist)\n");
+                }
+
                 // Show dialog with detailed info
                 use tauri_plugin_dialog::DialogExt;
                 app.dialog()

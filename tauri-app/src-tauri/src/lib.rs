@@ -117,22 +117,15 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
             return Err(format!("PDF not found at: {}", pdf_path.display()));
         }
 
-        // Try to open with shell instead of opener for better reliability
-        let path_str = pdf_path.to_string_lossy().to_string();
-
-        // Use tauri shell plugin which is more reliable for local files
-        use tauri_plugin_shell::ShellExt;
-        return app.shell()
-            .open(&path_str, None)
-            .map_err(|e| format!("Failed to open PDF: {}", e))
-            .map(|_| ());
+        // Use opener plugin's open_path for local files
+        return app.opener()
+            .open_path(pdf_path.to_string_lossy(), None::<String>)
+            .map_err(|e| format!("Failed to open PDF: {}", e));
     } else if url.starts_with("http://") || url.starts_with("https://") {
-        // External URL - open with default browser
-        use tauri_plugin_shell::ShellExt;
-        return app.shell()
-            .open(&url, None)
-            .map_err(|e| format!("Failed to open URL: {}", e))
-            .map(|_| ());
+        // Use opener plugin's open_url for web URLs
+        return app.opener()
+            .open_url(&url, None::<String>)
+            .map_err(|e| format!("Failed to open URL: {}", e));
     } else {
         return Err(format!("Unsupported URL format: {}", url));
     }

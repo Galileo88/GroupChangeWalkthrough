@@ -102,12 +102,26 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        // PDF is in the same directory as the frontend (src/)
-        let pdf_path = resource_dir.join(url.trim_start_matches("./"));
+        // Try to find PDF - frontend files might be in parent directory
+        let filename = url.trim_start_matches("./");
+        let paths_to_try = vec![
+            resource_dir.join(filename),
+            resource_dir.parent().map(|p| p.join(filename)),
+        ];
 
-        if !pdf_path.exists() {
-            return Err(format!("PDF not found: {}", pdf_path.display()));
-        }
+        let pdf_path = paths_to_try.iter()
+            .flatten()
+            .find(|p| p.exists())
+            .ok_or_else(|| {
+                use tauri_plugin_dialog::DialogExt;
+                let msg = format!("PDF '{}' not found.\n\nTried:\n{}\n\nResource dir: {}",
+                    filename,
+                    paths_to_try.iter().flatten().map(|p| p.display().to_string()).collect::<Vec<_>>().join("\n"),
+                    resource_dir.display()
+                );
+                app.dialog().message(&msg).title("PDF Path Debug").blocking_show();
+                msg
+            })?;
 
         // Use opener plugin's open_path for local files
         return app.opener()

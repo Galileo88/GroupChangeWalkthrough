@@ -104,11 +104,36 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        // PDFs are bundled at the root of the resource directory
+        // Try to find the PDF in the resource directory
         let pdf_path = resource_dir.join(pdf_filename);
 
+        // In dev mode, if not found in resource_dir, try the resources folder relative to src-tauri
+        let pdf_path = if !pdf_path.exists() {
+            // Try resources folder (for dev mode)
+            let dev_resources = resource_dir
+                .parent()
+                .and_then(|p| p.parent())
+                .map(|p| p.join("resources").join(pdf_filename));
+
+            if let Some(dev_path) = dev_resources {
+                if dev_path.exists() {
+                    dev_path
+                } else {
+                    pdf_path // Keep original path for error message
+                }
+            } else {
+                pdf_path
+            }
+        } else {
+            pdf_path
+        };
+
         if !pdf_path.exists() {
-            return Err(format!("PDF not found: {}. Please ensure the application was built with bundled resources.", pdf_filename));
+            return Err(format!(
+                "PDF not found: {}. Searched in: {}. Please ensure the application was built with bundled resources.",
+                pdf_filename,
+                pdf_path.display()
+            ));
         }
 
         // Use opener plugin's open_path for local files

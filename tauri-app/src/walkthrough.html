@@ -113,6 +113,7 @@
       const emailFieldImage = './images/emailfield.png';
       const practitionersImage = './images/practitioners.jpg';
       const questions21to24Image = './images/21_24.jpg';
+      const question25Image = './images/question25.jpg';
       const createEnrollmentImage = './images/CreateEnrollment.png';
       const newProviderWindowImage = './images/newproviderwindow.png';
       const groupSpecialtyImage = './images/groupspecialty.png';
@@ -135,6 +136,13 @@
       const letterProvImage = './images/letterprov.png';
       const generateLetterImage = './images/generateletter.png';
       const closeLetterImage = './images/closeletter.png';
+      const sigAuthImage = './images/sigauth.jpg';
+      const aouImage = './images/aou.jpg';
+      const provAgreementImage = './images/provagreement.jpg';
+      const dooImage = './images/doo.jpg';
+      const w9Image = './images/w9.jpg';
+      const achImage = './images/ACH.jpg';
+      const paperUpdatesImage = './images/paperupdates.jpg';
 
       // -------------------- Helper Functions --------------------
 
@@ -625,8 +633,8 @@
         // -------------------- Additional Verification Pages --------------------
         {
           id: 'questions-21-23',
-          title: 'Additional Questions (21-23) Verification',
-          description: 'Verify questions 21, 22 and 23 are answered correctly',
+          title: 'Additional Questions (21-23 & 25) Verification',
+          description: 'Verify questions 21, 22, 23 and 25 are answered correctly',
           fields: [
             {
               name: 'question21Answered',
@@ -664,9 +672,154 @@
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
               ]
+            },
+            {
+              name: 'question25Signed',
+              label: 'Is question 25 signed and dated on the Group Practice Application?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'Question 25 must be signed and dated.'
+              ]
             }
           ],
-          displayImage: questions21to24Image
+          displayImage: question25Image
+        },
+        // -------------------- Required Forms Verification --------------------
+        {
+          id: 'signature-authorization-form',
+          title: 'Signature Authorization Form',
+          description: 'Does the app include the Signature Authorization Form attached?',
+          fields: [
+            {
+              name: 'signatureAuthFormAttached',
+              label: 'Does the app include the Signature Authorization Form attached?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'Must have at least 1 authorized signer',
+                'Provider Name, Typed or Printed Full name and Actual Signature is required'
+              ]
+            }
+          ],
+          displayImage: sigAuthImage
+        },
+        {
+          id: 'agreement-of-understanding',
+          title: 'Agreement of Understanding',
+          description: 'Does the application have the Agreement of Understanding attached?',
+          fields: [
+            {
+              name: 'agreementOfUnderstandingAttached',
+              label: 'Does the application have the Agreement of Understanding attached?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'Must be signed and dated'
+              ]
+            }
+          ],
+          displayImage: aouImage
+        },
+        {
+          id: 'provider-agreement',
+          title: 'Provider Agreement',
+          description: 'Does the application have the Provider Agreement attached?',
+          fields: [
+            {
+              name: 'providerAgreementAttached',
+              label: 'Does the application have the Provider Agreement attached?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'Provider Name at the top of the form must be the group name',
+                'Must be signed and dated',
+                'For Group applications, only the providers being linked to the group should sign and date',
+                'If there are more providers being added than there are spots on the form, a copy of this page with the additional providers should be attached'
+              ]
+            }
+          ],
+          displayImage: provAgreementImage
+        },
+        {
+          id: 'disclosure-of-ownership',
+          title: 'Disclosure of Ownership',
+          description: 'Does the application have the Disclosure of Ownership attached? (form FD452)',
+          fields: [
+            {
+              name: 'disclosureOfOwnershipAttached',
+              label: 'Does the application have the Disclosure of Ownership attached? (form FD452)',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'All fields are required to be filled out',
+                'N/A should be used to answer questions Not Applicable to the group'
+              ]
+            }
+          ],
+          displayImage: dooImage
+        },
+        {
+          id: 'w9-or-irs-letter',
+          title: 'W9 or IRS Letter',
+          description: 'Does the application have a W9 or IRS letter (form 147C) attached for the group?',
+          fields: [
+            {
+              name: 'w9OrIrsLetterAttached',
+              label: 'Does the application have a W9 or IRS letter (form 147C) attached for the group?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'It is required on the W9 or IRS letter that the Name, SSN/Tax ID Number, and Employer ID Number (IRS#) matches what we have on file in CICS',
+                'If a W9 is provided, it must be signed and dated'
+              ]
+            }
+          ],
+          displayImage: w9Image
+        },
+        {
+          id: 'authorization-agreement-ach',
+          title: 'Authorization Agreement for Automatic Payments/Deposits',
+          description: 'Is there a copy of the Authorization Agreement for Automatic Payments/Deposits?',
+          fields: [
+            {
+              name: 'authorizationAgreementComplete',
+              label: 'Complete: Review Authorization Agreement for Automatic Payments/Deposits',
+              type: 'checkbox',
+              required: true,
+              validation: (value) => value === true
+            }
+          ],
+          instructionText: 'While this is not required for existing groups, it is important to pay attention to. If an existing group provides this form filled out, they may be looking to update their banking information. Compare the information to what we have in CICS on the 04 page. If the group wants make changes to their banking info, they will also need to provide a copy of a voided check. The account information will be taken from the voided check to update the info on the 04 page in CICS.\n\nFor new groups, this document is required along with a copy of a voided check. The account information will be taken from the voided check and added to the 04 page in CICS when enrolling a new group.\n\nPlease reach out to leadership prior to making any changes to ACH information.',
+          displayImage: achImage
+        },
+        {
+          id: 'request-for-paper-updates',
+          title: 'Request for Paper Updates',
+          description: 'Is there a Request for Paper Updates included with the application?',
+          fields: [
+            {
+              name: 'requestForPaperUpdatesComplete',
+              label: 'Complete: Review Request for Paper Updates form',
+              type: 'checkbox',
+              required: true,
+              validation: (value) => value === true
+            }
+          ],
+          instructionText: 'If this form is attached and completed, you will enter all N\'s for provider mailings on page 02 CICS:\n\nMAILING INDS: MANUALS - N\nNEWSLETTERS - N\nPAPER RA - N\n\nIf this form is not provided or filled out, you can continue processing as usual.',
+          displayImage: paperUpdatesImage
         },
         // ================== EXISTING PROVIDER WORKFLOW ==================
         // These pages handle adding an already-enrolled provider to a group
@@ -3558,6 +3711,175 @@
                           </div>
                         </div>
                       )}
+                      {formData.question25Signed === 'No' && (
+                        <div className="border-2 rounded-lg p-4 mt-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                          <div className="flex items-start gap-3">
+                            <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                              <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                                Outreach the group and request a date and signature for question 25 of the Group Practice Application.
+                              </p>
+                              <button
+                                onClick={() => handleAddOutreachNote('Outreach the group and request a date and signature for question 25 of the Group Practice Application.')}
+                                className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                                style={{backgroundColor: 'var(--gainwell-teal)'}}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add to Notes
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : currentPageData.id === 'signature-authorization-form' && formData.signatureAuthFormAttached === 'No' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach the group and request a completed Signature Authorization form.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed Signature Authorization form.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: 'var(--gainwell-teal)'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'agreement-of-understanding' && formData.agreementOfUnderstandingAttached === 'No' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach the group and request a completed Agreement of Understanding form.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed Agreement of Understanding form.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: 'var(--gainwell-teal)'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'provider-agreement' && formData.providerAgreementAttached === 'No' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach the group and request a completed Provider Agreement form.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed Provider Agreement form.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: 'var(--gainwell-teal)'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'disclosure-of-ownership' && formData.disclosureOfOwnershipAttached === 'No' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach the group and request a completed Disclosure of Ownership form.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed Disclosure of Ownership form.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: 'var(--gainwell-teal)'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'w9-or-irs-letter' && formData.w9OrIrsLetterAttached === 'No' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach the group and request a copy of the W9 or IRS letter.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a copy of the W9 or IRS letter.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: 'var(--gainwell-teal)'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ) : currentPageData.id !== 'question-20' && currentPageData.id !== 'questions-21-23' ? (
                     <ul className="space-y-2">

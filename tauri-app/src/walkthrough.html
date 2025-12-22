@@ -597,7 +597,13 @@
             },
             {
               name: 'licensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification. Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              label: () => (
+                <>
+                  Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification.
+                  <br/><br/>
+                  Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -1477,7 +1483,13 @@
             },
             {
               name: 'nextProviderFinalLicensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification. Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              label: () => (
+                <>
+                  Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification.
+                  <br/><br/>
+                  Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),

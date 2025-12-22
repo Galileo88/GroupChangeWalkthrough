@@ -95,23 +95,34 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     use tauri_plugin_opener::OpenerExt;
 
-    // Check if this is a relative path to a bundled resource (PDF)
-    let resolved_url = if url.starts_with("./") || url.starts_with("../") {
-        // Extract filename from relative path
-        let filename = url.trim_start_matches("./").trim_start_matches("../");
+    // Resolve local PDF paths to absolute filesystem paths
+    let resolved_url = if url.starts_with("assets/") && url.ends_with(".pdf") {
+        // Extract just the filename
+        let filename = url.trim_start_matches("assets/");
 
-        // Get the resource path - bundled resources from ../resources/*.pdf
-        // will be in the resources subdirectory of the resource directory
-        let resource_path = app.path()
-            .resource_dir()
-            .map_err(|e| format!("Failed to get resource directory: {}", e))?
-            .join("resources")  // PDFs are bundled in the resources subdirectory
-            .join(filename);
+        // Try multiple locations to find the PDF
+        let possible_paths = vec![
+            // Production: bundled resources
+            app.path().resource_dir().ok().map(|p| p.join("resources").join(filename)),
+            // Development: src/assets folder
+            std::env::current_dir().ok().map(|p| p.join("src").join("assets").join(filename)),
+            // Alternative: assets in current dir
+            std::env::current_dir().ok().map(|p| p.join("assets").join(filename)),
+        ];
 
-        // Convert to string
-        resource_path.to_string_lossy().to_string()
-    } else {
+        // Find the first path that exists
+        let pdf_path = possible_paths
+            .into_iter()
+            .flatten()
+            .find(|p| p.exists())
+            .ok_or_else(|| format!("PDF not found: {}", filename))?;
+
+        pdf_path.to_string_lossy().to_string()
+    } else if url.starts_with("http://") || url.starts_with("https://") {
+        // External URL - use as-is
         url
+    } else {
+        return Err(format!("Unsupported URL format: {}", url));
     };
 
     app.opener()

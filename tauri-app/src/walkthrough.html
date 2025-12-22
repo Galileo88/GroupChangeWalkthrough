@@ -308,7 +308,7 @@
 
         try {
           if (tauriInvoke) {
-            // Use Tauri's invoke to open URL with system default application
+            // Use Tauri's open_url command which handles path resolution
             console.log('Opening URL with Tauri:', url);
             await tauriInvoke('open_url', { url });
           } else {
@@ -317,7 +317,7 @@
           }
         } catch (error) {
           console.error('Failed to open URL:', error);
-          alert('Failed to open link. Please try again.');
+          alert(`Failed to open link: ${error}. Please try again.`);
         }
       };
 
@@ -1150,8 +1150,8 @@
           displayImage: newProviderWindowImage,
           resourceText: 'Be sure to check the individual providers license and utilize the links below to help determine the provider type and specialty:',
           resources: [
-            { label: '2025 Legal Quick Guide', url: './2025LegalQuickGuide.pdf', type: 'pdf' },
-            { label: 'Provider Types and Specialties', url: './ProviderTypesSpecialties.pdf', type: 'pdf' }
+            { label: '2025 Legal Quick Guide', url: 'assets/2025LegalQuickGuide.pdf', type: 'pdf' },
+            { label: 'Provider Types and Specialties', url: 'assets/ProviderTypesSpecialties.pdf', type: 'pdf' }
           ]
         },
         {
@@ -1330,7 +1330,7 @@
           instructionText: 'Claim Types can be determined by using the resource below.',
           resourceText: 'Use this resource to determine claim types:',
           resources: [
-            { label: 'Provider Types and Specialties', url: './ProviderTypesSpecialties.pdf', type: 'pdf' }
+            { label: 'Provider Types and Specialties', url: 'assets/ProviderTypesSpecialties.pdf', type: 'pdf' }
           ],
           displayImage: claimTabImage,
           pageNotes: [

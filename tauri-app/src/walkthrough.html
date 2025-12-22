@@ -2531,7 +2531,7 @@
         textContent += `End of Report\n`;
 
         const pwoNumber = formData.pwoNumber || 'UNKNOWN';
-        const filename = `PWO${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
+        const filename = `${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
         await saveFile(textContent, filename);
       };
 

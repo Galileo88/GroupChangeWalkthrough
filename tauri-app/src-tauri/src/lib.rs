@@ -100,22 +100,41 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         // Extract just the filename
         let filename = url.trim_start_matches("assets/");
 
-        // Try multiple locations to find the PDF
-        let possible_paths = vec![
-            // Production: bundled resources
-            app.path().resource_dir().ok().map(|p| p.join("resources").join(filename)),
-            // Development: src/assets folder
-            std::env::current_dir().ok().map(|p| p.join("src").join("assets").join(filename)),
-            // Alternative: assets in current dir
-            std::env::current_dir().ok().map(|p| p.join("assets").join(filename)),
-        ];
+        // Get the resource directory
+        let resource_dir = app.path()
+            .resource_dir()
+            .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        // Find the first path that exists
-        let pdf_path = possible_paths
-            .into_iter()
-            .flatten()
-            .find(|p| p.exists())
-            .ok_or_else(|| format!("PDF not found: {}", filename))?;
+        println!("Resource directory: {}", resource_dir.display());
+
+        // The PDFs are bundled from ../resources/*.pdf, so they'll be in resources/ subdirectory
+        let pdf_path = resource_dir.join("resources").join(filename);
+
+        println!("Looking for PDF at: {}", pdf_path.display());
+        println!("PDF exists: {}", pdf_path.exists());
+
+        if !pdf_path.exists() {
+            // List what's actually in the resource directory
+            if let Ok(entries) = std::fs::read_dir(&resource_dir) {
+                println!("Contents of resource directory:");
+                for entry in entries.flatten() {
+                    println!("  - {}", entry.path().display());
+                }
+            }
+
+            // Check resources subdirectory
+            let resources_subdir = resource_dir.join("resources");
+            if resources_subdir.exists() {
+                if let Ok(entries) = std::fs::read_dir(&resources_subdir) {
+                    println!("Contents of resources subdirectory:");
+                    for entry in entries.flatten() {
+                        println!("  - {}", entry.path().display());
+                    }
+                }
+            }
+
+            return Err(format!("PDF not found at: {}", pdf_path.display()));
+        }
 
         pdf_path.to_string_lossy().to_string()
     } else if url.starts_with("http://") || url.starts_with("https://") {

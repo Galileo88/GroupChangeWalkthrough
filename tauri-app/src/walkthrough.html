@@ -2563,7 +2563,8 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const filename = `outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
+        const filename = `${pwoNumber}-outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
         await saveFile(textContent, filename);
       };
 
@@ -2652,7 +2653,8 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const filename = `enrolled-providers-${new Date().toISOString().split('T')[0]}.txt`;
+        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
+        const filename = `${pwoNumber}-providers-${new Date().toISOString().split('T')[0]}.txt`;
         await saveFile(textContent, filename);
       };
 

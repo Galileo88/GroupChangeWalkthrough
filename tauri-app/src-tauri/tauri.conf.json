@@ -34,10 +34,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": {
-      "../resources/2025LegalQuickGuide.pdf": "resources/",
-      "../resources/ProviderTypesSpecialties.pdf": "resources/",
-      "../resources/FLOW_MAPPING.pdf": "resources/"
-    }
+    "resources": [
+      "../resources/2025LegalQuickGuide.pdf",
+      "../resources/ProviderTypesSpecialties.pdf",
+      "../resources/FLOW_MAPPING.pdf"
+    ]
   }
 }

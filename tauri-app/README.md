@@ -2,47 +2,97 @@
 
 ## What It Does
 
-A step-by-step walkthrough tool for Gainwell provider group change processes. Guides users through the workflow - it's purely an interactive guide, not a data collection tool.
+A step-by-step walkthrough tool for Gainwell provider group change processes. This application guides users through complex workflows across multiple systems (CICS, SNOW, mainframe) without gathering any provider information - it's purely an interactive guide showing what steps to take and in what order.
+
+The app provides a structured walkthrough for adding providers to groups with intelligent branching:
+- **Existing Provider Path**: For providers already enrolled in the system who need to be added to a group
+- **New Provider Path**: For providers who need to be enrolled first, then added to a group
+- **Auto-detection**: Automatically routes users through the correct workflow based on provider enrollment status
+- **State Persistence**: Tracks progress through the workflow and allows resuming exactly where you left off, even after system restarts
 
 ## Tech Stack
 
-- **Frontend**: HTML, CSS (Tailwind), Vanilla JavaScript
-- **Backend**: Rust (Tauri framework)
-- **Storage**: File-based state persistence
-- **Platform**: Desktop app (Windows, macOS, Linux)
+**Desktop Application (Tauri)**:
+- **Frontend**: HTML, CSS (Tailwind CSS), Vanilla JavaScript for the interactive walkthrough UI
+- **Backend**: Rust with Tauri framework for native OS integration and file system operations
+- **Storage**: File-based state persistence using Tauri's filesystem API (no databases, no browser localStorage)
+- **Platform**: Cross-platform desktop application supporting Windows, macOS, and Linux
+- **Architecture**: Frontend-backend communication via Tauri's IPC bridge using `window.__TAURI__.invoke()`
 
 ## Flow Logic
 
-1. **Steps 1-9**: Initial verification questions
-2. **Branch Point**: Auto-routes based on provider enrollment status
-   - **New Providers**: Enrollment workflow (Steps 24-37) → Existing provider workflow
-   - **Existing Providers**: Group addition workflow (Steps 11-23)
-3. **Looping**: Repeatable workflows for multiple providers
-4. **Completion**: Tracks enrolled providers
+### Sequential Steps (1-9)
+Initial verification and data gathering phase:
+- Welcome page with user name and PWO# entry
+- Group Practice Application verification
+- Question 6 verification
+- Pay To/Mail To information
+- Questions 9-17 verification
+- Email to SNOW
+- Question 20 verification
+- Questions 21-23 verification
+- Provider type selection (automatic branch point)
+
+### Branch Point (Step 9)
+System automatically determines the workflow path based on provider enrollment status:
+
+**New Provider Path (Steps 24-37)**:
+- Create new enrollment in the system
+- Fill complete provider information across multiple tabs (address, payment/mailing, NPI, specialty, license/DEA, claim types)
+- Verify enrollment application
+- Enroll on mainframe
+- Decision point: Additional new providers needed?
+  - **Yes**: Loop back to Step 24 for next provider
+  - **No**: Transition to existing provider workflow
+
+**Existing Provider Path (Steps 11-23)**:
+- Open CICS and add provider to group
+- Verify provider information
+- Close enrollment task and finish group change
+- Create checklist and approve group change
+- Complete letter generation workflow (open task, select letter, add provider, finish letter, close task)
+- Completion page with decision: Additional existing providers?
+  - **Yes**: Loop back to Step 11 for next provider
+  - **No**: Final completion
+
+### Workflow Priority
+The system enforces a specific order:
+1. All new providers must be enrolled first (Steps 24-37 loop)
+2. Only after new provider enrollment is complete, existing providers are added to the group (Steps 11-23 loop)
+3. Final completion when all providers (new and existing) have been processed
 
 ## Impact
 
-**Problem**: Provider group changes involve complex, multi-step processes across multiple systems (CICS, SNOW, mainframe). Staff can miss steps or perform them out of order.
+### Problem Statement
+Provider group changes involve complex, multi-step processes spanning multiple disconnected systems:
+- **CICS**: Legacy mainframe system for provider enrollment
+- **SNOW**: ServiceNow for task and checklist management
+- **Mainframe**: Core enrollment database
+- **Letter Generation System**: Provider correspondence
 
-**Solution**:
-- Ensures all steps are completed in the correct order
-- Eliminates need for external documentation
-- Standardizes the process across all staff
-- File-based storage allows resuming work after restarts
-- Works offline
+Without structured guidance, staff frequently:
+- Miss critical steps in the process
+- Perform steps out of order, causing errors
+- Lose progress when systems disconnect or browsers crash
+- Struggle to remember which providers have been processed
+- Require constant reference to external documentation
 
----
+### Solution Benefits
 
-## Development
+**Operational Excellence**:
+- Ensures all steps are completed in the correct order, every time
+- Eliminates manual tracking of which providers have been processed
+- Standardizes the process across all staff members
+- Reduces training time for new employees
 
-**Prerequisites**: Node.js, Rust, and system dependencies ([Tauri setup guide](https://tauri.app/start/prerequisites/))
+**Reliability**:
+- File-based storage survives browser crashes and system restarts
+- Each PWO# gets its own dedicated save file
+- Auto-save functionality means no manual "save" required
+- Can resume mid-workflow without losing any progress
 
-**Commands**:
-```bash
-cd tauri-app
-npm install        # Install dependencies
-npm run dev        # Development mode
-npm run build      # Build production app
-```
-
-**PWO state files** are saved to OS-specific app data directories.
+**Efficiency**:
+- No need to reference external documentation during processing
+- Clear visual indicators of current step and progress
+- Intelligent branching eliminates unnecessary steps
+- Works completely offline - no internet connection required

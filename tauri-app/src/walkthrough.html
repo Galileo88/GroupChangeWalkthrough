@@ -302,6 +302,25 @@
         }
       };
 
+      // Helper function to open external URLs and PDFs
+      const openExternalUrl = async (url) => {
+        if (!url) return;
+
+        try {
+          if (tauriInvoke) {
+            // Use Tauri's invoke to open URL with system default application
+            console.log('Opening URL with Tauri:', url);
+            await tauriInvoke('open_url', { url });
+          } else {
+            // Fallback to window.open for web version
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
+        } catch (error) {
+          console.error('Failed to open URL:', error);
+          alert('Failed to open link. Please try again.');
+        }
+      };
+
       // ============================================================
       // PAGES CONFIGURATION (46 Pages - Added Start Choice & Resume Lookup)
       // ============================================================
@@ -3101,12 +3120,10 @@
                     </p>
                     <div className="flex flex-wrap gap-3">
                       {currentPageData.resources.map((resource, idx) => (
-                        <a
+                        <button
                           key={idx}
-                          href={resource.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg"
+                          onClick={() => openExternalUrl(resource.url)}
+                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
                           style={{backgroundColor: 'var(--gainwell-teal)'}}
                           onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
                           onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
@@ -3115,7 +3132,7 @@
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>
                           {resource.label}
-                        </a>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -3482,30 +3499,26 @@
                               {(field.sovosUrl || field.npiRegistryUrl || hasUnableToVerifyButton) && (
                                 <div className="mt-3 flex justify-end gap-2">
                                   {field.sovosUrl && !isUnableToVerify && (
-                                    <a
-                                      href={field.sovosUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                    <button
+                                      onClick={() => openExternalUrl(field.sovosUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to SOVOS
-                                    </a>
+                                    </button>
                                   )}
                                   {field.npiRegistryUrl && !isUnableToVerify && (
-                                    <a
-                                      href={field.npiRegistryUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                    <button
+                                      onClick={() => openExternalUrl(field.npiRegistryUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to NPI Registry
-                                    </a>
+                                    </button>
                                   )}
                                   {hasUnableToVerifyButton && !isUnableToVerify && (
                                     <button
@@ -3584,17 +3597,15 @@
                               </label>
                               {field.sovosUrl && (
                                 <div className="mt-3 ml-8">
-                                  <a
-                                    href={field.sovosUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                  <button
+                                    onClick={() => openExternalUrl(field.sovosUrl)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
                                     Go to SOVOS
-                                  </a>
+                                  </button>
                                 </div>
                               )}
                             </div>

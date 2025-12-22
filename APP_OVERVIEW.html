@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Change Walkthrough Application - Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.3em;
+            border-bottom: 3px solid #3d5a66;
+        }
+
+        h2 {
+            color: #3d5a66;
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.2em;
+            border-bottom: 2px solid #00e5b4;
+        }
+
+        h3 {
+            color: #527584;
+            font-size: 1.4em;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+        }
+
+        h4 {
+            color: #2a3f4a;
+            font-size: 1.1em;
+            margin-top: 1em;
+            margin-bottom: 0.4em;
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 2em 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background-color: #3d5a66;
+            color: white;
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f9fc;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background-color: #f0f4f8;
+        }
+
+        strong, b {
+            color: #3d5a66;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #00e5b4;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #333;
+        }
+
+        blockquote {
+            border-left: 4px solid #00e5b4;
+            padding-left: 1em;
+            margin: 1em 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            * {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            h1, h2, h3, h4 {
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
+                break-before: avoid !important;
+                break-after: avoid !important;
+            }
+
+            table {
+                page-break-before: avoid !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                break-before: avoid !important;
+                break-inside: avoid !important;
+                break-after: avoid !important;
+            }
+
+            tr, td, th {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+
+        /* Gainwell brand colors */
+        .accent {
+            color: #00e5b4;
+        }
+
+        .primary {
+            color: #3d5a66;
+        }
+    </style>
+</head>
+<body>
+<h1>Group Change Walkthrough Application - Overview</h1>
+<h2>Executive Summary</h2>
+<p>The Group Change Walkthrough Application is a comprehensive web and desktop solution designed for Gainwell Technologies to streamline the provider enrollment process for Full Group Change Applications (FD23). This application guides enrollment specialists through a complex, multi-step workflow that handles both new provider enrollments and existing provider group additions.</p>
+<p><strong>Version:</strong> 1.0.0
+<strong>Target Users:</strong> Gainwell Provider Enrollment Specialists
+<strong>Primary Use Case:</strong> Processing Full Group Change Applications (FD23)</p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#application-purpose">Application Purpose</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#application-architecture">Application Architecture</a></li>
+<li><a href="#platform-availability">Platform Availability</a></li>
+<li><a href="#workflow-overview">Workflow Overview</a></li>
+<li><a href="#technical-stack">Technical Stack</a></li>
+<li><a href="#data-management">Data Management</a></li>
+<li><a href="#user-experience">User Experience</a></li>
+<li><a href="#installation--deployment">Installation &amp; Deployment</a></li>
+<li><a href="#future-roadmap">Future Roadmap</a></li>
+</ol>
+<hr>
+<h2>Application Purpose</h2>
+<p>The Group Change Walkthrough Application addresses a critical need in the provider enrollment process by providing:</p>
+<ul>
+<li><strong>Guided Workflow</strong>: Step-by-step instructions for processing complex group change applications</li>
+<li><strong>Data Validation</strong>: Ensures all required information is collected and verified</li>
+<li><strong>Reference Materials</strong>: Embedded screenshots and documentation for each step</li>
+<li><strong>Progress Tracking</strong>: Auto-save functionality with resume capability</li>
+<li><strong>Quality Assurance</strong>: Built-in verification steps to reduce errors</li>
+<li><strong>Outreach Management</strong>: Tracks providers requiring additional verification</li>
+<li><strong>Multi-Provider Support</strong>: Handles enrollment of multiple providers in a single session</li>
+</ul>
+<hr>
+<h2>Key Features</h2>
+<h3>1. <strong>Dual Platform Support</strong></h3>
+<ul>
+<li><strong>Web Application</strong>: Browser-based access via landing portal</li>
+<li><strong>Desktop Application</strong>: Tauri-based standalone app with persistent file storage</li>
+</ul>
+<h3>2. <strong>Intelligent Workflow Branching</strong></h3>
+<p>The application automatically routes users through different workflows based on provider enrollment status:</p>
+<ul>
+<li><strong>New Provider Path</strong> (Steps 24-37): Complete enrollment process for providers not in the system</li>
+<li><strong>Existing Provider Path</strong> (Steps 11-23): Simplified process for providers already enrolled</li>
+<li><strong>Auto-Branching Logic</strong>: Prioritizes new provider enrollments before existing provider additions</li>
+</ul>
+<h3>3. <strong>State Management &amp; Persistence</strong></h3>
+<ul>
+<li><strong>Web Version</strong>: LocalStorage-based state persistence</li>
+<li><strong>Desktop Version</strong>: File-based storage in OS-specific app data directories</li>
+<li><strong>Auto-Save</strong>: Debounced auto-save (1-second delay) on all state changes</li>
+<li><strong>Resume Capability</strong>: Users can exit and resume their work at any time</li>
+</ul>
+<h3>4. <strong>Comprehensive Data Collection</strong></h3>
+<p>The application collects and manages:</p>
+<ul>
+<li>Provider information (name, NPI, specialty, license, DEA)</li>
+<li>Group practice details</li>
+<li>Pay To/Mail To addresses</li>
+<li>Contact information</li>
+<li>Enrollment verification data</li>
+<li>Outreach notes and tracking</li>
+</ul>
+<h3>5. <strong>Reference Integration</strong></h3>
+<ul>
+<li><strong>Visual Guides</strong>: Screenshots for every step showing exactly what to do</li>
+<li><strong>Embedded PDFs</strong>: Access to reference materials including:<ul>
+<li>2025 Legal Quick Guide</li>
+<li>Provider Types &amp; Specialties guide</li>
+</ul>
+</li>
+<li><strong>Contextual Help</strong>: Instructions and notes specific to each workflow step</li>
+</ul>
+<h3>6. <strong>Quality Control Features</strong></h3>
+<ul>
+<li><strong>Verification Tracking</strong>: &quot;Unable to Verify&quot; flags for data requiring outreach</li>
+<li><strong>Required Field Validation</strong>: Prevents progression without completing critical fields</li>
+<li><strong>Enrolled Providers List</strong>: Running summary of all providers processed</li>
+<li><strong>Manual Notes</strong>: Provider-specific notes for special circumstances</li>
+</ul>
+<h3>7. <strong>Outreach Management</strong></h3>
+<ul>
+<li><strong>Outreach Reason Tracking</strong>: Documents why providers require follow-up</li>
+<li><strong>Provider Status</strong>: Marks providers as &quot;Unable to Verify - Requires Outreach&quot;</li>
+<li><strong>Notes History</strong>: Comprehensive outreach notes with timestamps</li>
+<li><strong>View/Edit Capability</strong>: Review and update outreach information</li>
+</ul>
+<hr>
+<h2>Application Architecture</h2>
+<h3>Component Structure</h3>
+<pre><code>Group Change Walkthrough Application
+│
+├── Web Portal (index.html)
+│   ├── Landing Page
+│   │   ├── Application Type Selection Grid (4x4)
+│   │   └── Active: Full Group Change Application - FD23
+│   └── Main Walkthrough (walkthrough.html)
+│       ├── React-based Form System
+│       ├── Page Navigation Engine
+│       ├── State Management
+│       └── LocalStorage Persistence
+│
+└── Desktop Application (Tauri)
+    ├── Frontend (src/)
+    │   ├── index.html (main walkthrough)
+    │   └── images/
+    └── Backend (src-tauri/)
+        ├── Rust File Management
+        ├── PWO-specific Storage
+        └── Tauri Commands API
+</code></pre>
+<h3>Data Flow</h3>
+<pre><code>User Input → Form State → Auto-Save (debounced)
+                ↓
+         State Validation
+                ↓
+    Web: LocalStorage | Desktop: File System
+                ↓
+         Resume on Load
+                ↓
+         Complete Workflow
+</code></pre>
+<hr>
+<h2>Platform Availability</h2>
+<h3>Web Application</h3>
+<p><strong>Access:</strong> Via landing portal at <code>/index.html</code></p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>No installation required</li>
+<li>Browser-based (Chrome, Firefox, Edge, Safari)</li>
+<li>LocalStorage persistence</li>
+<li>Responsive design (mobile, tablet, desktop)</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Data lost if browser cache cleared</li>
+<li>Requires internet connection for initial load</li>
+<li>Limited to single PWO per browser session</li>
+</ul>
+<h3>Desktop Application</h3>
+<p><strong>Platforms:</strong> Windows, macOS, Linux</p>
+<p><strong>Storage Locations:</strong></p>
+<ul>
+<li><strong>Windows</strong>: <code>C:\Users\&lt;YourName&gt;\AppData\Roaming\com.providerenrollment.walkthrough\PWO_&lt;PWO#&gt;\state.json</code></li>
+<li><strong>macOS</strong>: <code>~/Library/Application Support/com.providerenrollment.walkthrough/PWO_&lt;PWO#&gt;/state.json</code></li>
+<li><strong>Linux</strong>: <code>~/.local/share/com.providerenrollment.walkthrough/PWO_&lt;PWO#&gt;/state.json</code></li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Persistent file-based storage</li>
+<li>Survives browser cache clearing</li>
+<li>Standalone operation</li>
+<li>Multi-PWO support (separate folders per PWO)</li>
+<li>OS-native experience</li>
+</ul>
+<hr>
+<h2>Workflow Overview</h2>
+<h3>Pre-Enrollment Steps (Steps 1-9)</h3>
+<p><strong>Common Steps for All Applications:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Page ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>welcome</td>
+<td>Collect user name and PWO number</td>
+</tr>
+<tr>
+<td>2</td>
+<td>group-practice</td>
+<td>Verify Group Practice Application</td>
+</tr>
+<tr>
+<td>3</td>
+<td>question-6</td>
+<td>Verify Question 6 information</td>
+</tr>
+<tr>
+<td>4</td>
+<td>payto-mailto</td>
+<td>Enter Pay To/Mail To information</td>
+</tr>
+<tr>
+<td>5</td>
+<td>questions-9-17</td>
+<td>Verify Questions 9-17</td>
+</tr>
+<tr>
+<td>6</td>
+<td>email-to-snow</td>
+<td>Email to SNOW system</td>
+</tr>
+<tr>
+<td>7</td>
+<td>question-20</td>
+<td>Verify Question 20</td>
+</tr>
+<tr>
+<td>8</td>
+<td>questions-21-23</td>
+<td>Verify Questions 21-23</td>
+</tr>
+<tr>
+<td>9</td>
+<td>provider-type-selection</td>
+<td><strong>BRANCH POINT</strong> - Auto-determine path</td>
+</tr>
+</tbody></table>
+<h3>New Provider Path (Steps 24-37)</h3>
+<p><strong>For Providers Not Yet Enrolled:</strong></p>
+<p>Guides users through complete enrollment process including:</p>
+<ul>
+<li>Creating enrollment record</li>
+<li>Entering provider demographics</li>
+<li>Verifying group specialties</li>
+<li>Processing enrollment application</li>
+<li>Managing addresses (provider, payment, mailing)</li>
+<li>Provider information verification</li>
+<li>NPI, specialty, claim type configuration</li>
+<li>License and DEA processing</li>
+<li>Mainframe enrollment</li>
+</ul>
+<p><strong>Loop Feature:</strong> After completing a new provider, users can:</p>
+<ul>
+<li>Add another new provider (loops back to Step 24)</li>
+<li>Proceed to existing provider workflow (advances to Step 11)</li>
+</ul>
+<h3>Existing Provider Path (Steps 11-23)</h3>
+<p><strong>For Providers Already Enrolled:</strong></p>
+<p>Streamlined process for adding existing providers to the group:</p>
+<ul>
+<li>Open CICS system</li>
+<li>Add provider to group</li>
+<li>Verify provider information</li>
+<li>Close enrollment task</li>
+<li>Finish group change</li>
+<li>Create checklist</li>
+<li>Approve group change</li>
+<li>Process approval letter</li>
+</ul>
+<p><strong>Loop Feature:</strong> After completing an existing provider, users can:</p>
+<ul>
+<li>Add another existing provider (loops back to Step 11)</li>
+<li>Complete the application (finish workflow)</li>
+</ul>
+<h3>Workflow Logic</h3>
+<p><strong>Auto-Branching Priority:</strong></p>
+<ol>
+<li><strong>New Providers First</strong>: If any providers need enrollment, route to New Provider Path</li>
+<li><strong>All New Enrolled</strong>: After all new providers enrolled, transition to Existing Provider Path</li>
+<li><strong>Multiple Iterations</strong>: Support unlimited providers in both paths via loop mechanisms</li>
+</ol>
+<hr>
+<h2>Technical Stack</h2>
+<h3>Frontend Technologies</h3>
+<p><strong>Core Framework:</strong></p>
+<ul>
+<li><strong>React 18.2.0</strong>: UI component framework</li>
+<li><strong>React DOM 18.2.0</strong>: DOM rendering</li>
+<li><strong>Babel Standalone</strong>: JSX transpilation in browser</li>
+</ul>
+<p><strong>Styling:</strong></p>
+<ul>
+<li><strong>Tailwind CSS 3.4.0</strong>: Utility-first CSS framework</li>
+<li><strong>Custom CSS</strong>: Gainwell brand styling (teal/cyan color scheme)</li>
+<li><strong>Responsive Design</strong>: Mobile-first approach with breakpoints</li>
+</ul>
+<p><strong>Build Tools:</strong></p>
+<ul>
+<li><strong>Vite 5.0.8</strong>: Development server and build tool</li>
+<li><strong>PostCSS 8.4.32</strong>: CSS processing</li>
+<li><strong>Autoprefixer 10.4.16</strong>: CSS vendor prefixes</li>
+</ul>
+<h3>Backend Technologies (Desktop App)</h3>
+<p><strong>Desktop Framework:</strong></p>
+<ul>
+<li><strong>Tauri 2.1.0</strong>: Rust-based desktop application framework</li>
+<li><strong>Rust</strong>: Backend logic and file system operations</li>
+</ul>
+<p><strong>Tauri Commands:</strong></p>
+<ul>
+<li><code>save_pwo_state</code>: Persist application state to file</li>
+<li><code>load_pwo_state</code>: Load saved state from file</li>
+<li><code>delete_pwo_state</code>: Remove saved state</li>
+<li><code>get_save_location</code>: Retrieve file storage path</li>
+</ul>
+<h3>Documentation Tools</h3>
+<p><strong>PDF Generation:</strong></p>
+<ul>
+<li><strong>marked 17.0.1</strong>: Markdown parser</li>
+<li><strong>md-to-pdf 5.2.5</strong>: Markdown to PDF conversion</li>
+<li><strong>Custom build-pdf.sh</strong>: Automated PDF generation script</li>
+</ul>
+<h3>Data Format</h3>
+<p><strong>State Structure:</strong></p>
+<pre><code class="language-javascript">{
+  pwoNumber: string,
+  userName: string,
+  currentPage: number,
+  formData: object,
+  enrolledProviders: array,
+  outreachNotes: array,
+  providerManualNotes: object,
+  unableToVerifyFields: array,
+  visitedPages: array,
+  currentEnrollingProviderIndex: number,
+  currentAddingProviderIndex: number,
+  lastSaved: ISO timestamp,
+  hasOutreach: boolean
+}
+</code></pre>
+<hr>
+<h2>Data Management</h2>
+<h3>State Persistence</h3>
+<p><strong>Auto-Save Mechanism:</strong></p>
+<ul>
+<li><strong>Trigger</strong>: Any change to formData, enrolledProviders, outreachNotes, etc.</li>
+<li><strong>Debounce</strong>: 1-second delay to batch rapid changes</li>
+<li><strong>Condition</strong>: Only saves when PWO number exists and not on start/resume pages</li>
+</ul>
+<p><strong>Storage Format:</strong></p>
+<ul>
+<li><strong>Web</strong>: JSON stringified to LocalStorage with key <code>pwo-application-${pwoNumber}</code></li>
+<li><strong>Desktop</strong>: JSON file at <code>PWO_${pwoNumber}/state.json</code></li>
+</ul>
+<h3>Enrolled Providers Tracking</h3>
+<p><strong>Provider Record Structure:</strong></p>
+<pre><code class="language-javascript">{
+  providerName: string,
+  npi: string,
+  specialty: string,
+  status: string, // &quot;Enrolled&quot; or &quot;Unable to Verify - Requires Outreach&quot;
+  enrollmentType: string, // &quot;New Provider&quot; or &quot;Existing Provider&quot;
+  timestamp: ISO timestamp
+}
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>View all enrolled providers modal</li>
+<li>Delete provider from list</li>
+<li>Status tracking for quality control</li>
+<li>Enrollment type differentiation</li>
+</ul>
+<h3>Outreach Notes System</h3>
+<p><strong>Note Structure:</strong></p>
+<pre><code class="language-javascript">{
+  reason: string,
+  providerInfo: string,
+  timestamp: ISO timestamp,
+  resolved: boolean
+}
+</code></pre>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Add outreach note with reason</li>
+<li>View all notes chronologically</li>
+<li>Mark providers requiring follow-up</li>
+<li>Historical tracking of communication</li>
+</ul>
+<hr>
+<h2>User Experience</h2>
+<h3>Visual Design</h3>
+<p><strong>Brand Identity:</strong></p>
+<ul>
+<li><strong>Primary Color</strong>: Gainwell Teal (#3d5a66)</li>
+<li><strong>Accent Color</strong>: Gainwell Cyan (#00e5b4)</li>
+<li><strong>Dark Variant</strong>: #2a3f4a</li>
+<li><strong>Light Variant</strong>: #527584</li>
+</ul>
+<p><strong>Layout:</strong></p>
+<ul>
+<li><strong>Responsive Grid</strong>: 4x4 tile layout on landing page</li>
+<li><strong>Form Pages</strong>: Single-column layout with sidebar navigation</li>
+<li><strong>Progress Indicator</strong>: Visual step counter with completion status</li>
+<li><strong>Modal Dialogs</strong>: Confirmation, alerts, and information modals</li>
+</ul>
+<h3>Navigation Features</h3>
+<p><strong>Navigation Controls:</strong></p>
+<ul>
+<li><strong>Next Button</strong>: Advances to next step (with validation)</li>
+<li><strong>Back Button</strong>: Returns to previous step</li>
+<li><strong>Progress Bar</strong>: Shows current position in workflow</li>
+<li><strong>Breadcrumbs</strong>: Visual step indicator</li>
+</ul>
+<p><strong>Navigation State:</strong></p>
+<ul>
+<li><strong>Visited Pages</strong>: Tracks completed steps</li>
+<li><strong>Current Page</strong>: Highlights active step</li>
+<li><strong>Disabled Pages</strong>: Prevents skipping required steps</li>
+</ul>
+<h3>Accessibility</h3>
+<p><strong>Features:</strong></p>
+<ul>
+<li><strong>Keyboard Navigation</strong>: Full keyboard support</li>
+<li><strong>Focus Management</strong>: Clear focus indicators</li>
+<li><strong>Color Contrast</strong>: WCAG compliant color ratios</li>
+<li><strong>Responsive Text</strong>: Scales appropriately on all devices</li>
+<li><strong>Alt Text</strong>: Images include descriptive alt attributes</li>
+</ul>
+<h3>Error Handling</h3>
+<p><strong>Validation:</strong></p>
+<ul>
+<li><strong>Required Fields</strong>: Highlighted when missing</li>
+<li><strong>Format Validation</strong>: Email, NPI, phone number formats</li>
+<li><strong>Confirmation Dialogs</strong>: Prevent accidental data loss</li>
+<li><strong>Alert Messages</strong>: Clear error descriptions</li>
+</ul>
+<hr>
+<h2>Installation &amp; Deployment</h2>
+<h3>Web Application Deployment</h3>
+<p><strong>Development:</strong></p>
+<pre><code class="language-bash">npm install
+npm run dev
+</code></pre>
+<p><strong>Production Build:</strong></p>
+<pre><code class="language-bash">npm run build
+</code></pre>
+<p><strong>Deployment:</strong></p>
+<ul>
+<li>Build outputs to <code>dist/</code> directory</li>
+<li>Deploy to any static web hosting</li>
+<li>No server-side requirements</li>
+</ul>
+<h3>Desktop Application Build</h3>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li>Node.js (latest LTS)</li>
+<li>Rust (latest stable)</li>
+<li>Platform-specific dependencies:<ul>
+<li><strong>Windows</strong>: WebView2</li>
+<li><strong>macOS</strong>: Xcode Command Line Tools</li>
+<li><strong>Linux</strong>: webkit2gtk-4.1, build-essential, etc.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Build Process:</strong></p>
+<pre><code class="language-bash">cd tauri-app
+npm install
+npm run build
+</code></pre>
+<p><strong>Build Outputs:</strong></p>
+<ul>
+<li><strong>Windows</strong>: <code>.msi</code> or <code>.exe</code> installers in <code>src-tauri/target/release/bundle/</code></li>
+<li><strong>macOS</strong>: <code>.dmg</code> in <code>src-tauri/target/release/bundle/dmg/</code></li>
+<li><strong>Linux</strong>: <code>.deb</code>, <code>.rpm</code>, or <code>.AppImage</code> in respective bundle folders</li>
+</ul>
+<p><strong>Distribution:</strong></p>
+<ul>
+<li>Users install via platform-specific installer</li>
+<li>No dependencies required on user machines</li>
+<li>Auto-updates can be configured via Tauri</li>
+</ul>
+<hr>
+<h2>Future Roadmap</h2>
+<h3>Planned Enhancements</h3>
+<p><strong>Additional Application Types:</strong></p>
+<ul>
+<li>Currently: Only Full Group Change Application (FD23)</li>
+<li><strong>Coming Soon</strong>: 15 additional application types</li>
+<li>Grid layout supports 4x4 (16 total applications)</li>
+</ul>
+<p><strong>Feature Enhancements:</strong></p>
+<ul>
+<li><strong>Advanced Search</strong>: Search providers by name, NPI, status</li>
+<li><strong>Batch Operations</strong>: Process multiple PWOs simultaneously</li>
+<li><strong>Reporting</strong>: Generate completion reports and metrics</li>
+<li><strong>Export Functionality</strong>: Export provider data to CSV/Excel</li>
+<li><strong>Integration</strong>: Direct CICS/SNOW integration (reduce manual steps)</li>
+<li><strong>Audit Trail</strong>: Comprehensive logging of all actions</li>
+<li><strong>User Roles</strong>: Multi-user support with permissions</li>
+</ul>
+<p><strong>Technical Improvements:</strong></p>
+<ul>
+<li><strong>Cloud Sync</strong>: Sync state across devices (desktop + web)</li>
+<li><strong>Offline Mode</strong>: Full offline capability for desktop app</li>
+<li><strong>Performance</strong>: Optimize large provider lists (100+ providers)</li>
+<li><strong>Testing</strong>: Comprehensive automated test suite</li>
+<li><strong>Documentation</strong>: Interactive help system and video tutorials</li>
+</ul>
+<h3>Scalability Considerations</h3>
+<p><strong>Current Capacity:</strong></p>
+<ul>
+<li>Tested with up to 50 providers per PWO</li>
+<li>Handles unlimited PWOs (desktop version)</li>
+<li>Single-user focused</li>
+</ul>
+<p><strong>Future Scaling:</strong></p>
+<ul>
+<li>Multi-user concurrent editing</li>
+<li>Cloud-based state management</li>
+<li>Real-time collaboration features</li>
+<li>Advanced caching strategies</li>
+<li>Database backend (optional)</li>
+</ul>
+<hr>
+<h2>Support &amp; Resources</h2>
+<h3>Documentation Files</h3>
+<ul>
+<li><strong>FLOW_MAPPING.md</strong>: Detailed workflow and page index</li>
+<li><strong>README.md</strong> (tauri-app): Desktop application setup</li>
+<li><strong>WINDOWS_QUICKSTART.md</strong>: Windows-specific installation guide</li>
+</ul>
+<h3>Reference Materials</h3>
+<ul>
+<li><strong>2025LegalQuickGuide.pdf</strong>: Legal compliance reference</li>
+<li><strong>ProviderTypesSpecialties.pdf</strong>: Provider classification guide</li>
+</ul>
+<h3>Technical Support</h3>
+<p>For issues or questions:</p>
+<ol>
+<li>Check embedded documentation in application</li>
+<li>Review FLOW_MAPPING.md for workflow clarification</li>
+<li>Consult reference PDFs for provider data</li>
+<li>Contact Gainwell IT support for technical issues</li>
+</ol>
+<hr>
+<h2>Appendix: File Structure</h2>
+<pre><code>GroupChangeWalkthrough/
+├── index.html                      # Landing portal
+├── walkthrough.html                # Main web application
+├── APP_OVERVIEW.md                 # This document
+├── FLOW_MAPPING.md                 # Workflow documentation
+├── package.json                    # Web app dependencies
+├── build-pdf.sh                    # PDF generation script
+├── convert.js                      # Markdown to PDF converter
+├── images/                         # Reference screenshots
+│   ├── logo.png
+│   ├── groupchange_application.jpg
+│   ├── question6.jpg
+│   └── ... (30+ reference images)
+├── 2025LegalQuickGuide.pdf
+├── ProviderTypesSpecialties.pdf
+└── tauri-app/                      # Desktop application
+    ├── src/
+    │   ├── index.html              # Desktop app main page
+    │   └── images/                 # Image assets
+    ├── src-tauri/
+    │   ├── src/
+    │   │   ├── lib.rs              # Tauri commands
+    │   │   └── main.rs             # App entry point
+    │   ├── Cargo.toml              # Rust dependencies
+    │   └── tauri.conf.json         # Tauri configuration
+    ├── package.json                # Desktop app dependencies
+    └── README.md                   # Desktop app documentation
+</code></pre>
+<hr>
+<h2>Conclusion</h2>
+<p>The Group Change Walkthrough Application represents a significant advancement in provider enrollment processing for Gainwell Technologies. By combining intuitive guided workflows, robust state management, and flexible platform support, it empowers enrollment specialists to process complex group change applications efficiently and accurately.</p>
+<p><strong>Key Strengths:</strong></p>
+<ul>
+<li>Reduces processing time through guided workflow</li>
+<li>Minimizes errors via built-in validation</li>
+<li>Supports multiple providers in single session</li>
+<li>Provides persistent state across sessions</li>
+<li>Offers flexible deployment (web + desktop)</li>
+</ul>
+<p><strong>Impact:</strong></p>
+<ul>
+<li>Improved accuracy in provider enrollment</li>
+<li>Faster processing of FD23 applications</li>
+<li>Better tracking of outreach requirements</li>
+<li>Enhanced user experience for specialists</li>
+<li>Scalable foundation for additional application types</li>
+</ul>
+<hr>
+<p><strong>Document Version:</strong> 1.0
+<strong>Last Updated:</strong> December 2024
+<strong>Maintained By:</strong> Gainwell Technologies
+<strong>Application Version:</strong> 1.0.0</p>
+<hr>
+<p><em>For technical questions or feature requests, please contact the Gainwell Provider Enrollment Systems team.</em></p>
+
+</body>
+</html>

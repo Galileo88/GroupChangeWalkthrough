@@ -100,10 +100,12 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         // Extract filename from relative path
         let filename = url.trim_start_matches("./").trim_start_matches("../");
 
-        // Get the resource path
+        // Get the resource path - bundled resources from ../resources/*.pdf
+        // will be in the resources subdirectory of the resource directory
         let resource_path = app.path()
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?
+            .join("resources")  // PDFs are bundled in the resources subdirectory
             .join(filename);
 
         // Convert to string

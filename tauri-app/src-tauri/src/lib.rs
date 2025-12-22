@@ -95,8 +95,25 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     use tauri_plugin_shell::ShellExt;
 
+    // Check if this is a relative path to a bundled resource (PDF)
+    let resolved_url = if url.starts_with("./") || url.starts_with("../") {
+        // Extract filename from relative path
+        let filename = url.trim_start_matches("./").trim_start_matches("../");
+
+        // Get the resource path
+        let resource_path = app.path()
+            .resource_dir()
+            .map_err(|e| format!("Failed to get resource directory: {}", e))?
+            .join(filename);
+
+        // Convert to string
+        resource_path.to_string_lossy().to_string()
+    } else {
+        url
+    };
+
     app.shell()
-        .open(url, None)
+        .open(resolved_url, None)
         .map_err(|e| format!("Failed to open URL: {}", e))
 }
 

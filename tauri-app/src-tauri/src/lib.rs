@@ -114,39 +114,28 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         println!("PDF exists: {}", pdf_path.exists());
 
         if !pdf_path.exists() {
-            // List what's actually in the resource directory
-            if let Ok(entries) = std::fs::read_dir(&resource_dir) {
-                println!("Contents of resource directory:");
-                for entry in entries.flatten() {
-                    println!("  - {}", entry.path().display());
-                }
-            }
-
-            // Check resources subdirectory
-            let resources_subdir = resource_dir.join("resources");
-            if resources_subdir.exists() {
-                if let Ok(entries) = std::fs::read_dir(&resources_subdir) {
-                    println!("Contents of resources subdirectory:");
-                    for entry in entries.flatten() {
-                        println!("  - {}", entry.path().display());
-                    }
-                }
-            }
-
             return Err(format!("PDF not found at: {}", pdf_path.display()));
         }
 
-        pdf_path.to_string_lossy().to_string()
+        // Try to open with shell instead of opener for better reliability
+        let path_str = pdf_path.to_string_lossy().to_string();
+
+        // Use tauri shell plugin which is more reliable for local files
+        use tauri_plugin_shell::ShellExt;
+        return app.shell()
+            .open(&path_str, None)
+            .map_err(|e| format!("Failed to open PDF: {}", e))
+            .map(|_| ());
     } else if url.starts_with("http://") || url.starts_with("https://") {
-        // External URL - use as-is
-        url
+        // External URL - open with default browser
+        use tauri_plugin_shell::ShellExt;
+        return app.shell()
+            .open(&url, None)
+            .map_err(|e| format!("Failed to open URL: {}", e))
+            .map(|_| ());
     } else {
         return Err(format!("Unsupported URL format: {}", url));
-    };
-
-    app.opener()
-        .open_url(resolved_url, None::<String>)
-        .map_err(|e| format!("Failed to open URL: {}", e))
+    }
 }
 
 #[tauri::command]

@@ -95,77 +95,19 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     use tauri_plugin_opener::OpenerExt;
 
-    // Resolve local PDF paths to absolute filesystem paths
-    if url.starts_with("assets/") && url.ends_with(".pdf") {
-        // Extract just the filename
-        let filename = url.trim_start_matches("assets/");
-
-        // Get the resource directory
+    // Handle PDF paths - they're bundled with frontend in src/
+    if url.starts_with("./") && url.ends_with(".pdf") {
+        // Get the resource directory and go up to find the src directory
         let resource_dir = app.path()
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        // Try multiple possible locations for the bundled PDFs
-        let possible_paths = vec![
-            resource_dir.join("resources").join(filename),  // resources subdirectory
-            resource_dir.join(filename),                     // directly in resource_dir
-            // Frontend assets - PDFs bundled with src
-            resource_dir.parent()
-                .and_then(|p| p.parent())
-                .map(|p| p.join("assets").join(filename))
-                .unwrap_or_default(),
-        ];
+        // PDF is in the same directory as the frontend (src/)
+        let pdf_path = resource_dir.join(url.trim_start_matches("./"));
 
-        // Find the PDF in one of the possible locations
-        let pdf_path = match possible_paths.iter().find(|p| p.exists()) {
-            Some(path) => path,
-            None => {
-                // Show detailed error with all paths checked
-                let mut error_msg = format!("PDF '{}' not found.\n\nChecked:\n", filename);
-                for path in &possible_paths {
-                    error_msg.push_str(&format!("  {}: {}\n",
-                        path.display(),
-                        if path.exists() { "EXISTS" } else { "NOT FOUND" }
-                    ));
-                }
-                error_msg.push_str(&format!("\nResource directory: {}\n\nContents:\n", resource_dir.display()));
-                if let Ok(entries) = std::fs::read_dir(&resource_dir) {
-                    for entry in entries.flatten() {
-                        error_msg.push_str(&format!("  {}\n", entry.file_name().to_string_lossy()));
-                    }
-                } else {
-                    error_msg.push_str("  (Could not read directory)\n");
-                }
-
-                // Check what's IN the resources subdirectory
-                let resources_subdir = resource_dir.join("resources");
-                error_msg.push_str(&format!("\nResources subdirectory: {}\n", resources_subdir.display()));
-                if resources_subdir.exists() {
-                    if let Ok(entries) = std::fs::read_dir(&resources_subdir) {
-                        let items: Vec<_> = entries.flatten().collect();
-                        if items.is_empty() {
-                            error_msg.push_str("  (EMPTY - Files not bundled!)\n");
-                        } else {
-                            error_msg.push_str("Contents:\n");
-                            for entry in items {
-                                error_msg.push_str(&format!("  {}\n", entry.file_name().to_string_lossy()));
-                            }
-                        }
-                    }
-                } else {
-                    error_msg.push_str("  (Does not exist)\n");
-                }
-
-                // Show dialog with detailed info
-                use tauri_plugin_dialog::DialogExt;
-                app.dialog()
-                    .message(&error_msg)
-                    .title("PDF Not Found - Debug Info")
-                    .blocking_show();
-
-                return Err(format!("PDF not found: {}", filename));
-            }
-        };
+        if !pdf_path.exists() {
+            return Err(format!("PDF not found: {}", pdf_path.display()));
+        }
 
         // Use opener plugin's open_path for local files
         return app.opener()

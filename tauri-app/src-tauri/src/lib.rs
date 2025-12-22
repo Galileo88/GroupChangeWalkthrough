@@ -105,17 +105,43 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
             .resource_dir()
             .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
-        println!("Resource directory: {}", resource_dir.display());
+        // Try multiple possible locations for the bundled PDFs
+        let possible_paths = vec![
+            resource_dir.join("resources").join(filename),  // resources subdirectory
+            resource_dir.join(filename),                     // directly in resource_dir
+        ];
 
-        // The PDFs are bundled from ../resources/*.pdf, so they'll be in resources/ subdirectory
-        let pdf_path = resource_dir.join("resources").join(filename);
+        // Find the PDF in one of the possible locations
+        let pdf_path = match possible_paths.iter().find(|p| p.exists()) {
+            Some(path) => path,
+            None => {
+                // Show detailed error with all paths checked
+                let mut error_msg = format!("PDF '{}' not found.\n\nChecked:\n", filename);
+                for path in &possible_paths {
+                    error_msg.push_str(&format!("  {}: {}\n",
+                        path.display(),
+                        if path.exists() { "EXISTS" } else { "NOT FOUND" }
+                    ));
+                }
+                error_msg.push_str(&format!("\nResource directory: {}\n\nContents:\n", resource_dir.display()));
+                if let Ok(entries) = std::fs::read_dir(&resource_dir) {
+                    for entry in entries.flatten() {
+                        error_msg.push_str(&format!("  {}\n", entry.file_name().to_string_lossy()));
+                    }
+                } else {
+                    error_msg.push_str("  (Could not read directory)\n");
+                }
 
-        println!("Looking for PDF at: {}", pdf_path.display());
-        println!("PDF exists: {}", pdf_path.exists());
+                // Show dialog with detailed info
+                use tauri_plugin_dialog::DialogExt;
+                app.dialog()
+                    .message(&error_msg)
+                    .title("PDF Not Found - Debug Info")
+                    .blocking_show();
 
-        if !pdf_path.exists() {
-            return Err(format!("PDF not found at: {}", pdf_path.display()));
-        }
+                return Err(format!("PDF not found: {}", filename));
+            }
+        };
 
         // Use opener plugin's open_path for local files
         return app.opener()

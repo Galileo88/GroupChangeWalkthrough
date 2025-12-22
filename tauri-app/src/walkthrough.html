@@ -2285,6 +2285,22 @@
         }
 
         if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'No') {
+          // Check if this is a duplicate provider (already enrolled AND already in group)
+          if (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
+            // Add rejection note
+            const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
+            const duplicateNote = `[${stepInfo}] Rejected as a duplicate - provider is already in the group`;
+            setOutreachNotes(prev => [...prev, duplicateNote]);
+
+            // Navigate to duplicate rejection completion page
+            const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+            if (completionIndex !== -1) {
+              setCurrentPage(completionIndex);
+              setVisitedPages(prev => new Set([...prev, completionIndex]));
+            }
+            return;
+          }
+
           if (currentEnrollingProviderIndex !== null) {
             setEnrolledProviders(prev => {
               const updated = [...prev];

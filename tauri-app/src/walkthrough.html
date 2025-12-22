@@ -15,8 +15,8 @@
   <!-- PDF Modal (Full Screen) -->
   <div id="pdf-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000;">
     <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
-      <div style="padding: 16px 24px; border-bottom: 2px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, #f8f9fa, #e9ecef); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h2 id="pdf-modal-title" style="margin: 0; font-size: 18px; font-weight: 700; color: #2c3e50;">PDF Viewer</h2>
+      <div style="padding: 16px 24px; border-bottom: 2px solid #2a3f4a; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to right, #3d5a66, #2a3f4a); box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <h2 id="pdf-modal-title" style="margin: 0; font-size: 18px; font-weight: 700; color: white;">PDF Viewer</h2>
         <button onclick="closePdfModal()" style="background: #dc3545; color: white; border: none; font-size: 16px; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 6px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);" onmouseover="this.style.background='#c82333'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.4)'" onmouseout="this.style.background='#dc3545'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.3)'">✕ Close</button>
       </div>
       <iframe id="pdf-iframe" style="flex: 1; border: none; width: 100%; height: 100%;"></iframe>

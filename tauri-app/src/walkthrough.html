@@ -12,8 +12,51 @@
 <body>
   <div id="root"></div>
 
+  <!-- PDF Modal (Full Screen) -->
+  <div id="pdf-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000;">
+    <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
+      <div style="padding: 12px 16px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; background: #f5f5f5;">
+        <h2 id="pdf-modal-title" style="margin: 0; font-size: 16px; font-weight: 600;">PDF Viewer</h2>
+        <button onclick="closePdfModal()" style="background: #e5e5e5; border: none; font-size: 20px; cursor: pointer; padding: 4px 12px; border-radius: 4px; hover: background: #d5d5d5;">&times; Close</button>
+      </div>
+      <iframe id="pdf-iframe" style="flex: 1; border: none; width: 100%; height: 100%;"></iframe>
+    </div>
+  </div>
+
   <script type="text/babel">
     const { useState } = React;
+
+    // ============================================================
+    // PDF MODAL FUNCTIONS
+    // ============================================================
+
+    window.openPdfModal = (pdfUrl, title) => {
+      const modal = document.getElementById('pdf-modal');
+      const iframe = document.getElementById('pdf-iframe');
+      const titleEl = document.getElementById('pdf-modal-title');
+
+      iframe.src = pdfUrl;
+      titleEl.textContent = title || 'PDF Viewer';
+      modal.style.display = 'block';
+    };
+
+    window.closePdfModal = () => {
+      const modal = document.getElementById('pdf-modal');
+      const iframe = document.getElementById('pdf-iframe');
+
+      modal.style.display = 'none';
+      iframe.src = '';
+    };
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('pdf-modal');
+        if (modal.style.display === 'block') {
+          closePdfModal();
+        }
+      }
+    });
 
     // ============================================================
     // ICON COMPONENTS
@@ -303,16 +346,21 @@
       };
 
       // Helper function to open external URLs and PDFs
-      const openExternalUrl = async (url) => {
+      const openExternalUrl = async (url, title = 'PDF Viewer') => {
         if (!url) return;
 
         try {
+          // Check if it's a PDF - open in modal
+          if (url.endsWith('.pdf')) {
+            window.openPdfModal(url, title);
+            return;
+          }
+
+          // For non-PDF URLs, open externally
           if (tauriInvoke) {
-            // Use Tauri's open_url command which handles path resolution
             console.log('Opening URL with Tauri:', url);
             await tauriInvoke('open_url', { url });
           } else {
-            // Fallback to window.open for web version
             window.open(url, '_blank', 'noopener,noreferrer');
           }
         } catch (error) {
@@ -3120,7 +3168,7 @@
                       {currentPageData.resources.map((resource, idx) => (
                         <button
                           key={idx}
-                          onClick={() => openExternalUrl(resource.url)}
+                          onClick={() => openExternalUrl(resource.url, resource.label)}
                           className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
                           style={{backgroundColor: 'var(--gainwell-teal)'}}
                           onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}

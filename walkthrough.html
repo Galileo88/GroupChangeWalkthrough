@@ -2244,7 +2244,8 @@
           }
 
           // Find the previous visible page, but don't go below the branch starting page
-          while (prevPage >= minPageIndex && !shouldShowPage(prevPage)) {
+          // Also skip completion pages (they are terminal pages and should not be navigated to via Previous button)
+          while (prevPage >= minPageIndex && (!shouldShowPage(prevPage) || pages[prevPage].isCompletionPage)) {
             prevPage--;
           }
 

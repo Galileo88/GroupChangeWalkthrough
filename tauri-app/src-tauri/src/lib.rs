@@ -109,6 +109,11 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
         let possible_paths = vec![
             resource_dir.join("resources").join(filename),  // resources subdirectory
             resource_dir.join(filename),                     // directly in resource_dir
+            // Frontend assets - PDFs bundled with src
+            resource_dir.parent()
+                .and_then(|p| p.parent())
+                .map(|p| p.join("assets").join(filename))
+                .unwrap_or_default(),
         ];
 
         // Find the PDF in one of the possible locations

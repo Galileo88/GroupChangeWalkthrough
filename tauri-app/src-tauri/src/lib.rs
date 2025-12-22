@@ -96,7 +96,7 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     use tauri_plugin_opener::OpenerExt;
 
     // Resolve local PDF paths to absolute filesystem paths
-    let resolved_url = if url.starts_with("assets/") && url.ends_with(".pdf") {
+    if url.starts_with("assets/") && url.ends_with(".pdf") {
         // Extract just the filename
         let filename = url.trim_start_matches("assets/");
 

@@ -34,8 +34,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "../resources/*.pdf"
-    ]
+    "resources": {
+      "../resources/2025LegalQuickGuide.pdf": "resources/",
+      "../resources/ProviderTypesSpecialties.pdf": "resources/",
+      "../resources/FLOW_MAPPING.pdf": "resources/"
+    }
   }
 }

@@ -3882,7 +3882,7 @@
                     {currentPage === 0 ? (
                       <a
                         href="./index.html"
-                        className="flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all"
+                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all min-w-[120px]"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Go to Home
@@ -3894,7 +3894,7 @@
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                         }
-                        className={`flex items-center gap-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all min-w-[120px] ${
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                             ? 'text-slate-400 cursor-not-allowed bg-slate-100'
@@ -3908,7 +3908,7 @@
 
                     <button
                       onClick={() => setShowViewNotesModal(true)}
-                      className="relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg"
+                      className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg min-w-[160px]"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -3924,7 +3924,7 @@
                     {enrolledProviders.length > 0 && (
                       <button
                         onClick={() => setShowEnrolledProvidersModal(true)}
-                        className="relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg"
+                        className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[130px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -3943,7 +3943,7 @@
                           : (isLastPage ? handleSubmit : handleNext)
                       }
                       disabled={!canProceed}
-                      className={`btn-primary flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 ${
+                      className={`btn-primary flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 min-w-[180px] ${
                         canProceed
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'

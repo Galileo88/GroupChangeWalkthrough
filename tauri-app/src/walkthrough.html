@@ -2465,7 +2465,8 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const filename = `provider-enrollment-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
+        const filename = `PWO${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
         await saveFile(textContent, filename);
       };
 

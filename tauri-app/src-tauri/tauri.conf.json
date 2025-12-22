@@ -35,8 +35,7 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "../../2025LegalQuickGuide.pdf",
-      "../../ProviderTypesSpecialties.pdf"
+      "../resources/*.pdf"
     ]
   }
 }

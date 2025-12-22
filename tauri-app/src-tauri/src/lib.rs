@@ -92,6 +92,15 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    use tauri_plugin_shell::ShellExt;
+
+    app.shell()
+        .open(url, None)
+        .map_err(|e| format!("Failed to open URL: {}", e))
+}
+
+#[tauri::command]
 async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filename: String) -> Result<String, String> {
     // Show save file dialog
     let file_path = app.dialog()
@@ -126,6 +135,7 @@ pub fn run() {
             load_pwo_state,
             delete_pwo_state,
             get_save_location,
+            open_url,
             save_file_dialog
         ])
         .run(tauri::generate_context!())

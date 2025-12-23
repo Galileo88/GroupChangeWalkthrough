@@ -1950,6 +1950,9 @@
 
         // Handler for next-provider-ready-check: Save provider and determine next action
         if (currentPageData.id === 'next-provider-ready-check') {
+          console.log('In next-provider-ready-check handler. formData:', formData.nextProviderFinalVerificationConfirm, formData.nextProviderAlreadyEnrolled, formData.nextProviderInGroup);
+          console.log('Current providers:', enrolledProviders.length);
+
           // If Question 20 not answered, navigate to outreach completion
           if (formData.nextProviderFinalVerificationConfirm === 'No') {
             const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
@@ -2124,12 +2127,15 @@
 
                 // Navigate to questions-21-23 after saving final provider
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
+                console.log('Navigating to questions-21-23. Index:', questions2123Index, 'Total pages:', pages.length);
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
                   setTimeout(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }, 100);
+                } else {
+                  console.error('questions-21-23 page not found in pages array!');
                 }
                 return;
               }
@@ -3322,6 +3328,25 @@
 
       const currentPageData = pages[currentPage];
       const isLastPage = currentPage === pages.length - 1;
+
+      // Safety check: if currentPageData is undefined, something went wrong with navigation
+      if (!currentPageData) {
+        console.error('currentPageData is undefined! currentPage:', currentPage, 'pages.length:', pages.length);
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl p-8 shadow-xl max-w-md">
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Navigation Error</h2>
+              <p className="text-slate-700 mb-4">Something went wrong with page navigation. Please refresh and try again.</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Refresh Page
+              </button>
+            </div>
+          </div>
+        );
+      }
 
       const canProceed = isPageValid();
 

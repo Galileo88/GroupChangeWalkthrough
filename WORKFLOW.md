@@ -231,74 +231,207 @@ These pages display embedded documentation and provide access to reference mater
        └─────────┬─────────┘
                  │
                  ▼
-      ┌──────────────────────┐
-      │  Steps 2-8           │
-      │  (Verification)      │
-      └──────────┬───────────┘
-                 │
-                 ▼
-      ┌──────────────────────────────┐
-      │  Step 9: Provider Type       │
-      │  AUTOMATIC BRANCH POINT      │
-      │  (Based on enrollment status)│
-      └──────┬──────────────┬────────┘
-             │              │
-   [New Provider]    [Existing Provider]
-             │              │
-             │              │ [If all providers
-             │              │  already enrolled]
-             │              │
-             ▼              ▼
-   ┌─────────────────┐  ┌────────────────────┐
-   │ Steps 24-36     │  │ Steps 11-23        │
-   │ New Provider    │  │ Existing Provider  │
-   │ Enrollment      │  │ Group Addition     │
-   └────────┬────────┘  └─────────┬──────────┘
-            │                     │
-            ▼                     │
-   ┌─────────────────────────┐   │
-   │ Step 37: Additional     │   │
-   │ New Providers?          │   │
-   └──────┬──────────┬───────┘   │
-          │          │            │
-     [Yes]│      [No]│            │
-          │          │            │
-    [Loop │          └────────────┤
-     Back]│                       │
-          │                       ▼
-          │            ┌──────────────────────┐
-          │            │ Steps 11-23          │
-          │            │ Existing Provider    │
-          │            │ (Add to Group)       │
-          │            └──────────┬───────────┘
-          │                       │
-          │                       ▼
-          │            ┌──────────────────────┐
-          │            │ Step 23: Additional  │
-          │            │ Existing Providers?  │
-          │            └──────┬───────┬───────┘
-          │                   │       │
-          │              [Yes]│   [No]│
-          │                   │       │
-          │             [Loop │       │
-          │              Back]│       │
-          │                   │       │
-          └───────────────────┘       │
-                                      ▼
-                           ┌──────────────────┐
-                           │ Final Completion │
-                           │ • Export Data    │
-                           │ • Review Summary │
-                           └──────────────────┘
+┌──────────────────────────────────────┐
+│  Steps 2-6: Initial Verification    │
+│  • Group Practice Application        │
+│  • Question 6 (Practice Address)     │
+│  • Pay To/Mail To Info               │
+│  • Questions 9-17 (Contact Info)     │
+│  • Email to SNOW                     │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  Step 7: Question 20                 │
+│  PROVIDER VERIFICATION LOOP          │
+│                                      │
+│  For EACH provider:                  │
+│  • Is provider already enrolled?     │
+│    - No  → Status: Ready to Enroll   │
+│    - Yes → Is provider in group?     │
+│      - No  → Status: Ready to Add    │
+│      - Yes → DUPLICATE REJECTION     │
+│  • Verify SSN, DOB, NPI, Licenses    │
+│  • Check DEA, Effective Dates        │
+│                                      │
+│  [More providers?]                   │
+│  • Yes → Loop back (verify next)     │
+│  • No  → Continue to Step 8          │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  Step 8: Questions 21-23 & 25        │
+│  • Verify Questions 21 a-e           │
+│  • Verify Question 22                │
+│  • Verify Question 23                │
+│  • Verify Question 25 (Signature)    │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  AUTOMATIC ROUTING LOGIC             │
+│  (Based on enrolledProviders array)  │
+│                                      │
+│  Check provider statuses:            │
+│  1. Any "Ready to Enroll"?           │
+│     → New Provider Workflow          │
+│  2. Else, any "Ready to Add"?        │
+│     → Existing Provider Workflow     │
+└────┬─────────────────────┬───────────┘
+     │                     │
+     │[New Provider]  [Existing Provider]
+     │                     │
+     ▼                     │
+┌──────────────────────┐   │
+│ Steps 24-36:         │   │
+│ NEW PROVIDER         │   │
+│ ENROLLMENT           │   │
+│                      │   │
+│ Process ONE provider │   │
+│ at a time from       │   │
+│ enrolledProviders    │   │
+│ array with status:   │   │
+│ "Ready to Enroll"    │   │
+│                      │   │
+│ • Create Enrollment  │   │
+│ • Fill Provider Info │   │
+│ • Check Specialties  │   │
+│ • Fill All Tabs:     │   │
+│   - Address          │   │
+│   - Payment/Mailing  │   │
+│   - Provider Info    │   │
+│   - NPI              │   │
+│   - Specialty        │   │
+│   - Claim Types      │   │
+│   - License/DEA      │   │
+│ • Enroll on Mainframe│   │
+└──────────┬───────────┘   │
+           │               │
+           ▼               │
+┌──────────────────────┐   │
+│ Step 37:             │   │
+│ More NEW providers   │   │
+│ to enroll?           │   │
+└───┬──────────┬───────┘   │
+    │          │           │
+[Yes]│      [No]│           │
+    │          │           │
+    │   [Mark current as   │
+    │    "Enrolled",       │
+    │    process next      │
+    │    "Ready to Enroll" │
+    │    provider]         │
+    │          │           │
+    │          └───────────┤
+    │                      │
+    └─[Loop back           │
+       to Step 24]         │
+                           ▼
+              ┌────────────────────────┐
+              │ Steps 11-23:           │
+              │ EXISTING PROVIDER      │
+              │ ADD TO GROUP           │
+              │                        │
+              │ Process ONE provider   │
+              │ at a time from         │
+              │ enrolledProviders with │
+              │ status: "Ready to Add" │
+              │ or "Enrolled - Ready   │
+              │ to be Added to Group"  │
+              │                        │
+              │ • Open CICS            │
+              │ • Add to Group         │
+              │ • Verify Info          │
+              │ • Close Enrollment     │
+              │ • Finish Group Change  │
+              │ • Create Checklist     │
+              │ • Approve Change       │
+              │ • Letter Generation:   │
+              │   - Open Letter Task   │
+              │   - Select Letter      │
+              │   - Add to Letter      │
+              │   - Finish Letter      │
+              │   - Close Letter Task  │
+              └────────────┬───────────┘
+                           │
+                           ▼
+              ┌────────────────────────┐
+              │ Step 23:               │
+              │ More EXISTING providers│
+              │ to add to group?       │
+              └───┬────────────┬───────┘
+                  │            │
+             [Yes]│        [No]│
+                  │            │
+           [Mark current as    │
+            "Complete",        │
+            process next       │
+            "Ready to Add"]    │
+                  │            │
+                  │            │
+           [Loop back          │
+            to Step 11]        │
+                               │
+                               ▼
+                    ┌──────────────────┐
+                    │ Final Completion │
+                    │ • Export Data    │
+                    │ • Review Summary │
+                    └──────────────────┘
 ```
+
+### How The Workflow Actually Works
+
+**Key Concept**: The application uses a **provider verification loop** followed by **batch processing** of providers based on their status.
+
+#### Phase 1: Provider Verification (Question 20 Loop)
+At **Step 7 (Question 20)**, you verify EACH provider one at a time:
+1. Answer: "Is provider already enrolled?" (Yes/No)
+2. If Yes, answer: "Is provider in group?" (Yes/No)
+3. Verify provider credentials (SSN, DOB, NPI, licenses, DEA)
+4. Click "Next Provider" button
+5. System asks: "Are there more providers to verify?"
+   - **Yes** → Saves current provider to `enrolledProviders` array with appropriate status, clears form, loops back to Question 20
+   - **No** → Saves final provider, proceeds to Questions 21-23
+
+**Provider Statuses Assigned**:
+- `providerAlreadyEnrolled = 'No'` → Status: **"Verified - Ready to Enroll"**
+- `providerAlreadyEnrolled = 'Yes'` AND `providerInGroup = 'No'` → Status: **"Verified - Ready to Add to Group"**
+- `providerAlreadyEnrolled = 'Yes'` AND `providerInGroup = 'Yes'` → **Duplicate Rejection**
+
+#### Phase 2: Automatic Routing (After Questions 21-23)
+After completing Questions 21-23, the system examines the `enrolledProviders` array and automatically routes to the appropriate workflow:
+
+**Priority 1 - New Provider Workflow** (if applicable):
+- Triggered if ANY provider has status "Verified - Ready to Enroll"
+- Routes to Step 24 (create-enrollment)
+- Processes EACH new provider sequentially through enrollment steps
+- At Step 37, "More providers?" determines if another new provider needs enrollment
+  - **Yes** → Process next "Ready to Enroll" provider, loop to Step 24
+  - **No** → Mark all as "Enrolled - Ready to be Added to Group", transition to Existing Provider Workflow
+
+**Priority 2 - Existing Provider Workflow** (if applicable):
+- Triggered if providers have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
+- Routes to Step 11 (existing-provider-open-cics)
+- Processes EACH provider sequentially through group addition steps
+- At Step 23, "More providers?" determines if another provider needs to be added
+  - **Yes** → Process next "Ready to Add" provider, loop to Step 11
+  - **No** → Mark all as "Complete", go to Final Completion
+
+#### Phase 3: Sequential Batch Processing
+The workflows process providers from the `enrolledProviders` array ONE AT A TIME:
+- **New Provider Workflow**: Finds next provider with status "Verified - Ready to Enroll", processes through Steps 24-36
+- **Existing Provider Workflow**: Finds next provider with status "Ready to Add" or "Enrolled - Ready to be Added to Group", processes through Steps 11-23
 
 ### Workflow Priority Rules
 
-1. **New Provider First**: If ANY providers need enrollment, new provider workflow executes first
-2. **Complete All New**: All new provider enrollments must be completed before existing provider additions
-3. **Sequential Processing**: One provider at a time through each workflow
-4. **Automatic Transitions**: System automatically transitions from new → existing provider workflows
-5. **No Mixing**: Cannot interleave new and existing provider workflows
+1. **Verification First**: All providers must be verified at Question 20 before any enrollment/group addition begins
+2. **New Provider Priority**: If ANY providers need enrollment, new provider workflow executes first (all new enrollments must complete before group additions)
+3. **Batch Processing**: Providers processed sequentially one at a time, not all at once
+4. **Automatic Transitions**: System automatically transitions from new → existing provider workflows based on enrolledProviders array
+5. **Status-Based Routing**: Routing determined by provider status, not user selection
+6. **No Manual Branching**: Users never manually choose between "New Provider" or "Existing Provider" - the system decides automatically
 
 ---
 

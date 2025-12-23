@@ -313,13 +313,17 @@
       const sunIcon = document.getElementById('sun-icon');
       const moonIcon = document.getElementById('moon-icon');
 
-      if (savedTheme === 'dark') {
+      // Default to dark mode if no theme is saved
+      if (savedTheme === 'light') {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
         html.classList.add('dark');
         sunIcon.style.display = 'block';
         moonIcon.style.display = 'none';
-      } else {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
+        if (!savedTheme) {
+          localStorage.setItem('theme', 'dark');
+        }
       }
     })();
   </script>

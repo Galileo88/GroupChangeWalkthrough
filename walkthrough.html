@@ -2863,9 +2863,18 @@
             }
 
             /* Dark mode text overrides */
-            html.dark .text-slate-700,
-            html.dark .text-slate-800 {
-              color: #e5e7eb !important;
+            html.dark .text-slate-900,
+            html.dark .text-slate-800,
+            html.dark .text-slate-700 {
+              color: #f3f4f6 !important;
+            }
+
+            html.dark .text-slate-600 {
+              color: #d1d5db !important;
+            }
+
+            html.dark .text-slate-500 {
+              color: #9ca3af !important;
             }
 
             html.dark .text-slate-400 {
@@ -2899,6 +2908,31 @@
 
             html.dark .border-indigo-200 {
               border-color: #4b5563 !important;
+            }
+
+            /* Ensure text is dark on light selected backgrounds (light mode) */
+            .bg-cyan-50,
+            .bg-cyan-100,
+            .bg-indigo-50 {
+              color: #1f2937 !important;
+            }
+
+            .bg-cyan-50 *,
+            .bg-cyan-100 *,
+            .bg-indigo-50 * {
+              color: #1f2937 !important;
+            }
+
+            /* Override in dark mode for selected states */
+            html.dark .bg-cyan-50,
+            html.dark .bg-cyan-100 {
+              background-color: #0d9488 !important;
+              color: white !important;
+            }
+
+            html.dark .bg-cyan-50 *,
+            html.dark .bg-cyan-100 * {
+              color: white !important;
             }
 
             * {
@@ -3985,7 +4019,7 @@
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
-                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}) : {}}
+                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-cyan), var(--gainwell-teal))'}) : {}}
                     >
                       {getNextButtonText()}
                       {!isLastPage && <ChevronRight className="w-4 h-4" />}

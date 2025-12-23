@@ -3171,9 +3171,6 @@
 
             html.dark {
               /* Dark mode colors */
-              --gainwell-teal: #e5e7eb;
-              --gainwell-dark: #f3f4f6;
-              --gainwell-light-teal: #d1d5db;
               --bg-color: #111827;
               --card-bg: #1f2937;
               --text-primary: #f9fafb;
@@ -3291,7 +3288,10 @@
             html.dark div[style*="background-color:#e0f2f1"] h4,
             html.dark div[style*="background-color:#e0f2f1"] span,
             html.dark div[style*="backgroundColor:#e0f2f1"] li[style*="color"],
-            html.dark div[style*="backgroundColor:#e0f2f1"] h4[style*="color"] {
+            html.dark div[style*="backgroundColor:#e0f2f1"] h4[style*="color"],
+            html.dark div[style*="backgroundColor:#e0f2f1"] li[style*="var(--gainwell-teal)"],
+            html.dark div[style*="backgroundColor:#e0f2f1"] h4[style*="var(--gainwell-dark)"],
+            html.dark div[style*="backgroundColor:#e0f2f1"] p[style*="var(--gainwell-dark)"] {
               color: #f3f4f6 !important;
             }
 
@@ -4146,7 +4146,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
+                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">

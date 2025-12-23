@@ -3293,6 +3293,17 @@
 
               {/* Form Content */}
               <div className="p-8 space-y-6">
+                {/* Display Image */}
+                {currentPageData.displayImage && (
+                  <div className="mb-6">
+                    <img
+                      src={currentPageData.displayImage}
+                      alt="Reference"
+                      className="w-full rounded-lg border-2 border-slate-200 shadow-md"
+                    />
+                  </div>
+                )}
+
                 {/* Instruction Text */}
                 {getInstructionText() && !currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
@@ -3322,17 +3333,6 @@
                         {currentPageData.nameFormatNote}
                       </p>
                     </div>
-                  </div>
-                )}
-
-                {/* Display Image */}
-                {currentPageData.displayImage && (
-                  <div className="mb-6">
-                    <img
-                      src={currentPageData.displayImage}
-                      alt="Reference"
-                      className="w-full rounded-lg border-2 border-slate-200 shadow-md"
-                    />
                   </div>
                 )}
 

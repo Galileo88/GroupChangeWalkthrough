@@ -3223,6 +3223,31 @@
               border-color: #4b5563 !important;
             }
 
+            /* Ensure text is dark on light selected backgrounds (light mode) */
+            .bg-cyan-50,
+            .bg-cyan-100,
+            .bg-indigo-50 {
+              color: #1f2937 !important;
+            }
+
+            .bg-cyan-50 *,
+            .bg-cyan-100 *,
+            .bg-indigo-50 * {
+              color: #1f2937 !important;
+            }
+
+            /* Override in dark mode for selected states */
+            html.dark .bg-cyan-50,
+            html.dark .bg-cyan-100 {
+              background-color: #0d9488 !important;
+              color: white !important;
+            }
+
+            html.dark .bg-cyan-50 *,
+            html.dark .bg-cyan-100 * {
+              color: white !important;
+            }
+
             * {
               font-family: 'DM Sans', sans-serif;
             }

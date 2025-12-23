@@ -1123,7 +1123,7 @@
           id: 'final-completion',
           title: 'Walkthrough Complete!',
           description: 'ALL PRACTITIONERS HAVE BEEN ENROLLED AND ADDED TO THE GROUP',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
           fields: [],
           instructionText: 'Congratulations! You have successfully completed the group change walkthrough.\n\nAll practitioners have been enrolled and added to the group.\n\nYou can now:\n- Download your notes and answers\n- Start a new application',
           isCompletionPage: true
@@ -1134,7 +1134,7 @@
           id: 'create-enrollment',
           title: 'Create Enrollment in SNOW',
           description: 'Begin the new practitioner enrollment process',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'createEnrollmentComplete',
@@ -1152,10 +1152,10 @@
           id: 'fill-practitioner-info',
           title: 'Fill in practitioner Information',
           description: 'Enter the practitioner details in the enrollment window',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
-              name: 'practitionerInfoComplete',
+              name: 'providerInfoComplete',
               label: 'Complete: Filled in the practitioner information',
               type: 'checkbox',
               required: true,
@@ -1175,7 +1175,7 @@
           id: 'check-group-specialties',
           title: 'Check Group Specialties',
           description: 'Verify the group can accept the practitioner specialty',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'groupSpecialtiesChecked',
@@ -1195,7 +1195,7 @@
           id: 'enrollment-applications-tab',
           title: 'Enrollment Applications Tab',
           description: 'Navigate to the Enrollment Applications tab in SNOW',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'enrollmentTabComplete',
@@ -1212,17 +1212,17 @@
           id: 'verify-enrollment-application',
           title: 'Verify Enrollment Application',
           description: 'Verify and complete the enrollment application information',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
-              name: 'practitionerNameCorrect',
+              name: 'providerNameCorrect',
               label: 'Complete: Check the practitioner\'s name is correct',
               type: 'checkbox',
               required: true,
               validation: (value) => value === true
             },
             {
-              name: 'practitionerTypeCorrect',
+              name: 'providerTypeCorrect',
               label: 'Complete: Check the practitioner type is correct',
               type: 'checkbox',
               required: true,
@@ -1249,10 +1249,10 @@
           id: 'practitioner-address-tab',
           title: 'practitioner Address Tab',
           description: 'Enter the practitioner address information',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
-              name: 'practitionerAddressComplete',
+              name: 'providerAddressComplete',
               label: 'Complete: Enter the practitioner address information',
               type: 'checkbox',
               required: true,
@@ -1266,7 +1266,7 @@
           id: 'payment-mailing-address-tab',
           title: 'Payment Address and Mailing Address Tab',
           description: 'Review payment and mailing address settings',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'paymentMailingAddressComplete',
@@ -1283,10 +1283,10 @@
           id: 'practitioner-information-tab',
           title: 'practitioner Information Tab',
           description: 'Set eligibility dates and Medicare information',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
-              name: 'practitionerInfoTabComplete',
+              name: 'providerInfoTabComplete',
               label: 'Complete: Set eligibility dates and Medicare information',
               type: 'checkbox',
               required: true,
@@ -1300,7 +1300,7 @@
           id: 'npi-tab',
           title: 'NPI Tab',
           description: 'Verify or enter the NPI number',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'npiTabComplete',
@@ -1317,7 +1317,7 @@
           id: 'specialty-tab',
           title: 'Specialty Tab',
           description: 'Set specialty dates for the practitioner',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'specialtyTabComplete',
@@ -1334,7 +1334,7 @@
           id: 'claim-type-tab',
           title: 'Claim Type Tab',
           description: 'Set claim types for the practitioner',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New Practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'claimTypeTabComplete',
@@ -1361,7 +1361,7 @@
           id: 'license-dea-tab',
           title: 'License and DEA Tab',
           description: 'Enter license and DEA information',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'licenseDeaTabComplete',
@@ -1390,7 +1390,7 @@
           id: 'enroll-on-mainframe',
           title: 'Enrolling on Mainframe',
           description: 'Complete the enrollment process on the mainframe',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [
             {
               name: 'enrollOnMainframeComplete',
@@ -1407,7 +1407,7 @@
           id: 'additional-practitioners-check',
           title: 'practitioner Enrollment Status',
           description: 'Automatic practitioner workflow routing',
-          showWhen: { field: 'practitionerEnrollmentType', value: 'New practitioner' },
+          showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [],
           instructionText: '',
           isInformational: true
@@ -1419,7 +1419,7 @@
           showWhen: { field: 'additionalpractitionersNeeded', value: 'Yes' },
           fields: [
             {
-              name: 'nextpractitionerFinalVerificationConfirm',
+              name: 'nextProviderFinalVerificationConfirm',
               label: 'Is question 20 answered on the Group Practice Application?',
               type: 'radio',
               required: true,
@@ -1431,12 +1431,12 @@
               ]
             },
             {
-              name: 'nextpractitionerAlreadyEnrolled',
+              name: 'nextproviderAlreadyEnrolled',
               label: 'Is the practitioner already enrolled?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              showWhen: { field: 'nextpractitionerFinalVerificationConfirm', value: 'Yes' },
+              showWhen: { field: 'nextProviderFinalVerificationConfirm', value: 'Yes' },
               validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'If Yes, this will be noted for the practitioner and you will proceed to the next question.',
@@ -1444,12 +1444,12 @@
               ]
             },
             {
-              name: 'nextpractitionerInGroup',
+              name: 'nextproviderInGroup',
               label: 'Is the practitioner already in the group?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              showWhen: { field: 'nextpractitionerAlreadyEnrolled', value: 'Yes' },
+              showWhen: { field: 'nextproviderAlreadyEnrolled', value: 'Yes' },
               validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'If Yes, you will be given the option to reject this as a duplicate application.',
@@ -1457,41 +1457,41 @@
               ]
             },
             {
-              name: 'nextpractitionerFinalSsnVerified',
+              name: 'nextProviderFinalSsnVerified',
               label: 'SSN - Verify SSN using SOVOS if a Social Security Card is not attached to the application',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true,
               sovosUrl: 'https://taxport.sovos.com/login'
             },
             {
-              name: 'nextpractitionerFinalDexSanctionsCheck',
+              name: 'nextProviderFinalDexSanctionsCheck',
               label: 'DEX and Sanctions in WVT - Check all practitioners being added',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'nextpractitionerFinalDobVerified',
+              name: 'nextProviderFinalDobVerified',
               label: 'DOB - Verify DOB in PECOS (new practitioners may not be in PECOS, so just use their DOB on the application)',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'nextpractitionerFinalNpiVerified',
+              name: 'nextProviderFinalNpiVerified',
               label: 'NPI - Verify in either the WVT or at npiregistry.cms.hhs.gov to ensure the NPI belongs to the practitioner',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true,
               npiRegistryUrl: 'https://npiregistry.cms.hhs.gov'
             },
             {
-              name: 'nextpractitionerFinalLicensesVerified',
+              name: 'nextProviderFinalLicensesVerified',
               label: () => (
                 <>
                   Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification.
@@ -1501,24 +1501,24 @@
               ),
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true,
               licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
             {
-              name: 'nextpractitionerFinalDeaEffectiveDates',
+              name: 'nextProviderFinalDeaEffectiveDates',
               label: 'DEA effective dates - Compare expiration dates and update if newer. Add DEA information for new practitioners if attached',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'nextpractitionerFinalEffectiveDatesChecked',
+              name: 'nextProviderFinalEffectiveDatesChecked',
               label: 'Effective Dates - If no Requested Effective Date is provided, effective date goes one year back from stamped date (as long as license covers it)',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.nextpractitionerFinalVerificationConfirm === 'Yes' && (formData.nextpractitionerAlreadyEnrolled === 'No' || (formData.nextpractitionerAlreadyEnrolled === 'Yes' && formData.nextpractitionerInGroup === 'No')),
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextproviderAlreadyEnrolled === 'No' || (formData.nextproviderAlreadyEnrolled === 'Yes' && formData.nextproviderInGroup === 'No')),
               validation: (value) => value === true
             }
           ]
@@ -1560,16 +1560,16 @@
 
         const enrollmentFields = [
           'createEnrollmentComplete',
-          'practitionerInfoComplete',
+          'providerInfoComplete',
           'groupSpecialtiesChecked',
           'enrollmentTabComplete',
-          'practitionerNameCorrect',
-          'practitionerTypeCorrect',
+          'providerNameCorrect',
+          'providerTypeCorrect',
           'applicationDateAdded',
           'cancelReasonCode',
-          'practitionerAddressComplete',
+          'providerAddressComplete',
           'paymentMailingAddressComplete',
-          'practitionerInfoTabComplete',
+          'providerInfoTabComplete',
           'npiTabComplete',
           'specialtyTabComplete',
           'claimTypeTabComplete',
@@ -1577,12 +1577,12 @@
           'enrollOnMainframeComplete'
         ];
 
-        if (currentEnrollingpractitionerIndex !== null && enrollmentFields.includes(fieldName)) {
+        if (currentEnrollingProviderIndex !== null && enrollmentFields.includes(fieldName)) {
           setEnrolledpractitioners(prev => {
             const updated = [...prev];
-            if (updated[currentEnrollingpractitionerIndex]) {
-              updated[currentEnrollingpractitionerIndex] = {
-                ...updated[currentEnrollingpractitionerIndex],
+            if (updated[currentEnrollingProviderIndex]) {
+              updated[currentEnrollingProviderIndex] = {
+                ...updated[currentEnrollingProviderIndex],
                 [fieldName]: value
               };
             }
@@ -1627,13 +1627,13 @@
 
           // Restore all saved state
           setFormData(savedState.formData);
-          setEnrolledpractitioners(savedState.enrolledpractitioners);
+          setEnrolledpractitioners(savedState.enrolledProviders);
           setOutreachNotes(savedState.outreachNotes);
-          setpractitionerManualNotes(savedState.practitionerManualNotes);
+          setproviderManualNotes(savedState.providerManualNotes);
           setUnableToVerifyFields(new Set(savedState.unableToVerifyFields));
           setVisitedPages(new Set(savedState.visitedPages));
-          setCurrentEnrollingpractitionerIndex(savedState.currentEnrollingpractitionerIndex);
-          setCurrentAddingpractitionerIndex(savedState.currentAddingpractitionerIndex);
+          setCurrentEnrollingProviderIndex(savedState.currentEnrollingProviderIndex);
+          setCurrentAddingProviderIndex(savedState.currentAddingProviderIndex);
 
           // Navigate to the saved page
           setTimeout(() => {
@@ -1646,8 +1646,8 @@
 
         if (currentPageData.id === 'question-20') {
           // Check if this practitioner has already been saved (prevents duplicates when navigating backwards)
-          const expectedpractitionerCount = formData.expectedpractitionerCount || 0;
-          const practitionerAlreadySaved = expectedpractitionerCount > 0 && enrolledpractitioners.length >= expectedpractitionerCount;
+          const expectedProviderCount = formData.expectedProviderCount || 0;
+          const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
 
           const morepractitioners = await showConfirm('Are there more practitioners to verify in this application?');
@@ -1658,13 +1658,13 @@
           // Debug: Log unable to verify check
 
           // Only save the practitioner if it hasn't been saved already
-          if (!practitionerAlreadySaved) {
+          if (!providerAlreadySaved) {
             if (hasUnableToVerify) {
-              const practitionerData = {
+              const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
-                practitionerAlreadyEnrolled: formData.practitionerAlreadyEnrolled,
-                practitionerInGroup: formData.practitionerInGroup,
+                providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
+                providerInGroup: formData.providerInGroup,
                 ssnVerified: formData.ssnVerified,
                 dexSanctionsCheck: formData.dexSanctionsCheck,
                 dobVerified: formData.dobVerified,
@@ -1677,25 +1677,25 @@
               };
 
               setEnrolledpractitioners(prev => {
-                const updatedpractitioners = [...prev, practitionerData];
-                return updatedpractitioners;
+                const updatedProviders = [...prev, providerData];
+                return updatedProviders;
               });
             } else if (morepractitioners) {
-              let practitionerStatus = 'Verified - Ready to Enroll';
-              if (formData.practitionerAlreadyEnrolled === 'Yes') {
-                if (formData.practitionerInGroup === 'Yes') {
-                  practitionerStatus = 'Verified - Already in the Group';
+              let providerStatus = 'Verified - Ready to Enroll';
+              if (formData.providerAlreadyEnrolled === 'Yes') {
+                if (formData.providerInGroup === 'Yes') {
+                  providerStatus = 'Verified - Already in the Group';
                 } else {
-                  practitionerStatus = 'Verified - Ready to Add to Group';
+                  providerStatus = 'Verified - Ready to Add to Group';
                 }
               }
 
 
-              const practitionerData = {
-                status: practitionerStatus,
+              const providerData = {
+                status: providerStatus,
                 question20Answered: formData.question20Answered,
-                practitionerAlreadyEnrolled: formData.practitionerAlreadyEnrolled,
-                practitionerInGroup: formData.practitionerInGroup,
+                providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
+                providerInGroup: formData.providerInGroup,
                 ssnVerified: formData.ssnVerified,
                 dexSanctionsCheck: formData.dexSanctionsCheck,
                 dobVerified: formData.dobVerified,
@@ -1708,8 +1708,8 @@
               };
 
               setEnrolledpractitioners(prev => {
-                const updatedpractitioners = [...prev, practitionerData];
-                return updatedpractitioners;
+                const updatedProviders = [...prev, providerData];
+                return updatedProviders;
               });
             }
           } else {
@@ -1718,8 +1718,8 @@
           if (morepractitioners) {
             const clearedData = { ...formData };
             delete clearedData.question20Answered;
-            delete clearedData.practitionerAlreadyEnrolled;
-            delete clearedData.practitionerInGroup;
+            delete clearedData.providerAlreadyEnrolled;
+            delete clearedData.providerInGroup;
             delete clearedData.ssnVerified;
             delete clearedData.dexSanctionsCheck;
             delete clearedData.dobVerified;
@@ -1731,8 +1731,8 @@
 
             // Account for the practitioner we just saved (state update is async, so use +1 if we saved)
             // +1 for the practitioner just saved (if not already saved), +1 for the next expected practitioner
-            const practitionerJustSaved = !practitionerAlreadySaved ? 1 : 0;
-            clearedData.expectedpractitionerCount = enrolledpractitioners.length + practitionerJustSaved + 1;
+            const practitionerJustSaved = !providerAlreadySaved ? 1 : 0;
+            clearedData.expectedProviderCount = enrolledProviders.length + practitionerJustSaved + 1;
 
 
             setFormData(clearedData);
@@ -1745,13 +1745,13 @@
             return;
           } else {
             // Only save the final practitioner if it hasn't been saved already
-            if (!practitionerAlreadySaved) {
+            if (!providerAlreadySaved) {
               if (hasUnableToVerify) {
-                const practitionerData = {
+                const providerData = {
                   status: 'Unable to Verify - Requires Outreach',
                   question20Answered: formData.question20Answered,
-                  practitionerAlreadyEnrolled: formData.practitionerAlreadyEnrolled,
-                  practitionerInGroup: formData.practitionerInGroup,
+                  providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
+                  providerInGroup: formData.providerInGroup,
                   ssnVerified: formData.ssnVerified,
                   dexSanctionsCheck: formData.dexSanctionsCheck,
                   dobVerified: formData.dobVerified,
@@ -1764,15 +1764,15 @@
                 };
 
                 setEnrolledpractitioners(prev => {
-                  const updatedpractitioners = [...prev, practitionerData];
-                  return updatedpractitioners;
+                  const updatedProviders = [...prev, providerData];
+                  return updatedProviders;
                 });
 
-                // Set expectedpractitionerCount to prevent duplicate saves when navigating back and forth
-                const allpractitioners = [...enrolledpractitioners, practitionerData];
+                // Set expectedProviderCount to prevent duplicate saves when navigating back and forth
+                const allProviders = [...enrolledProviders, providerData];
                 setFormData(prev => ({
                   ...prev,
-                  expectedpractitionerCount: allpractitioners.length
+                  expectedProviderCount: allProviders.length
                 }));
 
                 const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
@@ -1786,21 +1786,21 @@
                 }
                 return;
               } else {
-                let practitionerStatus = 'Verified - Ready to Enroll';
-                if (formData.practitionerAlreadyEnrolled === 'Yes') {
-                  if (formData.practitionerInGroup === 'Yes') {
-                    practitionerStatus = 'Verified - Already in the Group';
+                let providerStatus = 'Verified - Ready to Enroll';
+                if (formData.providerAlreadyEnrolled === 'Yes') {
+                  if (formData.providerInGroup === 'Yes') {
+                    providerStatus = 'Verified - Already in the Group';
                   } else {
-                    practitionerStatus = 'Verified - Ready to Add to Group';
+                    providerStatus = 'Verified - Ready to Add to Group';
                   }
                 }
 
 
-                const practitionerData = {
-                  status: practitionerStatus,
+                const providerData = {
+                  status: providerStatus,
                   question20Answered: formData.question20Answered,
-                  practitionerAlreadyEnrolled: formData.practitionerAlreadyEnrolled,
-                  practitionerInGroup: formData.practitionerInGroup,
+                  providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
+                  providerInGroup: formData.providerInGroup,
                   ssnVerified: formData.ssnVerified,
                   dexSanctionsCheck: formData.dexSanctionsCheck,
                   dobVerified: formData.dobVerified,
@@ -1813,22 +1813,22 @@
                 };
 
                 setEnrolledpractitioners(prev => {
-                  const updatedpractitioners = [...prev, practitionerData];
-                  return updatedpractitioners;
+                  const updatedProviders = [...prev, providerData];
+                  return updatedProviders;
                 });
 
                 // Clear unable to verify fields after saving final practitioner
                 setUnableToVerifyFields(new Set());
 
-                // Set expectedpractitionerCount to prevent duplicate saves when navigating back and forth
-                const allpractitioners = [...enrolledpractitioners, practitionerData];
+                // Set expectedProviderCount to prevent duplicate saves when navigating back and forth
+                const allProviders = [...enrolledProviders, providerData];
                 setFormData(prev => ({
                   ...prev,
-                  expectedpractitionerCount: allpractitioners.length
+                  expectedProviderCount: allProviders.length
                 }));
 
                 // Check if this is a duplicate (only practitioner and already enrolled and in group)
-                if (allpractitioners.length === 1 && formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'Yes') {
+                if (allProviders.length === 1 && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
                   const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
                   const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only practitioner is already enrolled and in group`;
                   setOutreachNotes(prev => [...prev, rejectionNote]);
@@ -1893,8 +1893,8 @@
         // Handler for request-for-paper-updates: Route to appropriate practitioner workflow
         if (currentPageData.id === 'request-for-paper-updates') {
           // PRIORITY 1: Check for duplicate application first
-          const isDuplicateApplication = enrolledpractitioners.length === 1 &&
-                                        enrolledpractitioners[0].status === 'Verified - Already in the Group';
+          const isDuplicateApplication = enrolledProviders.length === 1 &&
+                                        enrolledProviders[0].status === 'Verified - Already in the Group';
 
           if (isDuplicateApplication) {
             const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
@@ -1909,14 +1909,14 @@
           }
 
           // PRIORITY 2: Check if any practitioner requires outreach OR if outreach notes were added
-          const haspractitionersRequiringOutreach = enrolledpractitioners.some(p =>
+          const hasProvidersRequiringOutreach = enrolledProviders.some(p =>
             p.status === 'Unable to Verify - Requires Outreach'
           );
-          const haspractitionerOutreachNotes = enrolledpractitioners.some(p =>
+          const hasProviderOutreachNotes = enrolledProviders.some(p =>
             p.outreachNotes && p.outreachNotes.length > 0
           );
           const hasGeneralOutreachNotes = outreachNotes.length > 0;
-          const requiresOutreach = haspractitionersRequiringOutreach || haspractitionerOutreachNotes || hasGeneralOutreachNotes;
+          const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
           if (requiresOutreach) {
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
@@ -1930,47 +1930,47 @@
             return;
           }
 
-          const needsEnrollment = enrolledpractitioners.some(p =>
+          const needsEnrollment = enrolledProviders.some(p =>
             p.status === 'Verified - Ready to Enroll' &&
-            p.practitionerAlreadyEnrolled === 'No'
+            p.providerAlreadyEnrolled === 'No'
           );
 
           if (needsEnrollment) {
-            const firstReadyIndex = enrolledpractitioners.findIndex(p =>
+            const firstReadyIndex = enrolledProviders.findIndex(p =>
               p.status === 'Verified - Ready to Enroll' &&
-              p.practitionerAlreadyEnrolled === 'No'
+              p.providerAlreadyEnrolled === 'No'
             );
 
             if (firstReadyIndex !== -1) {
               setEnrolledpractitioners(prev => {
-                const updatedpractitioners = [...prev];
-                updatedpractitioners[firstReadyIndex] = {
-                  ...updatedpractitioners[firstReadyIndex],
+                const updatedProviders = [...prev];
+                updatedProviders[firstReadyIndex] = {
+                  ...updatedProviders[firstReadyIndex],
                   createEnrollmentComplete: false,
-                  practitionerInfoComplete: false,
+                  providerInfoComplete: false,
                   groupSpecialtiesChecked: false,
                   enrollmentTabComplete: false,
-                  practitionerNameCorrect: false,
-                  practitionerTypeCorrect: false,
+                  providerNameCorrect: false,
+                  providerTypeCorrect: false,
                   applicationDateAdded: false,
                   cancelReasonCode: false,
-                  practitionerAddressComplete: false,
+                  providerAddressComplete: false,
                   paymentMailingAddressComplete: false,
-                  practitionerInfoTabComplete: false,
+                  providerInfoTabComplete: false,
                   npiTabComplete: false,
                   specialtyTabComplete: false,
                   claimTypeTabComplete: false,
                   licenseDeaTabComplete: false,
                   enrollOnMainframeComplete: false
                 };
-                return updatedpractitioners;
+                return updatedProviders;
               });
 
-              setCurrentEnrollingpractitionerIndex(firstReadyIndex);
+              setCurrentEnrollingProviderIndex(firstReadyIndex);
 
               const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
               if (createEnrollmentIndex !== -1) {
-                setFormData(prev => ({ ...prev, practitionerEnrollmentType: 'New practitioner' }));
+                setFormData(prev => ({ ...prev, providerEnrollmentType: 'New practitioner' }));
                 setCurrentPage(createEnrollmentIndex);
                 setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
                 setTimeout(() => {
@@ -1981,39 +1981,39 @@
             return;
           }
 
-          const hasExistingpractitioners = enrolledpractitioners.some(p =>
+          const hasExistingpractitioners = enrolledProviders.some(p =>
             p.status === 'Verified - Ready to Add to Group' ||
             p.status === 'Enrolled - Ready to be Added to Group'
           );
 
           if (hasExistingpractitioners) {
             setEnrolledpractitioners(prev => {
-              const updatedpractitioners = [...prev];
-              updatedpractitioners.forEach((practitioner, idx) => {
+              const updatedProviders = [...prev];
+              updatedProviders.forEach((practitioner, idx) => {
                 if (practitioner.status === 'Verified - Ready to Add to Group') {
-                  updatedpractitioners[idx] = { ...practitioner, status: 'Enrolled - Ready to be Added to Group' };
+                  updatedProviders[idx] = { ...practitioner, status: 'Enrolled - Ready to be Added to Group' };
                 }
               });
-              return updatedpractitioners;
+              return updatedProviders;
             });
 
             setFormData(prev => ({
               ...prev,
-              practitionerEnrollmentType: 'Existing practitioner'
+              providerEnrollmentType: 'Existing practitioner'
             }));
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-practitioner-open-cics');
             if (openCicsIndex !== -1) {
               // Find first practitioner accounting for the state update that just happened
               // The state update changes 'Verified - Ready to Add to Group' to 'Enrolled - Ready to be Added to Group'
-              // but enrolledpractitioners still has the old state, so we need to check for both statuses
-              const firstpractitionerIndex = enrolledpractitioners.findIndex(p =>
+              // but enrolledProviders still has the old state, so we need to check for both statuses
+              const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Verified - Ready to Add to Group' ||
                 p.status === 'Enrolled - Ready to be Added to Group'
               );
 
-              if (firstpractitionerIndex !== -1) {
-                setCurrentAddingpractitionerIndex(firstpractitionerIndex);
+              if (firstProviderIndex !== -1) {
+                setCurrentAddingProviderIndex(firstProviderIndex);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2030,19 +2030,19 @@
 
         if (currentPageData.id === 'existing-practitioner-completion') {
           // Automatically check if there are more practitioners to add to group
-          const nextReadyIndex = enrolledpractitioners.findIndex((p, idx) =>
-            idx > currentAddingpractitionerIndex &&
+          const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
+            idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
 
-          const currentpractitionerNum = currentAddingpractitionerIndex !== null ? currentAddingpractitionerIndex + 1 : '';
+          const currentProviderNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
 
           if (nextReadyIndex !== -1) {
             // There are more practitioners to add to group
-            const nextpractitionerNum = nextReadyIndex + 1;
+            const nextProviderNum = nextReadyIndex + 1;
             const confirmed = await showConfirm(
-              `You have successfully added practitioner ${currentpractitionerNum} to the group.\n\nNow adding practitioner ${nextpractitionerNum} to the group.`
+              `You have successfully added practitioner ${currentProviderNum} to the group.\n\nNow adding practitioner ${nextProviderNum} to the group.`
             );
 
             if (!confirmed) {
@@ -2052,9 +2052,9 @@
             setEnrolledpractitioners(prev => {
               const updated = [...prev];
 
-              if (currentAddingpractitionerIndex !== null && updated[currentAddingpractitionerIndex]) {
-                updated[currentAddingpractitionerIndex] = {
-                  ...updated[currentAddingpractitionerIndex],
+              if (currentAddingProviderIndex !== null && updated[currentAddingProviderIndex]) {
+                updated[currentAddingProviderIndex] = {
+                  ...updated[currentAddingProviderIndex],
                   status: 'Complete - Enrolled and Added to Group'
                 };
               }
@@ -2062,28 +2062,28 @@
               return updated;
             });
 
-            setCurrentAddingpractitionerIndex(nextReadyIndex);
+            setCurrentAddingProviderIndex(nextReadyIndex);
 
             setFormData(prev => {
               const clearedData = { ...prev };
               delete clearedData.additionalExistingpractitionersNeeded;
-              delete clearedData.existingpractitionerOpenCicsComplete;
-              delete clearedData.existingpractitionerAddToGroupComplete;
-              delete clearedData.practitionerNameFormatting02;
+              delete clearedData.existingProviderOpenCicsComplete;
+              delete clearedData.existingProviderAddToGroupComplete;
+              delete clearedData.providerNameFormatting02;
               delete clearedData.mailToPayToAddresses;
               delete clearedData.cancelCodes;
               delete clearedData.effectiveDates;
               delete clearedData.boardCertificationIndicators;
               delete clearedData.programCode54PA;
-              delete clearedData.existingpractitionerCloseEnrollmentComplete;
-              delete clearedData.existingpractitionerFinishGroupChangeComplete;
-              delete clearedData.existingpractitionerCreateChecklistComplete;
-              delete clearedData.existingpractitionerApproveGroupChangeComplete;
-              delete clearedData.existingpractitionerOpenLetterTaskComplete;
-              delete clearedData.existingpractitionerSelectLetterComplete;
-              delete clearedData.existingpractitionerAddToLetterComplete;
-              delete clearedData.existingpractitionerFinishLetterComplete;
-              delete clearedData.existingpractitionerCloseLetterTaskComplete;
+              delete clearedData.existingProviderCloseEnrollmentComplete;
+              delete clearedData.existingProviderFinishGroupChangeComplete;
+              delete clearedData.existingProviderCreateChecklistComplete;
+              delete clearedData.existingProviderApproveGroupChangeComplete;
+              delete clearedData.existingProviderOpenLetterTaskComplete;
+              delete clearedData.existingProviderSelectLetterComplete;
+              delete clearedData.existingProviderAddToLetterComplete;
+              delete clearedData.existingProviderFinishLetterComplete;
+              delete clearedData.existingProviderCloseLetterTaskComplete;
               return clearedData;
             });
 
@@ -2102,19 +2102,19 @@
               return; // User cancelled
             }
 
-            if (currentAddingpractitionerIndex !== null) {
+            if (currentAddingProviderIndex !== null) {
               setEnrolledpractitioners(prev => {
                 const updated = [...prev];
-                if (updated[currentAddingpractitionerIndex]) {
-                  updated[currentAddingpractitionerIndex] = {
-                    ...updated[currentAddingpractitionerIndex],
+                if (updated[currentAddingProviderIndex]) {
+                  updated[currentAddingProviderIndex] = {
+                    ...updated[currentAddingProviderIndex],
                     status: 'Complete - Enrolled and Added to Group'
                   };
                 }
                 return updated;
               });
 
-              setCurrentAddingpractitionerIndex(null);
+              setCurrentAddingProviderIndex(null);
             }
 
             const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
@@ -2128,19 +2128,19 @@
 
         if (currentPageData.id === 'additional-practitioners-check') {
           // Automatically check if there are more practitioners to enroll
-          const nextReadyIndex = enrolledpractitioners.findIndex((p, idx) =>
-            idx > currentEnrollingpractitionerIndex &&
+          const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
+            idx > currentEnrollingProviderIndex &&
             p.status === 'Verified - Ready to Enroll' &&
-            p.practitionerAlreadyEnrolled === 'No'
+            p.providerAlreadyEnrolled === 'No'
           );
 
-          const currentpractitionerNum = currentEnrollingpractitionerIndex !== null ? currentEnrollingpractitionerIndex + 1 : '';
+          const currentProviderNum = currentEnrollingProviderIndex !== null ? currentEnrollingProviderIndex + 1 : '';
 
           if (nextReadyIndex !== -1) {
             // There are more practitioners to enroll
-            const nextpractitionerNum = nextReadyIndex + 1;
+            const nextProviderNum = nextReadyIndex + 1;
             const confirmed = await showConfirm(
-              `You have successfully Enrolled practitioner ${currentpractitionerNum}.\n\nNow starting enrollment for practitioner ${nextpractitionerNum}.`
+              `You have successfully Enrolled practitioner ${currentProviderNum}.\n\nNow starting enrollment for practitioner ${nextProviderNum}.`
             );
 
             if (!confirmed) {
@@ -2150,9 +2150,9 @@
             setEnrolledpractitioners(prev => {
               const updated = [...prev];
 
-              if (currentEnrollingpractitionerIndex !== null && updated[currentEnrollingpractitionerIndex]) {
-                updated[currentEnrollingpractitionerIndex] = {
-                  ...updated[currentEnrollingpractitionerIndex],
+              if (currentEnrollingProviderIndex !== null && updated[currentEnrollingProviderIndex]) {
+                updated[currentEnrollingProviderIndex] = {
+                  ...updated[currentEnrollingProviderIndex],
                   status: 'Enrolled - Ready to be Added to Group'
                 };
               }
@@ -2161,16 +2161,16 @@
                 updated[nextReadyIndex] = {
                   ...updated[nextReadyIndex],
                   createEnrollmentComplete: false,
-                  practitionerInfoComplete: false,
+                  providerInfoComplete: false,
                   groupSpecialtiesChecked: false,
                   enrollmentTabComplete: false,
-                  practitionerNameCorrect: false,
-                  practitionerTypeCorrect: false,
+                  providerNameCorrect: false,
+                  providerTypeCorrect: false,
                   applicationDateAdded: false,
                   cancelReasonCode: false,
-                  practitionerAddressComplete: false,
+                  providerAddressComplete: false,
                   paymentMailingAddressComplete: false,
-                  practitionerInfoTabComplete: false,
+                  providerInfoTabComplete: false,
                   npiTabComplete: false,
                   specialtyTabComplete: false,
                   claimTypeTabComplete: false,
@@ -2182,29 +2182,29 @@
               return updated;
             });
 
-            setCurrentEnrollingpractitionerIndex(nextReadyIndex);
+            setCurrentEnrollingProviderIndex(nextReadyIndex);
 
             const clearedData = { ...formData };
             delete clearedData.createEnrollmentComplete;
-            delete clearedData.practitionerInfoComplete;
+            delete clearedData.providerInfoComplete;
             delete clearedData.groupSpecialtiesChecked;
             delete clearedData.enrollmentTabComplete;
-            delete clearedData.practitionerNameCorrect;
-            delete clearedData.practitionerTypeCorrect;
+            delete clearedData.providerNameCorrect;
+            delete clearedData.providerTypeCorrect;
             delete clearedData.applicationDateAdded;
             delete clearedData.cancelReasonCode;
-            delete clearedData.practitionerAddressComplete;
+            delete clearedData.providerAddressComplete;
             delete clearedData.paymentMailingAddressComplete;
-            delete clearedData.practitionerInfoTabComplete;
+            delete clearedData.providerInfoTabComplete;
             delete clearedData.npiTabComplete;
             delete clearedData.specialtyTabComplete;
             delete clearedData.claimTypeTabComplete;
             delete clearedData.licenseDeaTabComplete;
             delete clearedData.enrollOnMainframeComplete;
             delete clearedData.additionalpractitionersNeeded;
-            delete clearedData.duplicatepractitionerSaved;
+            delete clearedData.duplicateProviderSaved;
 
-            clearedData.practitionerEnrollmentType = 'New practitioner';
+            clearedData.providerEnrollmentType = 'New practitioner';
 
             setFormData(clearedData);
 
@@ -2229,12 +2229,12 @@
               return; // User cancelled
             }
 
-            if (currentEnrollingpractitionerIndex !== null) {
+            if (currentEnrollingProviderIndex !== null) {
               setEnrolledpractitioners(prev => {
                 const updated = [...prev];
-                if (updated[currentEnrollingpractitionerIndex]) {
-                  updated[currentEnrollingpractitionerIndex] = {
-                    ...updated[currentEnrollingpractitionerIndex],
+                if (updated[currentEnrollingProviderIndex]) {
+                  updated[currentEnrollingProviderIndex] = {
+                    ...updated[currentEnrollingProviderIndex],
                     status: 'Enrolled - Ready to be Added to Group'
                   };
                 }
@@ -2247,36 +2247,36 @@
                 });
               });
 
-              setCurrentEnrollingpractitionerIndex(null);
+              setCurrentEnrollingProviderIndex(null);
             }
 
             setFormData(prev => ({
               ...prev,
-              practitionerEnrollmentType: 'Existing practitioner'
+              providerEnrollmentType: 'Existing practitioner'
             }));
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-practitioner-open-cics');
             if (openCicsIndex !== -1) {
               // Find first practitioner accounting for the state updates that just happened
-              // - The current enrolling practitioner (currentEnrollingpractitionerIndex) will become "Enrolled - Ready to be Added to Group"
+              // - The current enrolling practitioner (currentEnrollingProviderIndex) will become "Enrolled - Ready to be Added to Group"
               // - All "Verified - Ready to Add to Group" will become "Enrolled - Ready to be Added to Group"
-              // But enrolledpractitioners still has the old state, so we need to account for these changes
-              let firstpractitionerIndex = -1;
+              // But enrolledProviders still has the old state, so we need to account for these changes
+              let firstProviderIndex = -1;
 
-              for (let i = 0; i < enrolledpractitioners.length; i++) {
-                const practitioner = enrolledpractitioners[i];
+              for (let i = 0; i < enrolledProviders.length; i++) {
+                const practitioner = enrolledProviders[i];
 
                 // Check if this practitioner will be ready to add after the state update
-                if (i === currentEnrollingpractitionerIndex ||
+                if (i === currentEnrollingProviderIndex ||
                     practitioner.status === 'Verified - Ready to Add to Group' ||
                     practitioner.status === 'Enrolled - Ready to be Added to Group') {
-                  firstpractitionerIndex = i;
+                  firstProviderIndex = i;
                   break;
                 }
               }
 
-              if (firstpractitionerIndex !== -1) {
-                setCurrentAddingpractitionerIndex(firstpractitionerIndex);
+              if (firstProviderIndex !== -1) {
+                setCurrentAddingProviderIndex(firstProviderIndex);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2297,16 +2297,16 @@
 
             const nextPageData = pages[nextPage];
 
-            if (nextPageData.showWhen?.field === 'practitionerEnrollmentType' &&
-                nextPageData.showWhen?.value === 'Existing practitioner' &&
-                currentAddingpractitionerIndex === null) {
-              const firstpractitionerIndex = enrolledpractitioners.findIndex(p =>
+            if (nextPageData.showWhen?.field === 'providerEnrollmentType' &&
+                nextPageData.showWhen?.value === 'Existing Provider' &&
+                currentAddingProviderIndex === null) {
+              const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Enrolled - Ready to be Added to Group' ||
                 p.status === 'Verified - Ready to Add to Group'
               );
 
-              if (firstpractitionerIndex !== -1) {
-                setCurrentAddingpractitionerIndex(firstpractitionerIndex);
+              if (firstProviderIndex !== -1) {
+                setCurrentAddingProviderIndex(firstProviderIndex);
               }
             }
 
@@ -2332,9 +2332,9 @@
 
           // Find the minimum page index for the current branch
           let minPageIndex = 0;
-          if (formData.practitionerEnrollmentType === 'New practitioner') {
+          if (formData.providerEnrollmentType === 'New Provider') {
             minPageIndex = pages.findIndex(page => page.id === 'create-enrollment');
-          } else if (formData.practitionerEnrollmentType === 'Existing practitioner') {
+          } else if (formData.providerEnrollmentType === 'Existing Provider') {
             minPageIndex = pages.findIndex(page => page.id === 'existing-practitioner-open-cics');
           }
 
@@ -2489,8 +2489,8 @@
         if (formData.agreementOfUnderstandingAttached !== undefined) {
           textContent += `  • Agreement of Understanding Attached: ${formData.agreementOfUnderstandingAttached}\n`;
         }
-        if (formData.practitionerAgreementAttached !== undefined) {
-          textContent += `  • practitioner Agreement Attached: ${formData.practitionerAgreementAttached}\n`;
+        if (formData.providerAgreementAttached !== undefined) {
+          textContent += `  • practitioner Agreement Attached: ${formData.providerAgreementAttached}\n`;
         }
         if (formData.disclosureOfOwnershipAttached !== undefined) {
           textContent += `  • Disclosure of Ownership Attached: ${formData.disclosureOfOwnershipAttached}\n`;
@@ -2507,20 +2507,20 @@
         textContent += `\n`;
 
         // Existing practitioner Workflow (if applicable)
-        const hasExistingpractitionerData = formData.existingpractitionerOpenCicsComplete !== undefined ||
-                                         formData.existingpractitionerAddToGroupComplete !== undefined ||
-                                         formData.practitionerNameFormatting02 !== undefined;
+        const hasExistingproviderData = formData.existingProviderOpenCicsComplete !== undefined ||
+                                         formData.existingProviderAddToGroupComplete !== undefined ||
+                                         formData.providerNameFormatting02 !== undefined;
 
-        if (hasExistingpractitionerData) {
+        if (hasExistingproviderData) {
           textContent += `EXISTING practitioner WORKFLOW:\n`;
-          if (formData.existingpractitionerOpenCicsComplete !== undefined) {
-            textContent += `  • CICS Opened: ${formData.existingpractitionerOpenCicsComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderOpenCicsComplete !== undefined) {
+            textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerAddToGroupComplete !== undefined) {
-            textContent += `  • practitioner Added to Group: ${formData.existingpractitionerAddToGroupComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderAddToGroupComplete !== undefined) {
+            textContent += `  • practitioner Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.practitionerNameFormatting02 !== undefined) {
-            textContent += `  • practitioner Name Formatting Checked (02 page): ${formData.practitionerNameFormatting02 ? 'Yes' : 'No'}\n`;
+          if (formData.providerNameFormatting02 !== undefined) {
+            textContent += `  • practitioner Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
           }
           if (formData.mailToPayToAddresses !== undefined) {
             textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
@@ -2537,32 +2537,32 @@
           if (formData.programCode54PA !== undefined) {
             textContent += `  • Program Code 54 for PA (04 page): ${formData.programCode54PA ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerCloseEnrollmentComplete !== undefined) {
-            textContent += `  • Enrollment Task Closed: ${formData.existingpractitionerCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderCloseEnrollmentComplete !== undefined) {
+            textContent += `  • Enrollment Task Closed: ${formData.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerFinishGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Completed: ${formData.existingpractitionerFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderFinishGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Completed: ${formData.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerCreateChecklistComplete !== undefined) {
-            textContent += `  • Checklist Created: ${formData.existingpractitionerCreateChecklistComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderCreateChecklistComplete !== undefined) {
+            textContent += `  • Checklist Created: ${formData.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerApproveGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Approved: ${formData.existingpractitionerApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderApproveGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Approved: ${formData.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerOpenLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Opened: ${formData.existingpractitionerOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderOpenLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Opened: ${formData.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerSelectLetterComplete !== undefined) {
-            textContent += `  • Letter Selected: ${formData.existingpractitionerSelectLetterComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderSelectLetterComplete !== undefined) {
+            textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerAddToLetterComplete !== undefined) {
-            textContent += `  • practitioner Added to Letter: ${formData.existingpractitionerAddToLetterComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderAddToLetterComplete !== undefined) {
+            textContent += `  • practitioner Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerFinishLetterComplete !== undefined) {
-            textContent += `  • Letter Finished: ${formData.existingpractitionerFinishLetterComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderFinishLetterComplete !== undefined) {
+            textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
           }
-          if (formData.existingpractitionerCloseLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Closed: ${formData.existingpractitionerCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          if (formData.existingProviderCloseLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Closed: ${formData.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
           }
           textContent += `\n`;
         }
@@ -2579,20 +2579,20 @@
 
         textContent += `${'='.repeat(80)}\n\n`;
 
-        if (enrolledpractitioners.length > 0) {
-          textContent += `ENROLLED practitionerS (${enrolledpractitioners.length} total)\n`;
+        if (enrolledProviders.length > 0) {
+          textContent += `ENROLLED practitionerS (${enrolledProviders.length} total)\n`;
           textContent += `${'-'.repeat(80)}\n\n`;
 
-          enrolledpractitioners.forEach((practitioner, index) => {
+          enrolledProviders.forEach((practitioner, index) => {
             textContent += `practitioner ${index + 1}\n`;
             textContent += `Status: ${practitioner.status || 'Successfully Enrolled'}\n\n`;
 
             // practitioner INFORMATION (QUESTION 20)
             textContent += `practitioner INFORMATION (QUESTION 20):\n`;
             textContent += `  • Question 20 Answered: ${practitioner.question20Answered !== false ? 'Yes' : 'No'}\n`;
-            textContent += `  • practitioner Already Enrolled: ${practitioner.practitionerAlreadyEnrolled || 'N/A'}\n`;
-            if (practitioner.practitionerAlreadyEnrolled === 'Yes') {
-              textContent += `  • practitioner In Group: ${practitioner.practitionerInGroup || 'N/A'}\n`;
+            textContent += `  • practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
+            if (practitioner.providerAlreadyEnrolled === 'Yes') {
+              textContent += `  • practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
             }
             textContent += `\n`;
 
@@ -2616,16 +2616,16 @@
             } else {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${practitioner.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Complete: ${practitioner.practitionerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Specialties Checked: ${practitioner.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
               textContent += `  • Enrollment Tab Complete: ${practitioner.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Name Correct: ${practitioner.practitionerNameCorrect ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Type Correct: ${practitioner.practitionerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
               textContent += `  • Application Date Added: ${practitioner.applicationDateAdded ? 'Yes' : 'No'}\n`;
               textContent += `  • Cancel Reason Code: ${practitioner.cancelReasonCode ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Address Complete: ${practitioner.practitionerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Payment/Mailing Address Complete: ${practitioner.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Tab Complete: ${practitioner.practitionerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • NPI Tab Complete: ${practitioner.npiTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Specialty Tab Complete: ${practitioner.specialtyTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Claim Type Tab Complete: ${practitioner.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
@@ -2633,9 +2633,9 @@
               textContent += `  • Mainframe Enrollment Complete: ${practitioner.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
             }
 
-            if (practitionerManualNotes[index]) {
+            if (providerManualNotes[index]) {
               textContent += `\nManual Notes:\n`;
-              textContent += `  ${practitionerManualNotes[index].split('\n').join('\n  ')}\n`;
+              textContent += `  ${providerManualNotes[index].split('\n').join('\n  ')}\n`;
             }
 
             if (practitioner.outreachNotes && practitioner.outreachNotes.length > 0) {
@@ -2715,21 +2715,21 @@
         textContent += `Generated: ${dateStr}\n`;
         textContent += `${'='.repeat(80)}\n\n`;
 
-        if (enrolledpractitioners.length > 0) {
+        if (enrolledProviders.length > 0) {
           // SECTION 1: practitioner MANUAL NOTES
           textContent += `practitioner MANUAL NOTES\n`;
           textContent += `${'-'.repeat(80)}\n\n`;
 
-          enrolledpractitioners.forEach((practitioner, index) => {
+          enrolledProviders.forEach((practitioner, index) => {
             textContent += `practitioner ${index + 1}\n`;
             textContent += `Status: ${practitioner.status || 'Successfully Enrolled'}\n\n`;
 
             // practitioner INFORMATION (QUESTION 20)
             textContent += `practitioner INFORMATION (QUESTION 20):\n`;
             textContent += `  • Question 20 Answered: ${practitioner.question20Answered !== false ? 'Yes' : 'No'}\n`;
-            textContent += `  • practitioner Already Enrolled: ${practitioner.practitionerAlreadyEnrolled || 'N/A'}\n`;
-            if (practitioner.practitionerAlreadyEnrolled === 'Yes') {
-              textContent += `  • practitioner In Group: ${practitioner.practitionerInGroup || 'N/A'}\n`;
+            textContent += `  • practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
+            if (practitioner.providerAlreadyEnrolled === 'Yes') {
+              textContent += `  • practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
             }
             textContent += `\n`;
 
@@ -2753,16 +2753,16 @@
             } else {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${practitioner.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Complete: ${practitioner.practitionerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Specialties Checked: ${practitioner.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
               textContent += `  • Enrollment Tab Complete: ${practitioner.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Name Correct: ${practitioner.practitionerNameCorrect ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Type Correct: ${practitioner.practitionerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
               textContent += `  • Application Date Added: ${practitioner.applicationDateAdded ? 'Yes' : 'No'}\n`;
               textContent += `  • Cancel Reason Code: ${practitioner.cancelReasonCode ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Address Complete: ${practitioner.practitionerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Payment/Mailing Address Complete: ${practitioner.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Tab Complete: ${practitioner.practitionerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • NPI Tab Complete: ${practitioner.npiTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Specialty Tab Complete: ${practitioner.specialtyTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Claim Type Tab Complete: ${practitioner.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
@@ -2770,9 +2770,9 @@
               textContent += `  • Mainframe Enrollment Complete: ${practitioner.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
             }
 
-            if (practitionerManualNotes[index]) {
+            if (providerManualNotes[index]) {
               textContent += `\nManual Notes:\n`;
-              textContent += `  ${practitionerManualNotes[index].split('\n').join('\n  ')}\n`;
+              textContent += `  ${providerManualNotes[index].split('\n').join('\n  ')}\n`;
             } else {
               textContent += `\nManual Notes: None\n`;
             }
@@ -2785,7 +2785,7 @@
           textContent += `${'-'.repeat(80)}\n\n`;
 
           let hasOutreachNotes = false;
-          enrolledpractitioners.forEach((practitioner, index) => {
+          enrolledProviders.forEach((practitioner, index) => {
             if (practitioner.outreachNotes && practitioner.outreachNotes.length > 0) {
               hasOutreachNotes = true;
               textContent += `practitioner ${index + 1}:\n`;
@@ -2822,11 +2822,11 @@
           setFormData({});
           setOutreachNotes([]);
           setEnrolledpractitioners([]);
-          setpractitionerManualNotes({});
+          setproviderManualNotes({});
           setUnableToVerifyFields(new Set());
           setPendingUnableToVerifyField(null);
-          setCurrentEnrollingpractitionerIndex(null);
-          setCurrentAddingpractitionerIndex(null);
+          setCurrentEnrollingProviderIndex(null);
+          setCurrentAddingProviderIndex(null);
           setVisitedPages(new Set([0]));
           setCurrentPage(0);
         }
@@ -2847,8 +2847,8 @@
       };
 
       const handleNextpractitioner = async () => {
-        const expectedpractitionerCount = formData.expectedpractitionerCount || 0;
-        if (enrolledpractitioners.length > expectedpractitionerCount) {
+        const expectedProviderCount = formData.expectedProviderCount || 0;
+        if (enrolledProviders.length > expectedProviderCount) {
           await showAlert('This practitioner has already been saved. Please proceed to the next step.');
           return;
         }
@@ -2857,28 +2857,28 @@
 
         const duplicateNote = 'practitioner already enrolled and in group - no action needed';
 
-        const practitionerData = {
+        const providerData = {
           status: 'Already Enrolled and In Group',
           question20Answered: formData.question20Answered,
-          practitionerAlreadyEnrolled: formData.practitionerAlreadyEnrolled,
-          practitionerInGroup: formData.practitionerInGroup,
-          nextpractitionerFinalVerificationConfirm: formData.nextpractitionerFinalVerificationConfirm,
-          nextpractitionerAlreadyEnrolled: formData.nextpractitionerAlreadyEnrolled,
-          nextpractitionerInGroup: formData.nextpractitionerInGroup,
+          providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
+          providerInGroup: formData.providerInGroup,
+          nextProviderFinalVerificationConfirm: formData.nextProviderFinalVerificationConfirm,
+          nextproviderAlreadyEnrolled: formData.nextproviderAlreadyEnrolled,
+          nextproviderInGroup: formData.nextproviderInGroup,
           outreachNotes: [duplicateNote]
         };
 
         if (morepractitioners) {
           // Save the duplicate practitioner and prepare for the next practitioner
           setEnrolledpractitioners(prev => {
-            const updatedpractitioners = [...prev, practitionerData];
-            return updatedpractitioners;
+            const updatedProviders = [...prev, providerData];
+            return updatedProviders;
           });
           const clearedData = { ...formData };
 
           delete clearedData.question20Answered;
-          delete clearedData.practitionerAlreadyEnrolled;
-          delete clearedData.practitionerInGroup;
+          delete clearedData.providerAlreadyEnrolled;
+          delete clearedData.providerInGroup;
           delete clearedData.ssnVerified;
           delete clearedData.dexSanctionsCheck;
           delete clearedData.dobVerified;
@@ -2888,25 +2888,25 @@
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
 
-          delete clearedData.nextpractitionerFinalVerificationConfirm;
-          delete clearedData.nextpractitionerAlreadyEnrolled;
-          delete clearedData.nextpractitionerInGroup;
-          delete clearedData.nextpractitionerFinalSsnVerified;
-          delete clearedData.nextpractitionerFinalDexSanctionsCheck;
-          delete clearedData.nextpractitionerFinalDobVerified;
-          delete clearedData.nextpractitionerFinalNpiVerified;
-          delete clearedData.nextpractitionerFinalLicensesVerified;
-          delete clearedData.nextpractitionerFinalDoctorLicenseVerified;
-          delete clearedData.nextpractitionerFinalDeaEffectiveDates;
-          delete clearedData.nextpractitionerFinalEffectiveDatesChecked;
+          delete clearedData.nextProviderFinalVerificationConfirm;
+          delete clearedData.nextproviderAlreadyEnrolled;
+          delete clearedData.nextproviderInGroup;
+          delete clearedData.nextProviderFinalSsnVerified;
+          delete clearedData.nextProviderFinalDexSanctionsCheck;
+          delete clearedData.nextProviderFinalDobVerified;
+          delete clearedData.nextProviderFinalNpiVerified;
+          delete clearedData.nextProviderFinalLicensesVerified;
+          delete clearedData.nextProviderFinalDoctorLicenseVerified;
+          delete clearedData.nextProviderFinalDeaEffectiveDates;
+          delete clearedData.nextProviderFinalEffectiveDatesChecked;
 
           // Account for the duplicate practitioner we just saved (state update is async)
           // +1 for the practitioner just saved, +1 for the next expected practitioner
-          clearedData.expectedpractitionerCount = enrolledpractitioners.length + 2;
+          clearedData.expectedProviderCount = enrolledProviders.length + 2;
 
           setFormData(clearedData);
 
-          const fieldsToRemove = ['nextpractitionerFinalSsnVerified', 'nextpractitionerFinalDexSanctionsCheck', 'nextpractitionerFinalDobVerified', 'nextpractitionerFinalNpiVerified', 'nextpractitionerFinalLicensesVerified', 'nextpractitionerFinalDoctorLicenseVerified'];
+          const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'];
           setUnableToVerifyFields(prev => {
             const newSet = new Set(prev);
             fieldsToRemove.forEach(field => newSet.delete(field));
@@ -2915,17 +2915,17 @@
 
           await showAlert('practitioner saved. You can now enter information for the next practitioner.');
         } else {
-          const allpractitioners = [...enrolledpractitioners, practitionerData];
+          const allProviders = [...enrolledProviders, providerData];
 
-          if (allpractitioners.length === 1 && practitionerData.status === 'Already Enrolled and In Group') {
+          if (allProviders.length === 1 && providerData.status === 'Already Enrolled and In Group') {
             const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
             const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only practitioner is already enrolled and in group`;
-            const updatedpractitionerData = {
-              ...practitionerData,
+            const updatedproviderData = {
+              ...providerData,
               outreachNotes: [duplicateNote, rejectionNote]
             };
 
-            setEnrolledpractitioners([updatedpractitionerData]);
+            setEnrolledpractitioners([updatedproviderData]);
             setOutreachNotes(prev => [...prev, rejectionNote]);
 
             const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
@@ -2936,14 +2936,14 @@
             return;
           }
 
-          const hasUnverifiedItems = allpractitioners.some(practitioner =>
+          const hasUnverifiedItems = allProviders.some(practitioner =>
             practitioner.outreachNotes && practitioner.outreachNotes.length > 0 &&
             practitioner.status === 'Unable to Verify - Requires Outreach'
           );
 
           if (hasUnverifiedItems) {
             // Save all practitioners including the current one
-            setEnrolledpractitioners(allpractitioners);
+            setEnrolledpractitioners(allProviders);
 
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
@@ -2951,33 +2951,33 @@
               setVisitedPages(prev => new Set([...prev, completionIndex]));
             }
           } else {
-            const needsEnrollment = allpractitioners.some(p =>
+            const needsEnrollment = allProviders.some(p =>
               p.status === 'Verified - Ready to Enroll' &&
-              p.practitionerAlreadyEnrolled === 'No'
+              p.providerAlreadyEnrolled === 'No'
             );
 
             if (needsEnrollment) {
-              const firstReadyIndex = allpractitioners.findIndex(p =>
+              const firstReadyIndex = allProviders.findIndex(p =>
                 p.status === 'Verified - Ready to Enroll' &&
-                p.practitionerAlreadyEnrolled === 'No'
+                p.providerAlreadyEnrolled === 'No'
               );
 
               if (firstReadyIndex !== -1) {
                 setEnrolledpractitioners(() => {
-                  const updated = [...allpractitioners];
+                  const updated = [...allProviders];
                   updated[firstReadyIndex] = {
                     ...updated[firstReadyIndex],
                     createEnrollmentComplete: false,
-                    practitionerInfoComplete: false,
+                    providerInfoComplete: false,
                     groupSpecialtiesChecked: false,
                     enrollmentTabComplete: false,
-                    practitionerNameCorrect: false,
-                    practitionerTypeCorrect: false,
+                    providerNameCorrect: false,
+                    providerTypeCorrect: false,
                     applicationDateAdded: false,
                     cancelReasonCode: false,
-                    practitionerAddressComplete: false,
+                    providerAddressComplete: false,
                     paymentMailingAddressComplete: false,
-                    practitionerInfoTabComplete: false,
+                    providerInfoTabComplete: false,
                     npiTabComplete: false,
                     specialtyTabComplete: false,
                     claimTypeTabComplete: false,
@@ -2987,11 +2987,11 @@
                   return updated;
                 });
 
-                setCurrentEnrollingpractitionerIndex(firstReadyIndex);
+                setCurrentEnrollingProviderIndex(firstReadyIndex);
 
                 const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                 if (createEnrollmentIndex !== -1) {
-                  setFormData(prev => ({ ...prev, practitionerEnrollmentType: 'New practitioner' }));
+                  setFormData(prev => ({ ...prev, providerEnrollmentType: 'New practitioner' }));
                   setCurrentPage(createEnrollmentIndex);
                   setVisitedPages(prev => new Set([...prev, createEnrollmentIndex]));
                   // Scroll to top after navigation
@@ -3002,21 +3002,21 @@
               }
             } else {
               // Save all practitioners including the current duplicate
-              setEnrolledpractitioners(allpractitioners);
+              setEnrolledpractitioners(allProviders);
 
               setFormData(prev => ({
                 ...prev,
-                practitionerEnrollmentType: 'Existing practitioner'
+                providerEnrollmentType: 'Existing practitioner'
               }));
 
               const addToGroupIndex = pages.findIndex(page => page.id === 'existing-practitioner-add-to-group');
               if (addToGroupIndex !== -1) {
-                const firstpractitionerIndex = allpractitioners.findIndex(p =>
+                const firstProviderIndex = allProviders.findIndex(p =>
                   p.status === 'Enrolled - Ready to be Added to Group'
                 );
 
-                if (firstpractitionerIndex !== -1) {
-                  setCurrentAddingpractitionerIndex(firstpractitionerIndex);
+                if (firstProviderIndex !== -1) {
+                  setCurrentAddingProviderIndex(firstProviderIndex);
                 }
 
                 setCurrentPage(addToGroupIndex);
@@ -3062,8 +3062,8 @@
         setOutreachNotes(prev => prev.filter((_, i) => i !== index));
       };
 
-      const handlepractitionerManualNoteChange = (practitionerIndex, note) => {
-        setpractitionerManualNotes(prev => ({
+      const handleProviderManualNoteChange = (practitionerIndex, note) => {
+        setproviderManualNotes(prev => ({
           ...prev,
           [practitionerIndex]: note
         }));
@@ -3077,8 +3077,8 @@
       const getNextButtonText = () => {
         if (currentPageData.id === 'existing-practitioner-completion') {
           // Check if there are more practitioners to add to group
-          const hasMorepractitioners = enrolledpractitioners.some((p, idx) =>
-            idx > currentAddingpractitionerIndex &&
+          const hasMorepractitioners = enrolledProviders.some((p, idx) =>
+            idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
@@ -3087,10 +3087,10 @@
 
         if (currentPageData.id === 'additional-practitioners-check') {
           // Check if there are more practitioners to enroll
-          const hasMorepractitioners = enrolledpractitioners.some((p, idx) =>
-            idx > currentEnrollingpractitionerIndex &&
+          const hasMorepractitioners = enrolledProviders.some((p, idx) =>
+            idx > currentEnrollingProviderIndex &&
             p.status === 'Verified - Ready to Enroll' &&
-            p.practitionerAlreadyEnrolled === 'No'
+            p.providerAlreadyEnrolled === 'No'
           );
           return hasMorepractitioners ? 'Next practitioner' : 'Add practitioners to Group';
         }
@@ -3105,13 +3105,13 @@
 
       const getInstructionText = () => {
         if (currentPageData.id === 'additional-practitioners-check') {
-          const practitionerNum = currentEnrollingpractitionerIndex !== null ? currentEnrollingpractitionerIndex + 1 : '';
+          const practitionerNum = currentEnrollingProviderIndex !== null ? currentEnrollingProviderIndex + 1 : '';
           const buttonText = getNextButtonText();
           return `You have successfully enrolled practitioner ${practitionerNum}.\n\nPlease click "${buttonText}" to continue.`;
         }
 
         if (currentPageData.id === 'existing-practitioner-completion') {
-          const practitionerNum = currentAddingpractitionerIndex !== null ? currentAddingpractitionerIndex + 1 : '';
+          const practitionerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
           const buttonText = getNextButtonText();
           const action = buttonText === 'Finish' ? 'to complete this application.' : 'to continue.';
           return `You have successfully added practitioner ${practitionerNum} to the group.\n\nPlease click "${buttonText}" ${action}`;
@@ -3263,27 +3263,27 @@
                   </div>
                 )}
                 {/* Current practitioner Indicator */}
-                {currentEnrollingpractitionerIndex !== null && formData.practitionerEnrollmentType === 'New practitioner' && (
+                {currentEnrollingProviderIndex !== null && formData.providerEnrollmentType === 'New Provider' && (
                   <div className="mt-4 inline-block bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2">
                     <div className="flex items-center gap-2">
                       <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       <span className="text-white font-semibold text-sm">
-                        Currently Enrolling: practitioner {currentEnrollingpractitionerIndex + 1} of {enrolledpractitioners.length}
+                        Currently Enrolling: practitioner {currentEnrollingProviderIndex + 1} of {enrolledProviders.length}
                       </span>
                     </div>
                   </div>
                 )}
                 {/* Adding practitioner to Group Indicator */}
-                {currentAddingpractitionerIndex !== null && formData.practitionerEnrollmentType === 'Existing practitioner' && (
+                {currentAddingProviderIndex !== null && formData.providerEnrollmentType === 'Existing Provider' && (
                   <div className="mt-4 inline-block bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2">
                     <div className="flex items-center gap-2">
                       <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       <span className="text-white font-semibold text-sm">
-                        Adding practitioner to Group: practitioner {currentAddingpractitionerIndex + 1} of {enrolledpractitioners.length}
+                        Adding practitioner to Group: practitioner {currentAddingProviderIndex + 1} of {enrolledProviders.length}
                       </span>
                     </div>
                   </div>
@@ -3709,7 +3709,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'nextpractitionerFinalSsnVerified', 'nextpractitionerFinalDexSanctionsCheck', 'nextpractitionerFinalDobVerified', 'nextpractitionerFinalNpiVerified', 'nextpractitionerFinalLicensesVerified'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 
@@ -3787,7 +3787,7 @@
                           );
                         })}
                     </div>
-                  ) : currentPageData.id === 'next-practitioner-ready-check' && formData.nextpractitionerFinalVerificationConfirm === 'No' ? (
+                  ) : currentPageData.id === 'next-practitioner-ready-check' && formData.nextProviderFinalVerificationConfirm === 'No' ? (
                     <div className="bg-amber-50 border-2 border-amber-400 rounded-lg p-4">
                       <div className="flex items-start gap-3">
                         <div className="bg-amber-400 rounded-full p-1 mt-0.5">
@@ -3803,7 +3803,7 @@
                         </div>
                       </div>
                     </div>
-                  ) : currentPageData.id === 'next-practitioner-ready-check' && formData.nextpractitionerFinalVerificationConfirm === 'Yes' ? (
+                  ) : currentPageData.id === 'next-practitioner-ready-check' && formData.nextProviderFinalVerificationConfirm === 'Yes' ? (
                     <div className="space-y-3">
                       {currentPageData.fields
                         .filter(f => {
@@ -4011,7 +4011,7 @@
                         </div>
                       </div>
                     </div>
-                  ) : currentPageData.id === 'practitioner-agreement' && formData.practitionerAgreementAttached === 'No' ? (
+                  ) : currentPageData.id === 'practitioner-agreement' && formData.providerAgreementAttached === 'No' ? (
                     <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
                       <div className="flex items-start gap-3">
                         <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
@@ -4166,12 +4166,12 @@
                       <button
                         onClick={handlePrevious}
                         disabled={
-                          (formData.practitionerEnrollmentType === 'New practitioner' && pages[currentPage]?.id === 'create-enrollment') ||
-                          (formData.practitionerEnrollmentType === 'Existing practitioner' && pages[currentPage]?.id === 'existing-practitioner-open-cics')
+                          (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
+                          (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-practitioner-open-cics')
                         }
                         className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all min-w-[90px] ${
-                          (formData.practitionerEnrollmentType === 'New practitioner' && pages[currentPage]?.id === 'create-enrollment') ||
-                          (formData.practitionerEnrollmentType === 'Existing practitioner' && pages[currentPage]?.id === 'existing-practitioner-open-cics')
+                          (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
+                          (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-practitioner-open-cics')
                             ? 'text-slate-400 cursor-not-allowed bg-slate-100'
                             : 'text-slate-700 hover:bg-slate-200'
                         }`}
@@ -4196,7 +4196,7 @@
                       )}
                     </button>
 
-                    {enrolledpractitioners.length > 0 && (
+                    {enrolledProviders.length > 0 && (
                       <button
                         onClick={() => setShowEnrolledpractitionersModal(true)}
                         className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[100px]"
@@ -4206,7 +4206,7 @@
                         </svg>
                         practitioners
                         <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                          {enrolledpractitioners.length}
+                          {enrolledProviders.length}
                         </span>
                       </button>
                     )}
@@ -4431,25 +4431,25 @@
                     </div>
                     <div className="flex-1">
                       <h2 className="text-3xl font-bold text-slate-900 mb-2">Enrolled practitioners</h2>
-                      <p className="text-slate-600">Review the practitioners you have successfully enrolled ({enrolledpractitioners.length} total).</p>
+                      <p className="text-slate-600">Review the practitioners you have successfully enrolled ({enrolledProviders.length} total).</p>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    {enrolledpractitioners.map((practitioner, index) => (
+                    {enrolledProviders.map((practitioner, index) => (
                       <div key={index} className={`bg-gradient-to-br ${
-                        index === currentEnrollingpractitionerIndex
+                        index === currentEnrollingProviderIndex
                           ? 'from-blue-50 to-indigo-50 border-2 border-blue-400 ring-2 ring-blue-300'
-                          : index === currentAddingpractitionerIndex
+                          : index === currentAddingProviderIndex
                           ? 'from-purple-50 to-violet-50 border-2 border-purple-400 ring-2 ring-purple-300'
                           : 'from-green-50 to-emerald-50 border-2 border-green-200'
                       } rounded-lg p-6 hover:border-green-300 transition-all`}>
                         <div className="mb-4">
                           <div className="flex items-center gap-3 mb-2">
                             <div className={`${
-                              index === currentEnrollingpractitionerIndex
+                              index === currentEnrollingProviderIndex
                                 ? 'bg-blue-500'
-                                : index === currentAddingpractitionerIndex
+                                : index === currentAddingProviderIndex
                                 ? 'bg-purple-500'
                                 : 'bg-green-500'
                             } text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold`}>
@@ -4457,10 +4457,10 @@
                             </div>
                             <h3 className="text-xl font-bold text-slate-900">
                               practitioner {index + 1}
-                              {index === currentEnrollingpractitionerIndex && (
+                              {index === currentEnrollingProviderIndex && (
                                 <span className="ml-2 text-sm font-normal text-blue-600">(Currently Enrolling)</span>
                               )}
-                              {index === currentAddingpractitionerIndex && (
+                              {index === currentAddingProviderIndex && (
                                 <span className="ml-2 text-sm font-normal text-purple-600">(Currently Being Added to Group)</span>
                               )}
                             </h3>
@@ -4513,7 +4513,7 @@
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span className="text-slate-700">
-                                  <span className="font-semibold">practitioner Info:</span> {practitioner.practitionerInfoComplete ? 'Complete' : 'Incomplete'}
+                                  <span className="font-semibold">practitioner Info:</span> {practitioner.providerInfoComplete ? 'Complete' : 'Incomplete'}
                                 </span>
                               </div>
                               <div className="flex items-start gap-2">
@@ -4541,13 +4541,13 @@
                                 </summary>
                                 <div className="mt-3 pl-4 space-y-2 text-sm text-slate-600">
                                   <div>• Enrollment Tab: {practitioner.enrollmentTabComplete ? '✓' : '✗'}</div>
-                                  <div>• practitioner Name: {practitioner.practitionerNameCorrect ? '✓' : '✗'}</div>
-                                  <div>• practitioner Type: {practitioner.practitionerTypeCorrect ? '✓' : '✗'}</div>
+                                  <div>• practitioner Name: {practitioner.providerNameCorrect ? '✓' : '✗'}</div>
+                                  <div>• practitioner Type: {practitioner.providerTypeCorrect ? '✓' : '✗'}</div>
                                   <div>• Application Date: {practitioner.applicationDateAdded ? '✓' : '✗'}</div>
                                   <div>• Cancel Reason Code: {practitioner.cancelReasonCode ? '✓' : '✗'}</div>
-                                  <div>• practitioner Address: {practitioner.practitionerAddressComplete ? '✓' : '✗'}</div>
+                                  <div>• practitioner Address: {practitioner.providerAddressComplete ? '✓' : '✗'}</div>
                                   <div>• Payment/Mailing Address: {practitioner.paymentMailingAddressComplete ? '✓' : '✗'}</div>
-                                  <div>• practitioner Info Tab: {practitioner.practitionerInfoTabComplete ? '✓' : '✗'}</div>
+                                  <div>• practitioner Info Tab: {practitioner.providerInfoTabComplete ? '✓' : '✗'}</div>
                                   <div>• NPI Tab: {practitioner.npiTabComplete ? '✓' : '✗'}</div>
                                   <div>• Specialty Tab: {practitioner.specialtyTabComplete ? '✓' : '✗'}</div>
                                   <div>• Claim Type Tab: {practitioner.claimTypeTabComplete ? '✓' : '✗'}</div>
@@ -4567,8 +4567,8 @@
                           </div>
                           <textarea
                             id={`manual-note-${index}`}
-                            value={practitionerManualNotes[index] || ''}
-                            onChange={(e) => handlepractitionerManualNoteChange(index, e.target.value)}
+                            value={providerManualNotes[index] || ''}
+                            onChange={(e) => handleProviderManualNoteChange(index, e.target.value)}
                             placeholder="Add any additional notes about this practitioner..."
                             className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm text-slate-700 placeholder-slate-400 resize-none"
                             rows="3"
@@ -4582,7 +4582,7 @@
                     <button
                       onClick={handleDownloadEnrolledpractitioners}
                       className="px-6 py-3 rounded-lg font-semibold text-green-700 bg-white border-2 border-green-500 hover:bg-green-50 transition-all hover:shadow-lg flex items-center gap-2"
-                      disabled={enrolledpractitioners.length === 0}
+                      disabled={enrolledProviders.length === 0}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

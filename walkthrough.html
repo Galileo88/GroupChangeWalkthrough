@@ -3008,8 +3008,8 @@
                       {currentPageData.resourceText}
                     </p>
                     <div className="flex flex-wrap gap-3">
-                      {currentPageData.resources.map((resource, idx) => (
-                        <a
+                      {(currentPageData.resources || []).map((resource, idx) => (
+                        <button
                           key={idx}
                           href={resource.url}
                           target="_blank"
@@ -3034,7 +3034,7 @@
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
-                      {currentPageData.pageNotes.map((note, idx) => (
+                      {(currentPageData.pageNotes || []).map((note, idx) => (
                         <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
                           <span className="mr-2 mt-1 flex-shrink-0">•</span>
                           <span>{note}</span>
@@ -3044,7 +3044,7 @@
                   </div>
                 )}
 
-                {currentPageData.fields.map((field, index) => {
+                {currentPageData.fields && currentPageData.fields.map((field, index) => {
                   if (currentPageData.id === 'question-20' && field.type === 'checkbox') {
                     return null;
                   }
@@ -3085,7 +3085,7 @@
                             {field.helperNotes ? (
                               <div className="border-2 rounded-lg p-5" style={{backgroundColor: '#e0f2f1', borderColor: '#b2dfdb'}}>
                                 <div className="mb-4">
-                                  {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, idx) => (
+                                  {((typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes) || []).map((note, idx) => (
                                     <p key={idx} className="font-medium mb-2" style={{color: 'var(--gainwell-dark)'}}>
                                       {note}
                                     </p>
@@ -3131,7 +3131,7 @@
                           </>
                         ) : field.type === 'radio' ? (
                           <div className="space-y-3">
-                            {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                            {((typeof field.options === 'function' ? field.options(formData) : field.options) || []).map((option) => (
                               <label
                                 key={option}
                                 className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
@@ -3345,7 +3345,7 @@
                     </div>
                   ) : currentPageData.id === 'question-20' && formData.question20Answered === 'Yes' ? (
                     <div className="space-y-3">
-                      {currentPageData.fields
+                      {currentPageData.fields && currentPageData.fields
                         .filter(f => {
                           if (f.type !== 'checkbox') return false;
                           if (f.showWhen) {
@@ -3450,7 +3450,7 @@
                     </div>
                   ) : currentPageData.id === 'next-provider-ready-check' && formData.nextProviderFinalVerificationConfirm === 'Yes' ? (
                     <div className="space-y-3">
-                      {currentPageData.fields
+                      {currentPageData.fields && currentPageData.fields
                         .filter(f => {
                           if (f.type !== 'checkbox') return false;
                           if (f.showWhen) {
@@ -3511,7 +3511,7 @@
                     </div>
                   ) : currentPageData.id === 'questions-21-23' ? (
                     <div className="space-y-6">
-                      {currentPageData.fields.map((field, idx) => {
+                      {currentPageData.fields && currentPageData.fields.map((field, idx) => {
                         const value = formData[field.name] || '';
                         const isValid = field.validation ? field.validation(value) : !!value;
 
@@ -3523,7 +3523,7 @@
                             </label>
 
                             <div className="space-y-3">
-                              {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                              {((typeof field.options === 'function' ? field.options(formData) : field.options) || []).map((option) => (
                                 <label
                                   key={option}
                                   className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
@@ -3549,7 +3549,7 @@
                               <div className="mt-3 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                                 <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                                 <ul className="space-y-2">
-                                  {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, noteIdx) => (
+                                  {((typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes) || []).map((note, noteIdx) => (
                                     <li key={noteIdx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
                                       <span className="mr-2 mt-1 flex-shrink-0">•</span>
                                       <span>{note}</span>
@@ -3731,7 +3731,7 @@
                     </div>
                   ) : currentPageData.id !== 'question-20' && currentPageData.id !== 'questions-21-23' ? (
                     <ul className="space-y-2">
-                      {currentPageData.fields
+                      {currentPageData.fields && currentPageData.fields
                         .filter(f => {
                           if (!f.required) return false;
                           if (f.showWhen) {

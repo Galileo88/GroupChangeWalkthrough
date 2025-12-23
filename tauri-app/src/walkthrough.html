@@ -135,7 +135,6 @@
 
           if (pwoNumber && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
-            console.log('Auto-saved application state (debounced) for PWO#:', pwoNumber);
           }
         }, 1000); // 1 second debounce
 
@@ -148,43 +147,45 @@
       }, [formData, enrolledProviders, outreachNotes, providerManualNotes, unableToVerifyFields, currentPage, currentEnrollingProviderIndex, currentAddingProviderIndex]);
 
       // -------------------- Reference Images --------------------
-      const groupPracticeAppImage = './images/groupchange_application.jpg';
-      const question6Image = './images/question6.jpg';
-      const paytoMailtoImage = './images/payto_mailto.jpg';
-      const paytoMailtoCICSImage = './images/payto_mailto_CICS.png';
-      const contactInfoImage = './images/contactinfo.jpg';
-      const emailFieldImage = './images/emailfield.png';
-      const practitionersImage = './images/practitioners.jpg';
-      const questions21to24Image = './images/21_24.jpg';
-      const createEnrollmentImage = './images/CreateEnrollment.png';
-      const newProviderWindowImage = './images/newproviderwindow.png';
-      const groupSpecialtyImage = './images/groupspecialty.png';
-      const enrollmentTabImage = './images/enrollmenttab.png';
-      const providerAddressImage = './images/provideraddress.png';
-      const mailingAddressImage = './images/mailingaddress.png';
-      const providerInfoTabImage = './images/providerinfotab.jpg';
-      const npiTabImage = './images/npitab.png';
-      const specTabImage = './images/spectab.png';
-      const claimTabImage = './images/claimtab.png';
-      const licenseDeaTabImage = './images/lictab.png';
-      const mainframeImage = './images/mainframe.png';
-      const cicsImage = './images/CICS.png';
-      const addProvImage = './images/addprov.png';
-      const enrollmentTaskImage = './images/enrollmenttask.png';
-      const checklistImage = './images/checklist.png';
-      const addToGroupImage = './images/addtogroup.png';
-      const letterTaskImage = './images/lettertask.png';
-      const letterSelectImage = './images/letterselect.png';
-      const letterProvImage = './images/letterprov.png';
-      const generateLetterImage = './images/generateletter.png';
-      const closeLetterImage = './images/closeletter.png';
-      const sigAuthImage = './images/sigauth.jpg';
-      const aouImage = './images/aou.jpg';
-      const provAgreementImage = './images/provagreement.jpg';
-      const dooImage = './images/doo.jpg';
-      const w9Image = './images/w9.jpg';
-      const achImage = './images/ACH.jpg';
-      const paperUpdatesImage = './images/paperupdates.jpg';
+      const IMAGES = {
+        groupPracticeApp: './images/groupchange_application.jpg',
+        question6: './images/question6.jpg',
+        paytoMailto: './images/payto_mailto.jpg',
+        paytoMailtoCICS: './images/payto_mailto_CICS.png',
+        contactInfo: './images/contactinfo.jpg',
+        emailField: './images/emailfield.png',
+        practitioners: './images/practitioners.jpg',
+        questions21to24: './images/21_24.jpg',
+        createEnrollment: './images/CreateEnrollment.png',
+        newProviderWindow: './images/newproviderwindow.png',
+        groupSpecialty: './images/groupspecialty.png',
+        enrollmentTab: './images/enrollmenttab.png',
+        providerAddress: './images/provideraddress.png',
+        mailingAddress: './images/mailingaddress.png',
+        providerInfoTab: './images/providerinfotab.jpg',
+        npiTab: './images/npitab.png',
+        specTab: './images/spectab.png',
+        claimTab: './images/claimtab.png',
+        licenseDeaTab: './images/lictab.png',
+        mainframe: './images/mainframe.png',
+        cics: './images/CICS.png',
+        addProv: './images/addprov.png',
+        enrollmentTask: './images/enrollmenttask.png',
+        checklist: './images/checklist.png',
+        addToGroup: './images/addtogroup.png',
+        letterTask: './images/lettertask.png',
+        letterSelect: './images/letterselect.png',
+        letterProv: './images/letterprov.png',
+        generateLetter: './images/generateletter.png',
+        closeLetter: './images/closeletter.png',
+        sigAuth: './images/sigauth.jpg',
+        aou: './images/aou.jpg',
+        provAgreement: './images/provagreement.jpg',
+        doo: './images/doo.jpg',
+        w9: './images/w9.jpg',
+        ach: './images/ACH.jpg',
+        paperUpdates: './images/paperupdates.jpg'
+      };
 
       // -------------------- Helper Functions --------------------
 
@@ -233,21 +234,15 @@
         null
       ) : null;
 
-      // Debug: Log what's available
+      // Tauri initialization check
       React.useEffect(() => {
-        if (isTauri) {
+        if (isTauri && !tauriInvoke) {
           const tauriKeys = Object.keys(window.__TAURI__ || {});
-          console.log('Tauri detected. Available keys:', tauriKeys);
-          console.log('Invoke function found:', !!tauriInvoke);
-
-          // Show debug alert if invoke not found
-          if (!tauriInvoke) {
-            alert('Tauri Debug Info:\n\n' +
-                  'Tauri detected: Yes\n' +
-                  'Available __TAURI__ keys: ' + tauriKeys.join(', ') + '\n' +
-                  'Invoke function found: No\n\n' +
-                  'Using localStorage fallback for saves.');
-          }
+          alert('Tauri Debug Info:\n\n' +
+                'Tauri detected: Yes\n' +
+                'Available __TAURI__ keys: ' + tauriKeys.join(', ') + '\n' +
+                'Invoke function found: No\n\n' +
+                'Using localStorage fallback for saves.');
         }
       }, []);
 
@@ -275,13 +270,10 @@
 
           if (tauriInvoke) {
             // Use Tauri's invoke to save to filesystem
-            console.log('Attempting to save state for PWO:', pwoNumber);
-            const result = await tauriInvoke('save_pwo_state', { state: stateToSave });
-            console.log('Save successful:', result);
+            await tauriInvoke('save_pwo_state', { state: stateToSave });
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           } else {
             // Fallback to localStorage for web version
-            console.log('Using localStorage fallback');
             localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           }
@@ -298,9 +290,7 @@
         try {
           if (tauriInvoke) {
             // Use Tauri's invoke to load from filesystem
-            console.log('Attempting to load state for PWO:', pwoNumber);
             const state = await tauriInvoke('load_pwo_state', { pwoNumber });
-            console.log('Load successful');
             return {
               pwoNumber: state.pwo_number,
               userName: state.user_name,
@@ -333,9 +323,7 @@
         try {
           if (tauriInvoke) {
             // Use Tauri's invoke to delete from filesystem
-            console.log('Attempting to delete state for PWO:', pwoNumber);
-            const result = await tauriInvoke('delete_pwo_state', { pwoNumber });
-            console.log('Delete successful:', result);
+            await tauriInvoke('delete_pwo_state', { pwoNumber });
           } else {
             // Fallback to localStorage for web version
             localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
@@ -358,7 +346,6 @@
 
           // For non-PDF URLs, open externally
           if (tauriInvoke) {
-            console.log('Opening URL with Tauri:', url);
             await tauriInvoke('open_url', { url });
           } else {
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -476,7 +463,7 @@
               ]
             }
           ],
-          displayImage: groupPracticeAppImage
+          displayImage: IMAGES.groupPracticeApp
         },
         {
           id: 'question-6',
@@ -497,7 +484,7 @@
               ]
             }
           ],
-          displayImage: question6Image
+          displayImage: IMAGES.question6
         },
         {
           id: 'payto-mailto',
@@ -525,7 +512,7 @@
               ]
             }
           ],
-          displayImage: paytoMailtoImage
+          displayImage: IMAGES.paytoMailto
         },
         {
           id: 'questions-9-17',
@@ -546,7 +533,7 @@
             'If these optional questions are blank, it is ok and does not stop us from moving forward.',
             'If the group answers 18 and 19 provides a CLIA# or a Mammography Cert#, they should include a copy of the certificates attached to the application. If they do not include a copy of certificate, we cannot add it to CICS until they do.'
           ],
-          displayImage: contactInfoImage
+          displayImage: IMAGES.contactInfo
         },
         {
           id: 'email-to-snow',
@@ -564,7 +551,7 @@
           pageNotes: [
             'If no contact email is provided, you will need to manually send out the letter by placing it in the S-Drive at the end.'
           ],
-          displayImage: emailFieldImage
+          displayImage: IMAGES.emailField
         },
         {
           id: 'question-20',
@@ -675,7 +662,7 @@
               validation: (value) => value === true
             }
           ],
-          displayImage: practitionersImage
+          displayImage: IMAGES.practitioners
         },
         // -------------------- Completion & Special Pages --------------------
         {
@@ -750,7 +737,7 @@
               ]
             }
           ],
-          displayImage: questions21to24Image
+          displayImage: IMAGES.questions21to24
         },
         // -------------------- Required Forms Verification --------------------
         {
@@ -771,7 +758,7 @@
               ]
             }
           ],
-          displayImage: sigAuthImage
+          displayImage: IMAGES.sigAuth
         },
         {
           id: 'agreement-of-understanding',
@@ -790,7 +777,7 @@
               ]
             }
           ],
-          displayImage: aouImage
+          displayImage: IMAGES.aou
         },
         {
           id: 'provider-agreement',
@@ -812,7 +799,7 @@
               ]
             }
           ],
-          displayImage: provAgreementImage
+          displayImage: IMAGES.provAgreement
         },
         {
           id: 'disclosure-of-ownership',
@@ -832,7 +819,7 @@
               ]
             }
           ],
-          displayImage: dooImage
+          displayImage: IMAGES.doo
         },
         {
           id: 'w9-or-irs-letter',
@@ -852,7 +839,7 @@
               ]
             }
           ],
-          displayImage: w9Image
+          displayImage: IMAGES.w9
         },
         {
           id: 'authorization-agreement-ach',
@@ -868,7 +855,7 @@
             }
           ],
           instructionText: 'While this is not required for existing groups, it is important to pay attention to. If an existing group provides this form filled out, they may be looking to update their banking information. Compare the information to what we have in CICS on the 04 page. If the group wants make changes to their banking info, they will also need to provide a copy of a voided check. The account information will be taken from the voided check to update the info on the 04 page in CICS.\n\nFor new groups, this document is required along with a copy of a voided check. The account information will be taken from the voided check and added to the 04 page in CICS when enrolling a new group.\n\nPlease reach out to leadership prior to making any changes to ACH information.',
-          displayImage: achImage
+          displayImage: IMAGES.ach
         },
         {
           id: 'request-for-paper-updates',
@@ -884,7 +871,7 @@
             }
           ],
           instructionText: 'If this form is attached and completed, you will enter all N\'s for provider mailings on page 02 CICS:\n\nMAILING INDS: MANUALS - N\nNEWSLETTERS - N\nPAPER RA - N\n\nIf this form is not provided or filled out, you can continue processing as usual.',
-          displayImage: paperUpdatesImage
+          displayImage: IMAGES.paperUpdates
         },
         // ================== EXISTING PROVIDER WORKFLOW ==================
         // These pages handle adding an already-enrolled provider to a group
@@ -903,7 +890,7 @@
             }
           ],
           instructionText: 'In CICS, set the OPTION # to 12, the TRANS. TYPE to "U" and enter the groups provider number and press enter.',
-          displayImage: cicsImage
+          displayImage: IMAGES.cics
         },
         {
           id: 'existing-provider-add-to-group',
@@ -920,7 +907,7 @@
             }
           ],
           instructionText: 'You will see list of all of the individual providers in the group.\n\nOne the first line, you will add a letter "A" to let CICS know you intend to Add a provider to this group.\n\nNext, tab over to the provider number and overwrite it with the new provider number that was just generated. (don\'t worry, you are not overwriting an existing provider).\n\nNext, tab over to the BEGIN DATE, and enter the begin date for the new provider.\nYou can get the BEGIN DATE by looking at Eligibility Begin in the Provider Information tab in SNOW.\n\nFinally, tab over to the END DATE and add 12319999 as the end date. If the date is already 12319999, you can leave it.\n\nOnce you hit ENTER, the provider will be added to the group.\n\nYou can check to see if the provider was successfully added by searching for their provider number where it says "NEXT MEMBER" and hitting enter. This will show you the provider you just added.\n\nAdditionally, check the notes page F6 to make sure a note was added stating you added the provider to the group.\n\nYou will do this for each provider you are adding',
-          displayImage: addProvImage
+          displayImage: IMAGES.addProv
         },
         {
           id: 'existing-provider-verify-info',
@@ -994,7 +981,7 @@
             }
           ],
           instructionText: 'In the Enrollment work object, once you refresh the screen, you should see an Enrollment Task titled "Verify CICS".\n\nClick the PWT number and close the task. Work notes can state that you are just "closing to task".\n\nThis will close the enrollment.\n\nNavigate back to the Group Change work object.',
-          displayImage: enrollmentTaskImage
+          displayImage: IMAGES.enrollmentTask
         },
         {
           id: 'existing-provider-finish-group-change',
@@ -1011,7 +998,7 @@
             }
           ],
           instructionText: 'Back in the Group Change work object, Open the application, and find question 17 in the Group Practice Application to find the email address for the group.\n\nInput that email address into the email field in SNOW.',
-          displayImage: emailFieldImage
+          displayImage: IMAGES.emailField
         },
         {
           id: 'existing-provider-create-checklist',
@@ -1028,7 +1015,7 @@
             }
           ],
           instructionText: 'Add a checklist and check off everything that you verified.\n\nIf you did not use part of the checklist, do not mark it off. Only mark off what was verified.',
-          displayImage: checklistImage
+          displayImage: IMAGES.checklist
         },
         {
           id: 'existing-provider-approve-group-change',
@@ -1045,7 +1032,7 @@
             }
           ],
           instructionText: 'Click one the approve button and make a comment stating the provider(s) has been added to the group.\n\nClick Approve.',
-          displayImage: addToGroupImage
+          displayImage: IMAGES.addToGroup
         },
         {
           id: 'existing-provider-open-letter-task',
@@ -1062,7 +1049,7 @@
             }
           ],
           instructionText: 'Once you have clicked approve, a new task will generate in the Group Change Task tab.\n\nClick the PWT number to go to the letter task.',
-          displayImage: letterTaskImage
+          displayImage: IMAGES.letterTask
         },
         {
           id: 'existing-provider-select-letter',
@@ -1079,7 +1066,7 @@
             }
           ],
           instructionText: 'Once in the letter task, click on the blue Select Letter button and select GroupChangeAdd\n\nAlso enter the effective date that was given to the provider.',
-          displayImage: letterSelectImage
+          displayImage: IMAGES.letterSelect
         },
         {
           id: 'existing-provider-add-to-letter',
@@ -1096,7 +1083,7 @@
             }
           ],
           instructionText: 'Near the bottom of the letter task, click on the blue "New" button.\n\nIn the Provider field, enter the provider number of the individual we just added to the group.\n\nIn the Effective Date field, enter the effective date given to the provider.\n\nHit Submit.\n\nYou will do this for each provider you added to the group.',
-          displayImage: letterProvImage
+          displayImage: IMAGES.letterProv
         },
         {
           id: 'existing-provider-finish-letter',
@@ -1113,7 +1100,7 @@
             }
           ],
           instructionText: 'IMPORTANT: Before creating the letter, verify the address matches the groups Mail To address on CICS. From the 02 screen in CICS, hit F5 3 times to view the Mail To address.\n\nOnce the letter has been selected, the effective date entered, and the provider(s) are added to the letter, click on the "Create Letter" button at the top right.\n\nThis will create an approval letter, and it will be attached to the top of the page.\n\nOpen the letter by clicking "view" next to the attached letter and verify that all the information on the letter is correct.\n\nDownload the letter by clicking directly on the letter attachment.\nIn your Downloads folder, locate the letter and rename it to the following format:\n\nGroupChangeAdd_GroupName_ICN#_Date\n\nExample:\nGroupChangeAdd_CMC DEPT OF MEDICINE GRP_24226304109_2024-08-20\n\nOnce renamed place the letter into the SDRIVE folder:\n\\\\192.60.36.175\\shared\\Provider Services\\Enrollment\\2-PE Letters',
-          displayImage: generateLetterImage
+          displayImage: IMAGES.generateLetter
         },
         {
           id: 'existing-provider-close-letter-task',
@@ -1130,7 +1117,7 @@
             }
           ],
           instructionText: 'Add a work note stating you have "Generated the approval letter"\n\nChange the Group Change Task State to Closed\n\nClick on the "Save" button\n\nThis will close the letter task and the Group Change work object all at one.',
-          displayImage: closeLetterImage
+          displayImage: IMAGES.closeLetter
         },
         {
           id: 'existing-provider-completion',
@@ -1169,7 +1156,7 @@
           ],
           instructionText: 'Begin enrolling a new provider by clicking on the blue "Create Enrollment" button within your work object in SNOW.',
           noteText: 'NOTE: You will do this for each new provider that needs to be enrolled into CICS, but do it one at a time to avoid making a mistake.',
-          displayImage: createEnrollmentImage
+          displayImage: IMAGES.createEnrollment
         },
         {
           id: 'fill-provider-info',
@@ -1187,7 +1174,7 @@
           ],
           instructionText: 'Fill in the information for the individual provider you are enrolling into the window that pops up.',
           nameFormatNote: 'When entering the providers name, it should be in all CAPS and the format should be LAST FIRST MI and the professional title. ex: SMITH JOHN J. MD',
-          displayImage: newProviderWindowImage,
+          displayImage: IMAGES.newProviderWindow,
           resourceText: 'Be sure to check the individual providers license and utilize the links below to help determine the provider type and specialty:',
           resources: [
             { label: '2025 Legal Quick Guide', url: './2025LegalQuickGuide.pdf', type: 'pdf' },
@@ -1209,7 +1196,7 @@
             }
           ],
           instructionText: 'Back in CICS, under the group, be sure to check what kind of specialties the group can take. From the 02 page in CICS, press F5 and take a look at the specialties that are already added to the group. If you do not see the providers specialty, check to see if the specialty is covered under another specialty, e.g. 420, 110, 750 etc.\n\nIf necessary, add the specialty to the group. The specialty will get the same effective date as the provider you are adding.',
-          displayImage: groupSpecialtyImage,
+          displayImage: IMAGES.groupSpecialty,
           pageNotes: [
             'If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.'
           ]
@@ -1229,7 +1216,7 @@
             }
           ],
           instructionText: 'Back in SNOW, navigate to the bottom of the PWO and locate the "Enrollment Applications" tab.\n\nYou will see a new Enrollment Application associated with the provider information you just entered.\n\nClick on the PWO to take you to the enrollment application.',
-          displayImage: enrollmentTabImage
+          displayImage: IMAGES.enrollmentTab
         },
         {
           id: 'verify-enrollment-application',
@@ -1283,7 +1270,7 @@
             }
           ],
           instructionText: 'The street address will be the practice address found on question 6 of the Group Practice Application.\n\nThe phone number, and fax number can be found on questions 11 and 14 in the Group Practice Application',
-          displayImage: providerAddressImage
+          displayImage: IMAGES.providerAddress
         },
         {
           id: 'payment-mailing-address-tab',
@@ -1300,7 +1287,7 @@
             }
           ],
           instructionText: 'By default these inherit the street address from the Provider Address tab. These do not need to be changed in SNOW, but will need to be updated in CICS once the provider is added to the group.',
-          displayImage: mailingAddressImage
+          displayImage: IMAGES.mailingAddress
         },
         {
           id: 'provider-information-tab',
@@ -1317,7 +1304,7 @@
             }
           ],
           instructionText: 'The Eligibility Begin date will be the Requested Effective Date on question 20 of the Group Practice Application.\n\nA Requested Effective Date might not be provided. If that is the case, The effective date will go one year back from the stamped date as long as the license can cover it.\n\nIf the Requested Effective Date is further than a year back, we will go back 1 year from the stamped date on the application, as long as the individual providers license covers that far back. If the license does not cover that far back, you can only go as far back as the issue date of the license.\n\nThe Eligibility End date will remain blank.\n\nIf the provider has a Medicare Number, you can enter it in the Medicare Number field.',
-          displayImage: providerInfoTabImage
+          displayImage: IMAGES.providerInfoTab
         },
         {
           id: 'npi-tab',
@@ -1334,7 +1321,7 @@
             }
           ],
           instructionText: 'The NPI number for the individual provider should already be populated into this tab. If it is not, you will enter it here.',
-          displayImage: npiTabImage
+          displayImage: IMAGES.npiTab
         },
         {
           id: 'specialty-tab',
@@ -1351,7 +1338,7 @@
             }
           ],
           instructionText: 'This is a good time to triple check the specialty.\n\nSpecialty 1 Begin Date will be the same as the Eligibility Begin date as on the Provider Information tab.\n\nFor NURSES, Specialty 1 End Date will be the date their Board Certificate expires\n\nFor DOCTORS & PAs, Specialty 1 End Date will remain blank',
-          displayImage: specTabImage
+          displayImage: IMAGES.specTab
         },
         {
           id: 'claim-type-tab',
@@ -1372,7 +1359,7 @@
           resources: [
             { label: 'Provider Types and Specialties', url: './ProviderTypesSpecialties.pdf', type: 'pdf' }
           ],
-          displayImage: claimTabImage,
+          displayImage: IMAGES.claimTab,
           pageNotes: [
             'Example: A Provider Type 70 with a Specialty of 190 will get Claim Types 13, 15, 22',
             'Claim Type 1 Begin Date will be the same as the Eligibility Begin date as on the Provider Information tab.',
@@ -1399,7 +1386,7 @@
           resources: [
             { label: 'Verify License', url: 'https://miamifrp.com/verification/', type: 'link' }
           ],
-          displayImage: licenseDeaTabImage,
+          displayImage: IMAGES.licenseDeaTab,
           pageNotes: [
             'Input the License Number along with the License Effective Date and License Expiration Date.',
             'The License Effective Date is the issue date of the license',
@@ -1424,7 +1411,7 @@
             }
           ],
           instructionText: 'Once all of the information has been filled out accurately, click "Save" at the top of the screen and then you can proceed to click on "Enroll On Mainframe".\n\nThis may take a moment to process, but eventually you should see a blue banner stating "PROVIDER XXXXXXX SUCCESSFULLY ADDED"\n\nThe provider now has a provider ID.',
-          displayImage: mainframeImage
+          displayImage: IMAGES.mainframe
         },
         {
           id: 'additional-providers-check',
@@ -1608,7 +1595,6 @@
                 ...updated[currentEnrollingProviderIndex],
                 [fieldName]: value
               };
-              console.log(`Updated enrollment detail for provider ${currentEnrollingProviderIndex + 1}: ${fieldName} = ${value}`);
             }
             return updated;
           });
@@ -1650,7 +1636,6 @@
           }
 
           // Restore all saved state
-          console.log('Restoring saved application for PWO#:', pwoToResume);
           setFormData(savedState.formData);
           setEnrolledProviders(savedState.enrolledProviders);
           setOutreachNotes(savedState.outreachNotes);
@@ -1674,25 +1659,14 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
-          console.log('=== Question 20 Save Check ===');
-          console.log('Expected provider count:', expectedProviderCount);
-          console.log('Current enrolled providers length:', enrolledProviders.length);
-          console.log('Provider already saved?', providerAlreadySaved);
-
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
-          // Debug: Log unable to verify check
-          console.log('=== Question 20 Verification Check ===');
-          console.log('Unable to verify fields:', Array.from(unableToVerifyFields));
-          console.log('Has unable to verify:', hasUnableToVerify);
-
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
             if (hasUnableToVerify) {
-              console.log('Saving provider with OUTREACH status');
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
@@ -1709,11 +1683,7 @@
                 outreachNotes: [...outreachNotes]
               };
 
-              setEnrolledProviders(prev => {
-                const updatedProviders = [...prev, providerData];
-                console.log(`Provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
-                return updatedProviders;
-              });
+              setEnrolledProviders(prev => [...prev, providerData]);
             } else if (moreProviders) {
               let providerStatus = 'Verified - Ready to Enroll';
               if (formData.providerAlreadyEnrolled === 'Yes') {
@@ -1723,8 +1693,6 @@
                   providerStatus = 'Verified - Ready to Add to Group';
                 }
               }
-
-              console.log('Saving provider with VERIFIED status:', providerStatus);
 
               const providerData = {
                 status: providerStatus,
@@ -1742,14 +1710,8 @@
                 outreachNotes: [...outreachNotes]
               };
 
-              setEnrolledProviders(prev => {
-                const updatedProviders = [...prev, providerData];
-                console.log(`Fully verified provider saved. Total providers: ${updatedProviders.length}`);
-                return updatedProviders;
-              });
+              setEnrolledProviders(prev => [...prev, providerData]);
             }
-          } else {
-            console.log(`Provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
           }
 
           if (moreProviders) {
@@ -1770,11 +1732,6 @@
             // +1 for the provider just saved (if not already saved), +1 for the next expected provider
             const providerJustSaved = !providerAlreadySaved ? 1 : 0;
             clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
-
-            console.log('=== Setting Expected Provider Count ===');
-            console.log('enrolledProviders.length:', enrolledProviders.length);
-            console.log('providerJustSaved:', providerJustSaved);
-            console.log('New expectedProviderCount:', clearedData.expectedProviderCount);
 
             setFormData(clearedData);
 
@@ -1806,7 +1763,6 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
-                  console.log(`Final provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1816,7 +1772,6 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
-                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
                 if (completionIndex !== -1) {
@@ -1838,7 +1793,6 @@
                   }
                 }
 
-                console.log('Saving FINAL provider with VERIFIED status:', providerStatus);
 
                 const providerData = {
                   status: providerStatus,
@@ -1858,7 +1812,6 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
-                  console.log(`Final verified provider saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1871,18 +1824,15 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
-                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 // Check if this is a duplicate (only provider and already enrolled and in group)
                 if (allProviders.length === 1 && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
-                  console.log('>>> DUPLICATE DETECTED: Only provider is already enrolled and in group <<<');
                   const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
                   const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only provider is already enrolled and in group`;
                   setOutreachNotes(prev => [...prev, rejectionNote]);
 
                   const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
                   if (completionIndex !== -1) {
-                    console.log('>>> ROUTING TO DUPLICATE-REJECTION-COMPLETION at index', completionIndex);
                     setCurrentPage(completionIndex);
                     setVisitedPages(prev => new Set([...prev, completionIndex]));
                     setTimeout(() => {
@@ -1893,11 +1843,8 @@
                 }
 
                 // Navigate to questions-21-23 after saving final provider
-                console.log('>>> ATTEMPTING TO ROUTE TO QUESTIONS-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
-                console.log('questions2123Index:', questions2123Index);
                 if (questions2123Index !== -1) {
-                  console.log('>>> ROUTING TO QUESTIONS-21-23 at index', questions2123Index);
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
                   // Scroll to top after navigation
@@ -1912,7 +1859,6 @@
               }
             } else {
               // Provider already saved, just navigate to appropriate next page
-              console.log(`Final provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
 
               // Determine the appropriate next page based on existing providers
               if (hasUnableToVerify) {
@@ -1928,7 +1874,6 @@
                 return;
               } else {
                 // Navigate to questions-21-23 (navigating back case)
-                console.log('>>> NAVIGATING BACK: Routing to questions-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
@@ -1951,7 +1896,6 @@
                                         enrolledProviders[0].status === 'Verified - Already in the Group';
 
           if (isDuplicateApplication) {
-            console.log('Duplicate application detected - only provider is already enrolled and in group');
             const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
             if (duplicateIndex !== -1) {
               setCurrentPage(duplicateIndex);
@@ -1974,7 +1918,6 @@
           const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
           if (requiresOutreach) {
-            console.log('Routing to outreach completion page due to outreach requirements');
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -2023,7 +1966,6 @@
               });
 
               setCurrentEnrollingProviderIndex(firstReadyIndex);
-              console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
 
               const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
               if (createEnrollmentIndex !== -1) {
@@ -2044,7 +1986,6 @@
           );
 
           if (hasExistingProviders) {
-            console.log('Routing to existing provider workflow');
             setEnrolledProviders(prev => {
               const updatedProviders = [...prev];
               updatedProviders.forEach((provider, idx) => {
@@ -2072,7 +2013,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2119,14 +2059,12 @@
                   ...updated[currentAddingProviderIndex],
                   status: 'Complete - Enrolled and Added to Group'
                 };
-                console.log(`Provider ${currentAddingProviderIndex + 1} added to group.`);
               }
 
               return updated;
             });
 
             setCurrentAddingProviderIndex(nextReadyIndex);
-            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             setFormData(prev => {
               const clearedData = { ...prev };
@@ -2174,7 +2112,6 @@
                     ...updated[currentAddingProviderIndex],
                     status: 'Complete - Enrolled and Added to Group'
                   };
-                  console.log(`Final provider ${currentAddingProviderIndex + 1} added to group.`);
                 }
                 return updated;
               });
@@ -2220,7 +2157,6 @@
                   ...updated[currentEnrollingProviderIndex],
                   status: 'Enrolled - Ready to be Added to Group'
                 };
-                console.log(`Provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
 
               if (updated[nextReadyIndex]) {
@@ -2249,7 +2185,6 @@
             });
 
             setCurrentEnrollingProviderIndex(nextReadyIndex);
-            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             const clearedData = { ...formData };
             delete clearedData.createEnrollmentComplete;
@@ -2304,7 +2239,6 @@
                     ...updated[currentEnrollingProviderIndex],
                     status: 'Enrolled - Ready to be Added to Group'
                   };
-                  console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
                 }
 
                 return updated.map(provider => {
@@ -2345,7 +2279,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2376,7 +2309,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting existing provider branch - adding provider ${firstProviderIndex + 1} to group`);
               }
             }
 
@@ -2392,7 +2324,6 @@
           const pwoNumber = formData.pwoNumber;
           if (pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
-            console.log('Auto-saved application state for PWO#:', pwoNumber);
           }
         }, 100);
       };
@@ -2427,18 +2358,15 @@
               const pwoNumber = formData.pwoNumber;
               if (pwoNumber) {
                 saveApplicationState(pwoNumber);
-                console.log('Auto-saved application state for PWO#:', pwoNumber);
               }
             }, 100);
           } else {
-            console.log('Navigation blocked: Cannot go back before the start of the provider enrollment workflow');
           }
         }
       };
 
       const handleSubmit = async () => {
         if (isPageValid()) {
-          console.log('Form submitted:', formData);
           await showAlert('Form submitted successfully! Check console for data.');
         }
       };
@@ -2448,12 +2376,10 @@
         if (tauriInvoke) {
           // Tauri desktop app - use custom command
           try {
-            console.log('Attempting to save file with Tauri...');
             const result = await tauriInvoke('save_file_dialog', {
               content: content,
               defaultFilename: defaultFilename
             });
-            console.log('File saved:', result);
             await showAlert('File saved successfully!');
           } catch (error) {
             console.error('Tauri save failed:', error);
@@ -2894,7 +2820,6 @@
           const currentPwoNumber = formData.pwoNumber;
           if (currentPwoNumber) {
             await deleteApplicationState(currentPwoNumber);
-            console.log('Deleted saved application state for PWO#:', currentPwoNumber);
           }
 
           setFormData({});
@@ -2950,7 +2875,6 @@
           // Save the duplicate provider and prepare for the next provider
           setEnrolledProviders(prev => {
             const updatedProviders = [...prev, providerData];
-            console.log(`Provider saved as duplicate. Total providers: ${updatedProviders.length}`);
             return updatedProviders;
           });
           const clearedData = { ...formData };
@@ -3067,7 +2991,6 @@
                 });
 
                 setCurrentEnrollingProviderIndex(firstReadyIndex);
-                console.log(`Starting enrollment for provider ${firstReadyIndex + 1}`);
 
                 const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                 if (createEnrollmentIndex !== -1) {
@@ -3097,7 +3020,6 @@
 
                 if (firstProviderIndex !== -1) {
                   setCurrentAddingProviderIndex(firstProviderIndex);
-                  console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
                 }
 
                 setCurrentPage(addToGroupIndex);
@@ -4334,7 +4256,7 @@
                 <div className="bg-white rounded-xl p-6 max-h-[80vh] overflow-y-auto">
                   <h2 className="text-2xl font-bold text-indigo-900 mb-4">Next Steps</h2>
                   <img
-                    src={paytoMailtoCICSImage}
+                    src={IMAGES.paytoMailtoCICS}
                     alt="Pay To / Mail To CICS Screen"
                     className="w-full rounded-lg border border-slate-200 mb-4"
                   />

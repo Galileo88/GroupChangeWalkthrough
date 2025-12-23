@@ -771,12 +771,12 @@
         },
         {
           id: 'provider-agreement',
-          title: 'practitioner Agreement',
-          description: 'Does the application have the practitioner Agreement attached?',
+          title: 'Provider Agreement',
+          description: 'Does the application have the Provider Agreement attached?',
           fields: [
             {
               name: 'providerAgreementAttached',
-              label: 'Does the application have the practitioner Agreement attached?',
+              label: 'Does the application have the Provider Agreement attached?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
@@ -1400,7 +1400,7 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Once all of the information has been filled out accurately, click "Save" at the top of the screen and then you can proceed to click on "Enroll On Mainframe".\n\nThis may take a moment to process, but eventually you should see a blue banner stating "practitioner XXXXXXX SUCCESSFULLY ADDED"\n\nThe practitioner now has a practitioner ID.',
+          instructionText: 'Once all of the information has been filled out accurately, click "Save" at the top of the screen and then you can proceed to click on "Enroll On Mainframe".\n\nThis may take a moment to process, but eventually you should see a blue banner stating "Practitioner XXXXXXX SUCCESSFULLY ADDED"\n\nThe practitioner now has a practitioner ID.',
           displayImage: mainframeImage
         },
         {
@@ -1999,7 +1999,7 @@
 
             setFormData(prev => ({
               ...prev,
-              providerEnrollmentType: 'Existing practitioner'
+              providerEnrollmentType: 'Existing Practitioner'
             }));
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-practitioner-open-cics');
@@ -2252,7 +2252,7 @@
 
             setFormData(prev => ({
               ...prev,
-              providerEnrollmentType: 'Existing practitioner'
+              providerEnrollmentType: 'Existing Practitioner'
             }));
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-practitioner-open-cics');
@@ -2490,7 +2490,7 @@
           textContent += `  • Agreement of Understanding Attached: ${formData.agreementOfUnderstandingAttached}\n`;
         }
         if (formData.providerAgreementAttached !== undefined) {
-          textContent += `  • practitioner Agreement Attached: ${formData.providerAgreementAttached}\n`;
+          textContent += `  • Provider Agreement Attached: ${formData.providerAgreementAttached}\n`;
         }
         if (formData.disclosureOfOwnershipAttached !== undefined) {
           textContent += `  • Disclosure of Ownership Attached: ${formData.disclosureOfOwnershipAttached}\n`;
@@ -2506,7 +2506,7 @@
         }
         textContent += `\n`;
 
-        // Existing practitioner Workflow (if applicable)
+        // Existing Practitioner Workflow (if applicable)
         const hasExistingproviderData = formData.existingProviderOpenCicsComplete !== undefined ||
                                          formData.existingProviderAddToGroupComplete !== undefined ||
                                          formData.providerNameFormatting02 !== undefined;
@@ -2517,10 +2517,10 @@
             textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
           }
           if (formData.existingProviderAddToGroupComplete !== undefined) {
-            textContent += `  • practitioner Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
+            textContent += `  • Practitioner Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
           }
           if (formData.providerNameFormatting02 !== undefined) {
-            textContent += `  • practitioner Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
+            textContent += `  • Practitioner Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
           }
           if (formData.mailToPayToAddresses !== undefined) {
             textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
@@ -2556,7 +2556,7 @@
             textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
           }
           if (formData.existingProviderAddToLetterComplete !== undefined) {
-            textContent += `  • practitioner Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
+            textContent += `  • Practitioner Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
           }
           if (formData.existingProviderFinishLetterComplete !== undefined) {
             textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
@@ -2590,9 +2590,9 @@
             // practitioner INFORMATION (QUESTION 20)
             textContent += `practitioner INFORMATION (QUESTION 20):\n`;
             textContent += `  • Question 20 Answered: ${practitioner.question20Answered !== false ? 'Yes' : 'No'}\n`;
-            textContent += `  • practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
+            textContent += `  • Practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
             if (practitioner.providerAlreadyEnrolled === 'Yes') {
-              textContent += `  • practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
+              textContent += `  • Practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
             }
             textContent += `\n`;
 
@@ -2612,20 +2612,20 @@
                                        practitioner.status === 'Enrolled - Ready to be Added to Group';
 
             if (isExistingpractitioner) {
-              textContent += `Enrollment Details: Existing practitioner\n`;
+              textContent += `Enrollment Details: Existing Practitioner\n`;
             } else {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${practitioner.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Specialties Checked: ${practitioner.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
               textContent += `  • Enrollment Tab Complete: ${practitioner.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
               textContent += `  • Application Date Added: ${practitioner.applicationDateAdded ? 'Yes' : 'No'}\n`;
               textContent += `  • Cancel Reason Code: ${practitioner.cancelReasonCode ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Payment/Mailing Address Complete: ${practitioner.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • NPI Tab Complete: ${practitioner.npiTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Specialty Tab Complete: ${practitioner.specialtyTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Claim Type Tab Complete: ${practitioner.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
@@ -2727,9 +2727,9 @@
             // practitioner INFORMATION (QUESTION 20)
             textContent += `practitioner INFORMATION (QUESTION 20):\n`;
             textContent += `  • Question 20 Answered: ${practitioner.question20Answered !== false ? 'Yes' : 'No'}\n`;
-            textContent += `  • practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
+            textContent += `  • Practitioner Already Enrolled: ${practitioner.providerAlreadyEnrolled || 'N/A'}\n`;
             if (practitioner.providerAlreadyEnrolled === 'Yes') {
-              textContent += `  • practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
+              textContent += `  • Practitioner In Group: ${practitioner.providerInGroup || 'N/A'}\n`;
             }
             textContent += `\n`;
 
@@ -2749,20 +2749,20 @@
                                        practitioner.status === 'Enrolled - Ready to be Added to Group';
 
             if (isExistingpractitioner) {
-              textContent += `Enrollment Details: Existing practitioner\n`;
+              textContent += `Enrollment Details: Existing Practitioner\n`;
             } else {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${practitioner.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Info Complete: ${practitioner.providerInfoComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Specialties Checked: ${practitioner.groupSpecialtiesChecked ? 'Yes' : 'No'}\n`;
               textContent += `  • Enrollment Tab Complete: ${practitioner.enrollmentTabComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Name Correct: ${practitioner.providerNameCorrect ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Type Correct: ${practitioner.providerTypeCorrect ? 'Yes' : 'No'}\n`;
               textContent += `  • Application Date Added: ${practitioner.applicationDateAdded ? 'Yes' : 'No'}\n`;
               textContent += `  • Cancel Reason Code: ${practitioner.cancelReasonCode ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Address Complete: ${practitioner.providerAddressComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Payment/Mailing Address Complete: ${practitioner.paymentMailingAddressComplete ? 'Yes' : 'No'}\n`;
-              textContent += `  • practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Practitioner Info Tab Complete: ${practitioner.providerInfoTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • NPI Tab Complete: ${practitioner.npiTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Specialty Tab Complete: ${practitioner.specialtyTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Claim Type Tab Complete: ${practitioner.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
@@ -3006,7 +3006,7 @@
 
               setFormData(prev => ({
                 ...prev,
-                providerEnrollmentType: 'Existing practitioner'
+                providerEnrollmentType: 'Existing Practitioner'
               }));
 
               const addToGroupIndex = pages.findIndex(page => page.id === 'existing-practitioner-add-to-group');
@@ -4022,10 +4022,10 @@
                         <div className="flex-1">
                           <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
                           <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
-                            Outreach the group and request a completed practitioner Agreement form.
+                            Outreach the group and request a completed Provider Agreement form.
                           </p>
                           <button
-                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed practitioner Agreement form.')}
+                            onClick={() => handleAddOutreachNote('Outreach the group and request a completed Provider Agreement form.')}
                             className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
                             style={{backgroundColor: 'var(--gainwell-teal)'}}
                             onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
@@ -4204,7 +4204,7 @@
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        practitioners
+                        Practitioners
                         <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                           {enrolledProviders.length}
                         </span>
@@ -4408,7 +4408,7 @@
             </div>
           )}
 
-          {/* Enrolled practitioners Modal */}
+          {/* Enrolled Practitioners Modal */}
           {showEnrolledProvidersModal && (
             <div
               className="modal-overlay"
@@ -4430,7 +4430,7 @@
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-3xl font-bold text-slate-900 mb-2">Enrolled practitioners</h2>
+                      <h2 className="text-3xl font-bold text-slate-900 mb-2">Enrolled Practitioners</h2>
                       <p className="text-slate-600">Review the practitioners you have successfully enrolled ({enrolledProviders.length} total).</p>
                     </div>
                   </div>
@@ -4456,7 +4456,7 @@
                               {index + 1}
                             </div>
                             <h3 className="text-xl font-bold text-slate-900">
-                              practitioner {index + 1}
+                              Practitioner {index + 1}
                               {index === currentEnrollingProviderIndex && (
                                 <span className="ml-2 text-sm font-normal text-blue-600">(Currently Enrolling)</span>
                               )}
@@ -4492,8 +4492,8 @@
                               </svg>
                               <span className="text-sm font-semibold text-indigo-800">
                                 {practitioner.status === 'Verified - Already in the Group'
-                                  ? 'practitioner is already enrolled and in the group'
-                                  : 'Enrollment Details: Existing practitioner'}
+                                  ? 'Practitioner is already enrolled and in the group'
+                                  : 'Enrollment Details: Existing Practitioner'}
                               </span>
                             </div>
                           </div>
@@ -4541,13 +4541,13 @@
                                 </summary>
                                 <div className="mt-3 pl-4 space-y-2 text-sm text-slate-600">
                                   <div>• Enrollment Tab: {practitioner.enrollmentTabComplete ? '✓' : '✗'}</div>
-                                  <div>• practitioner Name: {practitioner.providerNameCorrect ? '✓' : '✗'}</div>
-                                  <div>• practitioner Type: {practitioner.providerTypeCorrect ? '✓' : '✗'}</div>
+                                  <div>• Practitioner Name: {practitioner.providerNameCorrect ? '✓' : '✗'}</div>
+                                  <div>• Practitioner Type: {practitioner.providerTypeCorrect ? '✓' : '✗'}</div>
                                   <div>• Application Date: {practitioner.applicationDateAdded ? '✓' : '✗'}</div>
                                   <div>• Cancel Reason Code: {practitioner.cancelReasonCode ? '✓' : '✗'}</div>
-                                  <div>• practitioner Address: {practitioner.providerAddressComplete ? '✓' : '✗'}</div>
+                                  <div>• Practitioner Address: {practitioner.providerAddressComplete ? '✓' : '✗'}</div>
                                   <div>• Payment/Mailing Address: {practitioner.paymentMailingAddressComplete ? '✓' : '✗'}</div>
-                                  <div>• practitioner Info Tab: {practitioner.providerInfoTabComplete ? '✓' : '✗'}</div>
+                                  <div>• Practitioner Info Tab: {practitioner.providerInfoTabComplete ? '✓' : '✗'}</div>
                                   <div>• NPI Tab: {practitioner.npiTabComplete ? '✓' : '✗'}</div>
                                   <div>• Specialty Tab: {practitioner.specialtyTabComplete ? '✓' : '✗'}</div>
                                   <div>• Claim Type Tab: {practitioner.claimTypeTabComplete ? '✓' : '✗'}</div>

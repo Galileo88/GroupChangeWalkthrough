@@ -1416,7 +1416,7 @@
           id: 'next-practitioner-ready-check',
           title: 'Final practitioner Verification',
           description: 'Last chance to verify all practitioner information before enrollment',
-          showWhen: { field: 'additionalpractitionersNeeded', value: 'Yes' },
+          showWhen: { field: 'additionalProvidersNeeded', value: 'Yes' },
           fields: [
             {
               name: 'nextProviderFinalVerificationConfirm',
@@ -1578,7 +1578,7 @@
         ];
 
         if (currentEnrollingProviderIndex !== null && enrollmentFields.includes(fieldName)) {
-          setEnrolledpractitioners(prev => {
+          setEnrolledProviders(prev => {
             const updated = [...prev];
             if (updated[currentEnrollingProviderIndex]) {
               updated[currentEnrollingProviderIndex] = {
@@ -1627,7 +1627,7 @@
 
           // Restore all saved state
           setFormData(savedState.formData);
-          setEnrolledpractitioners(savedState.enrolledProviders);
+          setEnrolledProviders(savedState.enrolledProviders);
           setOutreachNotes(savedState.outreachNotes);
           setproviderManualNotes(savedState.providerManualNotes);
           setUnableToVerifyFields(new Set(savedState.unableToVerifyFields));
@@ -1650,7 +1650,7 @@
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
 
-          const morepractitioners = await showConfirm('Are there more practitioners to verify in this application?');
+          const moreProviders = await showConfirm('Are there more practitioners to verify in this application?');
 
           const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
@@ -1676,11 +1676,11 @@
                 outreachNotes: [...outreachNotes]
               };
 
-              setEnrolledpractitioners(prev => {
+              setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
                 return updatedProviders;
               });
-            } else if (morepractitioners) {
+            } else if (moreProviders) {
               let providerStatus = 'Verified - Ready to Enroll';
               if (formData.providerAlreadyEnrolled === 'Yes') {
                 if (formData.providerInGroup === 'Yes') {
@@ -1707,7 +1707,7 @@
                 outreachNotes: [...outreachNotes]
               };
 
-              setEnrolledpractitioners(prev => {
+              setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
                 return updatedProviders;
               });
@@ -1715,7 +1715,7 @@
           } else {
           }
 
-          if (morepractitioners) {
+          if (moreProviders) {
             const clearedData = { ...formData };
             delete clearedData.question20Answered;
             delete clearedData.providerAlreadyEnrolled;
@@ -1763,7 +1763,7 @@
                   outreachNotes: [...outreachNotes]
                 };
 
-                setEnrolledpractitioners(prev => {
+                setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
                   return updatedProviders;
                 });
@@ -1812,7 +1812,7 @@
                   outreachNotes: [...outreachNotes]
                 };
 
-                setEnrolledpractitioners(prev => {
+                setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
                   return updatedProviders;
                 });
@@ -1942,7 +1942,7 @@
             );
 
             if (firstReadyIndex !== -1) {
-              setEnrolledpractitioners(prev => {
+              setEnrolledProviders(prev => {
                 const updatedProviders = [...prev];
                 updatedProviders[firstReadyIndex] = {
                   ...updatedProviders[firstReadyIndex],
@@ -1981,13 +1981,13 @@
             return;
           }
 
-          const hasExistingpractitioners = enrolledProviders.some(p =>
+          const hasExistingProviders = enrolledProviders.some(p =>
             p.status === 'Verified - Ready to Add to Group' ||
             p.status === 'Enrolled - Ready to be Added to Group'
           );
 
-          if (hasExistingpractitioners) {
-            setEnrolledpractitioners(prev => {
+          if (hasExistingProviders) {
+            setEnrolledProviders(prev => {
               const updatedProviders = [...prev];
               updatedProviders.forEach((practitioner, idx) => {
                 if (practitioner.status === 'Verified - Ready to Add to Group') {
@@ -2049,7 +2049,7 @@
               return; // User cancelled
             }
 
-            setEnrolledpractitioners(prev => {
+            setEnrolledProviders(prev => {
               const updated = [...prev];
 
               if (currentAddingProviderIndex !== null && updated[currentAddingProviderIndex]) {
@@ -2066,7 +2066,7 @@
 
             setFormData(prev => {
               const clearedData = { ...prev };
-              delete clearedData.additionalExistingpractitionersNeeded;
+              delete clearedData.additionalExistingProvidersNeeded;
               delete clearedData.existingProviderOpenCicsComplete;
               delete clearedData.existingProviderAddToGroupComplete;
               delete clearedData.providerNameFormatting02;
@@ -2103,7 +2103,7 @@
             }
 
             if (currentAddingProviderIndex !== null) {
-              setEnrolledpractitioners(prev => {
+              setEnrolledProviders(prev => {
                 const updated = [...prev];
                 if (updated[currentAddingProviderIndex]) {
                   updated[currentAddingProviderIndex] = {
@@ -2147,7 +2147,7 @@
               return; // User cancelled
             }
 
-            setEnrolledpractitioners(prev => {
+            setEnrolledProviders(prev => {
               const updated = [...prev];
 
               if (currentEnrollingProviderIndex !== null && updated[currentEnrollingProviderIndex]) {
@@ -2201,7 +2201,7 @@
             delete clearedData.claimTypeTabComplete;
             delete clearedData.licenseDeaTabComplete;
             delete clearedData.enrollOnMainframeComplete;
-            delete clearedData.additionalpractitionersNeeded;
+            delete clearedData.additionalProvidersNeeded;
             delete clearedData.duplicateProviderSaved;
 
             clearedData.providerEnrollmentType = 'New practitioner';
@@ -2230,7 +2230,7 @@
             }
 
             if (currentEnrollingProviderIndex !== null) {
-              setEnrolledpractitioners(prev => {
+              setEnrolledProviders(prev => {
                 const updated = [...prev];
                 if (updated[currentEnrollingProviderIndex]) {
                   updated[currentEnrollingProviderIndex] = {
@@ -2701,7 +2701,7 @@
         await saveFile(textContent, filename);
       };
 
-      const handleDownloadEnrolledpractitioners = async () => {
+      const handleDownloadEnrolledProviders = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2821,7 +2821,7 @@
 
           setFormData({});
           setOutreachNotes([]);
-          setEnrolledpractitioners([]);
+          setEnrolledProviders([]);
           setproviderManualNotes({});
           setUnableToVerifyFields(new Set());
           setPendingUnableToVerifyField(null);
@@ -2853,7 +2853,7 @@
           return;
         }
 
-        const morepractitioners = await showConfirm('Are there additional practitioners in this application to process?\n\nThis will save the current practitioner as "already enrolled and in group" and reset the form for the next practitioner.');
+        const moreProviders = await showConfirm('Are there additional practitioners in this application to process?\n\nThis will save the current practitioner as "already enrolled and in group" and reset the form for the next practitioner.');
 
         const duplicateNote = 'practitioner already enrolled and in group - no action needed';
 
@@ -2868,9 +2868,9 @@
           outreachNotes: [duplicateNote]
         };
 
-        if (morepractitioners) {
+        if (moreProviders) {
           // Save the duplicate practitioner and prepare for the next practitioner
-          setEnrolledpractitioners(prev => {
+          setEnrolledProviders(prev => {
             const updatedProviders = [...prev, providerData];
             return updatedProviders;
           });
@@ -2925,7 +2925,7 @@
               outreachNotes: [duplicateNote, rejectionNote]
             };
 
-            setEnrolledpractitioners([updatedproviderData]);
+            setEnrolledProviders([updatedproviderData]);
             setOutreachNotes(prev => [...prev, rejectionNote]);
 
             const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
@@ -2943,7 +2943,7 @@
 
           if (hasUnverifiedItems) {
             // Save all practitioners including the current one
-            setEnrolledpractitioners(allProviders);
+            setEnrolledProviders(allProviders);
 
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
@@ -2963,7 +2963,7 @@
               );
 
               if (firstReadyIndex !== -1) {
-                setEnrolledpractitioners(() => {
+                setEnrolledProviders(() => {
                   const updated = [...allProviders];
                   updated[firstReadyIndex] = {
                     ...updated[firstReadyIndex],
@@ -3002,7 +3002,7 @@
               }
             } else {
               // Save all practitioners including the current duplicate
-              setEnrolledpractitioners(allProviders);
+              setEnrolledProviders(allProviders);
 
               setFormData(prev => ({
                 ...prev,
@@ -3077,22 +3077,22 @@
       const getNextButtonText = () => {
         if (currentPageData.id === 'existing-practitioner-completion') {
           // Check if there are more practitioners to add to group
-          const hasMorepractitioners = enrolledProviders.some((p, idx) =>
+          const hasMoreProviders = enrolledProviders.some((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
-          return hasMorepractitioners ? 'Next practitioner' : 'Finish';
+          return hasMoreProviders ? 'Next practitioner' : 'Finish';
         }
 
         if (currentPageData.id === 'additional-practitioners-check') {
           // Check if there are more practitioners to enroll
-          const hasMorepractitioners = enrolledProviders.some((p, idx) =>
+          const hasMoreProviders = enrolledProviders.some((p, idx) =>
             idx > currentEnrollingProviderIndex &&
             p.status === 'Verified - Ready to Enroll' &&
             p.providerAlreadyEnrolled === 'No'
           );
-          return hasMorepractitioners ? 'Next practitioner' : 'Add practitioners to Group';
+          return hasMoreProviders ? 'Next practitioner' : 'Add practitioners to Group';
         }
 
         if (currentPageData.id === 'question-20') {
@@ -4198,7 +4198,7 @@
 
                     {enrolledProviders.length > 0 && (
                       <button
-                        onClick={() => setShowEnrolledpractitionersModal(true)}
+                        onClick={() => setShowEnrolledProvidersModal(true)}
                         className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[100px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4409,14 +4409,14 @@
           )}
 
           {/* Enrolled practitioners Modal */}
-          {showEnrolledpractitionersModal && (
+          {showEnrolledProvidersModal && (
             <div
               className="modal-overlay"
-              onClick={() => setShowEnrolledpractitionersModal(false)}
+              onClick={() => setShowEnrolledProvidersModal(false)}
             >
               <div className="relative max-w-4xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
                 <button
-                  onClick={() => setShowEnrolledpractitionersModal(false)}
+                  onClick={() => setShowEnrolledProvidersModal(false)}
                   className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors flex items-center gap-2 text-sm font-medium"
                 >
                   <span>Close</span>
@@ -4580,7 +4580,7 @@
 
                   <div className="mt-8 flex justify-between items-center">
                     <button
-                      onClick={handleDownloadEnrolledpractitioners}
+                      onClick={handleDownloadEnrolledProviders}
                       className="px-6 py-3 rounded-lg font-semibold text-green-700 bg-white border-2 border-green-500 hover:bg-green-50 transition-all hover:shadow-lg flex items-center gap-2"
                       disabled={enrolledProviders.length === 0}
                     >
@@ -4590,7 +4590,7 @@
                       Export practitioners
                     </button>
                     <button
-                      onClick={() => setShowEnrolledpractitionersModal(false)}
+                      onClick={() => setShowEnrolledProvidersModal(false)}
                       className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg"
                     >
                       Close

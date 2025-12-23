@@ -12,8 +12,51 @@
 <body>
   <div id="root"></div>
 
+  <!-- PDF Modal (Full Screen) -->
+  <div id="pdf-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000;">
+    <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
+      <div style="padding: 16px 24px; border-bottom: 2px solid #2a3f4a; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to right, #3d5a66, #2a3f4a); box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <h2 id="pdf-modal-title" style="margin: 0; font-size: 18px; font-weight: 700; color: white;">PDF Viewer</h2>
+        <button onclick="closePdfModal()" style="background: #dc3545; color: white; border: none; font-size: 16px; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 6px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);" onmouseover="this.style.background='#c82333'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.4)'" onmouseout="this.style.background='#dc3545'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.3)'">✕ Close</button>
+      </div>
+      <iframe id="pdf-iframe" style="flex: 1; border: none; width: 100%; height: 100%;"></iframe>
+    </div>
+  </div>
+
   <script type="text/babel">
     const { useState } = React;
+
+    // ============================================================
+    // PDF MODAL FUNCTIONS
+    // ============================================================
+
+    window.openPdfModal = (pdfUrl, title) => {
+      const modal = document.getElementById('pdf-modal');
+      const iframe = document.getElementById('pdf-iframe');
+      const titleEl = document.getElementById('pdf-modal-title');
+
+      iframe.src = pdfUrl;
+      titleEl.textContent = title || 'PDF Viewer';
+      modal.style.display = 'block';
+    };
+
+    window.closePdfModal = () => {
+      const modal = document.getElementById('pdf-modal');
+      const iframe = document.getElementById('pdf-iframe');
+
+      modal.style.display = 'none';
+      iframe.src = '';
+    };
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('pdf-modal');
+        if (modal.style.display === 'block') {
+          closePdfModal();
+        }
+      }
+    });
 
     // ============================================================
     // ICON COMPONENTS
@@ -85,6 +128,7 @@
       const [pendingUnableToVerifyField, setPendingUnableToVerifyField] = useState(null);
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
+      const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
       const [isDarkMode, setIsDarkMode] = useState(() => {
         return localStorage.getItem('theme') === 'dark';
       });
@@ -201,54 +245,130 @@
         });
       };
 
-      // -------------------- LocalStorage Utilities --------------------
+      // -------------------- Save/Load Utilities --------------------
 
       const STORAGE_PREFIX = 'pwo-application-';
 
-      const saveApplicationState = (pwoNumber) => {
+      // Check if we're running in Tauri and get the invoke function
+      const isTauri = typeof window !== 'undefined' && window.__TAURI__;
+      const tauriInvoke = isTauri ? (
+        window.__TAURI__.invoke ||
+        window.__TAURI__.tauri?.invoke ||
+        window.__TAURI_INTERNALS__?.invoke ||
+        null
+      ) : null;
+
+      // Debug: Log what's available
+      React.useEffect(() => {
+        if (isTauri) {
+          // Tauri detection check
+        }
+      }, []);
+
+      const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
 
         const stateToSave = {
-          pwoNumber,
-          userName: formData.userName,
-          currentPage,
-          formData,
-          enrolledProviders,
-          outreachNotes,
-          providerManualNotes,
-          unableToVerifyFields: Array.from(unableToVerifyFields),
-          visitedPages: Array.from(visitedPages),
-          currentEnrollingProviderIndex,
-          currentAddingProviderIndex,
-          lastSaved: new Date().toISOString(),
-          hasOutreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
+          pwo_number: pwoNumber,
+          user_name: formData.userName || '',
+          current_page: currentPage.toString(),
+          form_data: formData,
+          enrolled_providers: enrolledProviders,
+          outreach_notes: outreachNotes,
+          provider_manual_notes: providerManualNotes,
+          unable_to_verify_fields: Array.from(unableToVerifyFields).map(f => String(f)),
+          visited_pages: Array.from(visitedPages).map(p => String(p)),
+          current_enrolling_provider_index: currentEnrollingProviderIndex ?? -1,
+          current_adding_provider_index: currentAddingProviderIndex ?? -1,
+          last_saved: new Date().toISOString(),
+          has_outreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
         };
 
         try {
-          localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
+          setSaveStatus({ saving: true, lastSaved: null, error: null });
+
+          if (tauriInvoke) {
+            // Use Tauri's invoke to save to filesystem
+            const result = await tauriInvoke('save_pwo_state', { state: stateToSave });
+            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
+          } else {
+            // Fallback to localStorage for web version
+            localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
+            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
+          }
         } catch (error) {
-          // Failed to save application state
+          const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Save failed');
+          setSaveStatus({ saving: false, lastSaved: null, error: errorMsg });
         }
       };
 
-      const loadApplicationState = (pwoNumber) => {
+      const loadApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return null;
 
         try {
-          const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
-          return saved ? JSON.parse(saved) : null;
+          if (tauriInvoke) {
+            // Use Tauri's invoke to load from filesystem
+            const state = await tauriInvoke('load_pwo_state', { pwoNumber });
+            return {
+              pwoNumber: state.pwo_number,
+              userName: state.user_name,
+              currentPage: parseInt(state.current_page),
+              formData: state.form_data,
+              enrolledProviders: state.enrolled_providers,
+              outreachNotes: state.outreach_notes,
+              providerManualNotes: state.provider_manual_notes,
+              unableToVerifyFields: state.unable_to_verify_fields,
+              visitedPages: state.visited_pages.map(p => parseInt(p)),
+              currentEnrollingProviderIndex: state.current_enrolling_provider_index,
+              currentAddingProviderIndex: state.current_adding_provider_index,
+              lastSaved: state.last_saved,
+              hasOutreach: state.has_outreach
+            };
+          } else {
+            // Fallback to localStorage for web version
+            const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
+            return saved ? JSON.parse(saved) : null;
+          }
         } catch (error) {
           return null;
         }
       };
 
-      const deleteApplicationState = (pwoNumber) => {
+      const deleteApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
 
         try {
-          localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          if (tauriInvoke) {
+            // Use Tauri's invoke to delete from filesystem
+            const result = await tauriInvoke('delete_pwo_state', { pwoNumber });
+          } else {
+            // Fallback to localStorage for web version
+            localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          }
         } catch (error) {
-          // Failed to delete application state
+          // Delete failed
+        }
+      };
+
+      // Helper function to open external URLs and PDFs
+      const openExternalUrl = async (url, title = 'PDF Viewer') => {
+        if (!url) return;
+
+        try {
+          // Check if it's a PDF - open in modal
+          if (url.endsWith('.pdf')) {
+            window.openPdfModal(url, title);
+            return;
+          }
+
+          // For non-PDF URLs, open externally
+          if (tauriInvoke) {
+            await tauriInvoke('open_url', { url });
+          } else {
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
+        } catch (error) {
+          // Failed to open URL
         }
       };
 
@@ -289,8 +409,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -315,8 +440,13 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'Enter PWO number',
-              validation: (value) => value && value.trim().length > 0
+              placeholder: 'PWO1234567',
+              validation: (value) => {
+                if (!value) return false;
+                const pwoPattern = /^PWO\d{7}$/;
+                return pwoPattern.test(value.trim().toUpperCase());
+              },
+              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
             }
           ]
         },
@@ -518,19 +648,33 @@
             },
             {
               name: 'licensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: () => (
+                <>
+                  Licenses - APN, CRNA, CNM require RN license and APN license.
+                  <br/><br/>
+                  Doctors are required to have a copy of their license.
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
-              validation: (value) => value === true
+              validation: (value) => value === true,
+              licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
             {
-              name: 'doctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'boardCertificatesVerified',
+              label: () => (
+                <>
+                  Board Certificates - APN, CRNA, CNM require board certificate.
+                  <br/><br/>
+                  Doctors are not required to provide a board certificate, but can be added and updated if included.
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
-              validation: (value) => value === true
+              validation: (value) => value === true,
+              licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
             {
               name: 'deaEffectiveDates',
@@ -578,10 +722,9 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -590,10 +733,9 @@
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -603,10 +745,9 @@
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -615,10 +756,9 @@
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]
@@ -1390,19 +1530,33 @@
             },
             {
               name: 'nextProviderFinalLicensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: () => (
+                <>
+                  Licenses - APN, CRNA, CNM require RN license and APN license.
+                  <br/><br/>
+                  Doctors are required to have a copy of their license.
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
-              validation: (value) => value === true
+              validation: (value) => value === true,
+              licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
             {
-              name: 'nextProviderFinalDoctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'nextProviderFinalBoardCertificatesVerified',
+              label: () => (
+                <>
+                  Board Certificates - APN, CRNA, CNM require board certificate.
+                  <br/><br/>
+                  Doctors are not required to provide a board certificate, but can be added and updated if included.
+                </>
+              ),
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
-              validation: (value) => value === true
+              validation: (value) => value === true,
+              licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
             {
               name: 'nextProviderFinalDeaEffectiveDates',
@@ -1451,6 +1605,10 @@
       };
 
       const handleFieldChange = (fieldName, value) => {
+        // Auto-format PWO number fields to uppercase
+        if (fieldName === 'pwoNumber' || fieldName === 'resumePwoNumber') {
+          value = value.toUpperCase();
+        }
         setFormData(prev => ({ ...prev, [fieldName]: value }));
 
         const enrollmentFields = [
@@ -1503,7 +1661,7 @@
         // Handle resume-lookup page: Load saved application
         if (currentPageData.id === 'resume-lookup') {
           const pwoToResume = formData.resumePwoNumber;
-          const savedState = loadApplicationState(pwoToResume);
+          const savedState = await loadApplicationState(pwoToResume);
 
           if (!savedState) {
             await showAlert(`No saved application found for PWO# ${pwoToResume}. Please check the PWO# and try again, or start a new application.`);
@@ -1544,10 +1702,13 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
+
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
+          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
+
+          // Debug: Log unable to verify check
 
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
@@ -1562,6 +1723,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1582,6 +1744,7 @@
                 }
               }
 
+
               const providerData = {
                 status: providerStatus,
                 question20Answered: formData.question20Answered,
@@ -1592,6 +1755,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1603,6 +1767,7 @@
                 return updatedProviders;
               });
             }
+          } else {
           }
 
           if (moreProviders) {
@@ -1615,6 +1780,7 @@
             delete clearedData.dobVerified;
             delete clearedData.npiVerified;
             delete clearedData.licensesVerified;
+            delete clearedData.boardCertificatesVerified;
             delete clearedData.doctorLicenseVerified;
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
@@ -1623,6 +1789,7 @@
             // +1 for the provider just saved (if not already saved), +1 for the next expected provider
             const providerJustSaved = !providerAlreadySaved ? 1 : 0;
             clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
+
 
             setFormData(clearedData);
 
@@ -1646,6 +1813,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1684,6 +1852,7 @@
                   }
                 }
 
+
                 const providerData = {
                   status: providerStatus,
                   question20Answered: formData.question20Answered,
@@ -1694,6 +1863,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1741,6 +1911,7 @@
                   setTimeout(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }, 100);
+                } else {
                 }
                 return;  // CRITICAL: Prevent general navigation logic from overriding this routing
 
@@ -1978,10 +2149,6 @@
             if (openCicsIndex !== -1) {
               setCurrentPage(openCicsIndex);
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
-              // Scroll to top after navigation
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 100);
             }
           } else {
             // No more providers - all done!
@@ -2012,10 +2179,6 @@
             if (finalCompletionIndex !== -1) {
               setCurrentPage(finalCompletionIndex);
               setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
-              // Scroll to top after navigation
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 100);
             }
           }
           return;
@@ -2253,17 +2416,50 @@
                 saveApplicationState(pwoNumber);
               }
             }, 100);
+          } else {
           }
         }
       };
 
       const handleSubmit = async () => {
         if (isPageValid()) {
-          await showAlert('Form submitted successfully!');
+          await showAlert('Form submitted successfully! Check console for data.');
         }
       };
 
-      const handleDownloadNotes = () => {
+      // Helper function to save file (works in both Tauri and browser)
+      const saveFile = async (content, defaultFilename) => {
+        if (tauriInvoke) {
+          // Tauri desktop app - use custom command
+          try {
+            const result = await tauriInvoke('save_file_dialog', {
+              content: content,
+              defaultFilename: defaultFilename
+            });
+            await showAlert('File saved successfully!');
+          } catch (error) {
+            const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Unknown error');
+            if (errorMsg.includes('cancelled')) {
+              // User cancelled, don't show error
+              return;
+            }
+            await showAlert('Failed to save file: ' + errorMsg);
+          }
+        } else {
+          // Browser fallback
+          const dataBlob = new Blob([content], { type: 'text/plain' });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = defaultFilename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      const handleDownloadNotes = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2275,6 +2471,170 @@
 
         let textContent = `PROVIDER ENROLLMENT NOTES\n`;
         textContent += `Generated: ${dateStr}\n`;
+        textContent += `${'='.repeat(80)}\n\n`;
+
+        // Add User Answers Section for Accountability
+        textContent += `USER ANSWERS & SELECTIONS\n`;
+        textContent += `${'-'.repeat(80)}\n\n`;
+
+        // Application Setup
+        textContent += `APPLICATION SETUP:\n`;
+        if (formData.userName) {
+          textContent += `  • User Name: ${formData.userName}\n`;
+        }
+        if (formData.pwoNumber) {
+          textContent += `  • PWO Number: ${formData.pwoNumber}\n`;
+        }
+        if (formData.applicationChoice) {
+          textContent += `  • Application Choice: ${formData.applicationChoice}\n`;
+        }
+        textContent += `\n`;
+
+        // Group Practice Application
+        textContent += `GROUP PRACTICE APPLICATION:\n`;
+        if (formData.groupPracticeAttached !== undefined) {
+          textContent += `  • Group Practice Application Attached: ${formData.groupPracticeAttached}\n`;
+        }
+        if (formData.questionsAnswered !== undefined) {
+          textContent += `  • Questions 2, 4, 5, 5C Answered: ${formData.questionsAnswered}\n`;
+        }
+        if (formData.question6Answered !== undefined) {
+          textContent += `  • Question 6 (Practice Address) Answered: ${formData.question6Answered}\n`;
+        }
+        textContent += `\n`;
+
+        // Pay To / Mail To
+        textContent += `PAY TO / MAIL TO ADDRESS:\n`;
+        if (formData.paytoMailtoMatch !== undefined) {
+          textContent += `  • Pay-to/Mail-to Match CICS: ${formData.paytoMailtoMatch}\n`;
+        }
+        if (formData.paytoMailtoComplete !== undefined) {
+          textContent += `  • Pay-to/Mail-to Updated in CICS: ${formData.paytoMailtoComplete ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Additional Questions 9-17
+        textContent += `ADDITIONAL QUESTIONS (9-17):\n`;
+        if (formData.questions9to17Answered !== undefined) {
+          textContent += `  • Questions 9, 11, 12, 16, 17 Answered: ${formData.questions9to17Answered}\n`;
+        }
+        if (formData.emailAddedToSNOW !== undefined) {
+          textContent += `  • Contact Email Added to SNOW: ${formData.emailAddedToSNOW ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Additional Questions 21-23 & 25
+        textContent += `ADDITIONAL QUESTIONS (21-23 & 25):\n`;
+        if (formData.question21Answered !== undefined) {
+          textContent += `  • Question 21 (a-e) Answered: ${formData.question21Answered}\n`;
+        }
+        if (formData.question22Answered !== undefined) {
+          textContent += `  • Question 22 Answered: ${formData.question22Answered}\n`;
+        }
+        if (formData.question23Answered !== undefined) {
+          textContent += `  • Question 23 Answered: ${formData.question23Answered}\n`;
+        }
+        if (formData.question25Signed !== undefined) {
+          textContent += `  • Question 25 Signed: ${formData.question25Signed}\n`;
+        }
+        textContent += `\n`;
+
+        // Required Forms
+        textContent += `REQUIRED FORMS:\n`;
+        if (formData.signatureAuthFormAttached !== undefined) {
+          textContent += `  • Signature Authorization Form Attached: ${formData.signatureAuthFormAttached}\n`;
+        }
+        if (formData.agreementOfUnderstandingAttached !== undefined) {
+          textContent += `  • Agreement of Understanding Attached: ${formData.agreementOfUnderstandingAttached}\n`;
+        }
+        if (formData.providerAgreementAttached !== undefined) {
+          textContent += `  • Provider Agreement Attached: ${formData.providerAgreementAttached}\n`;
+        }
+        if (formData.disclosureOfOwnershipAttached !== undefined) {
+          textContent += `  • Disclosure of Ownership Attached: ${formData.disclosureOfOwnershipAttached}\n`;
+        }
+        if (formData.w9OrIrsLetterAttached !== undefined) {
+          textContent += `  • W9 or IRS Letter Attached: ${formData.w9OrIrsLetterAttached}\n`;
+        }
+        if (formData.authorizationAgreementComplete !== undefined) {
+          textContent += `  • Authorization Agreement Reviewed: ${formData.authorizationAgreementComplete ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.requestForPaperUpdatesComplete !== undefined) {
+          textContent += `  • Request for Paper Updates Reviewed: ${formData.requestForPaperUpdatesComplete ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Existing Provider Workflow (if applicable)
+        const hasExistingProviderData = formData.existingProviderOpenCicsComplete !== undefined ||
+                                         formData.existingProviderAddToGroupComplete !== undefined ||
+                                         formData.providerNameFormatting02 !== undefined;
+
+        if (hasExistingProviderData) {
+          textContent += `EXISTING PROVIDER WORKFLOW:\n`;
+          if (formData.existingProviderOpenCicsComplete !== undefined) {
+            textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderAddToGroupComplete !== undefined) {
+            textContent += `  • Provider Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.providerNameFormatting02 !== undefined) {
+            textContent += `  • Provider Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.mailToPayToAddresses !== undefined) {
+            textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.cancelCodes !== undefined) {
+            textContent += `  • Cancel Codes Checked: ${formData.cancelCodes ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.effectiveDates !== undefined) {
+            textContent += `  • Effective Dates Checked: ${formData.effectiveDates ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.boardCertificationIndicators !== undefined) {
+            textContent += `  • Board Certification Indicators Checked: ${formData.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.programCode54PA !== undefined) {
+            textContent += `  • Program Code 54 for PA (04 page): ${formData.programCode54PA ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCloseEnrollmentComplete !== undefined) {
+            textContent += `  • Enrollment Task Closed: ${formData.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderFinishGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Completed: ${formData.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCreateChecklistComplete !== undefined) {
+            textContent += `  • Checklist Created: ${formData.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderApproveGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Approved: ${formData.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderOpenLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Opened: ${formData.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderSelectLetterComplete !== undefined) {
+            textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderAddToLetterComplete !== undefined) {
+            textContent += `  • Provider Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderFinishLetterComplete !== undefined) {
+            textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCloseLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Closed: ${formData.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          }
+          textContent += `\n`;
+        }
+
+        // Unable to Verify Fields
+        if (unableToVerifyFields && unableToVerifyFields.size > 0) {
+          textContent += `UNABLE TO VERIFY FIELDS:\n`;
+          const fieldsArray = Array.from(unableToVerifyFields);
+          fieldsArray.forEach(field => {
+            textContent += `  • ${field}\n`;
+          });
+          textContent += `\n`;
+        }
+
         textContent += `${'='.repeat(80)}\n\n`;
 
         if (enrolledProviders.length > 0) {
@@ -2301,6 +2661,7 @@
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
@@ -2361,19 +2722,12 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
         const pwoNumber = formData.pwoNumber || 'UNKNOWN';
-        link.download = `PWO${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const filename = `${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
-      const handleDownloadOutreachNotes = () => {
+      const handleDownloadOutreachNotes = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2401,18 +2755,12 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
+        const filename = `${pwoNumber}-outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
-      const handleDownloadEnrolledProviders = () => {
+      const handleDownloadEnrolledProviders = async () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2434,6 +2782,27 @@
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
+
+            // PROVIDER INFORMATION (QUESTION 20)
+            textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
+            textContent += `  • Question 20 Answered: ${provider.question20Answered !== false ? 'Yes' : 'No'}\n`;
+            textContent += `  • Provider Already Enrolled: ${provider.providerAlreadyEnrolled || 'N/A'}\n`;
+            if (provider.providerAlreadyEnrolled === 'Yes') {
+              textContent += `  • Provider In Group: ${provider.providerInGroup || 'N/A'}\n`;
+            }
+            textContent += `\n`;
+
+            // PROVIDER VERIFICATION
+            textContent += `PROVIDER VERIFICATION:\n`;
+            textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
+            textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `\n`;
 
             // Check if this is an existing provider (being added to group)
             const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
@@ -2497,15 +2866,9 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const dataBlob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `enrolled-providers-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
+        const filename = `${pwoNumber}-providers-${new Date().toISOString().split('T')[0]}.txt`;
+        await saveFile(textContent, filename);
       };
 
       const handleStartNewApplication = async () => {
@@ -2513,7 +2876,7 @@
           // Delete saved application state if it exists
           const currentPwoNumber = formData.pwoNumber;
           if (currentPwoNumber) {
-            deleteApplicationState(currentPwoNumber);
+            await deleteApplicationState(currentPwoNumber);
           }
 
           setFormData({});
@@ -2581,6 +2944,7 @@
           delete clearedData.dobVerified;
           delete clearedData.npiVerified;
           delete clearedData.licensesVerified;
+          delete clearedData.boardCertificatesVerified;
           delete clearedData.doctorLicenseVerified;
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
@@ -2593,6 +2957,7 @@
           delete clearedData.nextProviderFinalDobVerified;
           delete clearedData.nextProviderFinalNpiVerified;
           delete clearedData.nextProviderFinalLicensesVerified;
+          delete clearedData.nextProviderFinalBoardCertificatesVerified;
           delete clearedData.nextProviderFinalDoctorLicenseVerified;
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
@@ -2603,7 +2968,7 @@
 
           setFormData(clearedData);
 
-          const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'];
+          const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified', 'nextProviderFinalDoctorLicenseVerified'];
           setUnableToVerifyFields(prev => {
             const newSet = new Set(prev);
             fieldsToRemove.forEach(field => newSet.delete(field));
@@ -2854,6 +3219,128 @@
               --modal-bg: #1f2937;
             }
 
+            /* Dark mode text overrides */
+            html.dark .text-slate-900,
+            html.dark .text-slate-800,
+            html.dark .text-slate-700 {
+              color: #f3f4f6 !important;
+            }
+
+            html.dark .text-slate-600 {
+              color: #d1d5db !important;
+            }
+
+            html.dark .text-slate-500 {
+              color: #9ca3af !important;
+            }
+
+            html.dark .text-slate-400 {
+              color: #9ca3af !important;
+            }
+
+            html.dark .placeholder-slate-400::placeholder {
+              color: #6b7280 !important;
+            }
+
+            /* Dark mode background overrides */
+            html.dark .bg-slate-50,
+            html.dark .bg-slate-100 {
+              background-color: #374151 !important;
+            }
+
+            html.dark .bg-white {
+              background-color: var(--card-bg) !important;
+            }
+
+            html.dark .bg-indigo-50 {
+              background-color: #1e3a5f !important;
+            }
+
+            html.dark .bg-blue-50,
+            html.dark .bg-blue-100 {
+              background-color: #1e3a5f !important;
+            }
+
+            /* Override text color in blue background sections for dark mode */
+            html.dark .bg-blue-50 *,
+            html.dark .bg-blue-100 *,
+            html.dark .border-blue-200 *,
+            html.dark .border-blue-400 * {
+              color: #f3f4f6 !important;
+            }
+
+            /* Dark mode border overrides */
+            html.dark .border-slate-100,
+            html.dark .border-slate-200,
+            html.dark .border-slate-300 {
+              border-color: #4b5563 !important;
+            }
+
+            html.dark .border-indigo-200,
+            html.dark .border-blue-200,
+            html.dark .border-blue-400 {
+              border-color: #4b5563 !important;
+            }
+
+            /* Ensure text is dark on light selected backgrounds (light mode) */
+            .bg-cyan-50,
+            .bg-cyan-100,
+            .bg-indigo-50 {
+              color: #1f2937 !important;
+            }
+
+            .bg-cyan-50 *,
+            .bg-cyan-100 *,
+            .bg-indigo-50 * {
+              color: #1f2937 !important;
+            }
+
+            /* Override in dark mode for selected states */
+            html.dark .bg-cyan-50,
+            html.dark .bg-cyan-100 {
+              background-color: #0d9488 !important;
+              color: white !important;
+            }
+
+            html.dark .bg-cyan-50 *,
+            html.dark .bg-cyan-100 * {
+              color: white !important;
+            }
+
+            /* Override hardcoded light teal backgrounds in instruction boxes */
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
+            html.dark div[style*="background-color: rgb(224, 242, 241)"],
+            html.dark div[style*="backgroundColor:#e0f2f1"],
+            html.dark div[style*="background-color:#e0f2f1"] {
+              background-color: #1e3a5f !important;
+            }
+
+            /* Ensure text in instruction boxes with teal background is light in dark mode */
+            html.dark div[style*="backgroundColor:#e0f2f1"] *,
+            html.dark div[style*="background-color:#e0f2f1"] *,
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
+            html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
+              color: #f3f4f6 !important;
+            }
+
+            /* Dark mode input and textarea styles */
+            html.dark input[type="text"],
+            html.dark input[type="email"],
+            html.dark input[type="number"],
+            html.dark input[type="tel"],
+            html.dark input[type="date"],
+            html.dark textarea,
+            html.dark select {
+              background-color: var(--input-bg) !important;
+              color: #f3f4f6 !important;
+              border-color: #4b5563 !important;
+            }
+
+            html.dark input::placeholder,
+            html.dark textarea::placeholder {
+              color: #9ca3af !important;
+            }
+
             * {
               font-family: 'DM Sans', sans-serif;
             }
@@ -2993,6 +3480,34 @@
                     </div>
                   </div>
                 )}
+                {/* Save Status Indicator */}
+                {formData.pwoNumber && (
+                  <div className="mt-3 flex items-center gap-2 text-sm">
+                    {saveStatus.saving ? (
+                      <div className="flex items-center gap-2 text-cyan-100">
+                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Saving...</span>
+                      </div>
+                    ) : saveStatus.error ? (
+                      <div className="flex items-center gap-2 text-red-200" title={saveStatus.error}>
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Save failed: {saveStatus.error}</span>
+                      </div>
+                    ) : saveStatus.lastSaved ? (
+                      <div className="flex items-center gap-2 text-cyan-100">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Saved at {saveStatus.lastSaved.toLocaleTimeString()}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
                 {/* Current Provider Indicator */}
                 {currentEnrollingProviderIndex !== null && formData.providerEnrollmentType === 'New Provider' && (
                   <div className="mt-4 inline-block bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-4 py-2">
@@ -3090,12 +3605,10 @@
                     </p>
                     <div className="flex flex-wrap gap-3">
                       {currentPageData.resources.map((resource, idx) => (
-                        <a
+                        <button
                           key={idx}
-                          href={resource.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg"
+                          onClick={() => openExternalUrl(resource.url, resource.label)}
+                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
                           style={{backgroundColor: 'var(--gainwell-teal)'}}
                           onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
                           onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
@@ -3104,7 +3617,7 @@
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>
                           {resource.label}
-                        </a>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -3442,7 +3955,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 
@@ -3468,33 +3981,40 @@
                                   {isUnableToVerify && <span className="ml-2 text-xs font-semibold text-amber-600">(UNABLE TO VERIFY)</span>}
                                 </span>
                               </label>
-                              {(field.sovosUrl || field.npiRegistryUrl || hasUnableToVerifyButton) && (
+                              {(field.sovosUrl || field.npiRegistryUrl || field.licenseVerifyUrl || hasUnableToVerifyButton) && (
                                 <div className="mt-3 flex justify-end gap-2">
                                   {field.sovosUrl && !isUnableToVerify && (
-                                    <a
-                                      href={field.sovosUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                    <button
+                                      onClick={() => openExternalUrl(field.sovosUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to SOVOS
-                                    </a>
+                                    </button>
                                   )}
                                   {field.npiRegistryUrl && !isUnableToVerify && (
-                                    <a
-                                      href={field.npiRegistryUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                    <button
+                                      onClick={() => openExternalUrl(field.npiRegistryUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to NPI Registry
-                                    </a>
+                                    </button>
+                                  )}
+                                  {field.licenseVerifyUrl && !isUnableToVerify && (
+                                    <button
+                                      onClick={() => openExternalUrl(field.licenseVerifyUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                      Verify License
+                                    </button>
                                   )}
                                   {hasUnableToVerifyButton && !isUnableToVerify && (
                                     <button
@@ -3571,19 +4091,30 @@
                                   {isUnableToVerify && <span className="ml-2 text-xs font-semibold text-amber-600">(UNABLE TO VERIFY)</span>}
                                 </span>
                               </label>
-                              {field.sovosUrl && (
+                              {(field.sovosUrl || field.licenseVerifyUrl) && (
                                 <div className="mt-3 ml-8">
-                                  <a
-                                    href={field.sovosUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                    Go to SOVOS
-                                  </a>
+                                  {field.sovosUrl && (
+                                    <button
+                                      onClick={() => openExternalUrl(field.sovosUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                      Go to SOVOS
+                                    </button>
+                                  )}
+                                  {field.licenseVerifyUrl && !isUnableToVerify && (
+                                    <button
+                                      onClick={() => openExternalUrl(field.licenseVerifyUrl)}
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                      Verify License
+                                    </button>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -3643,7 +4174,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
+                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">
@@ -3843,7 +4374,7 @@
               </div>
 
               {/* Navigation */}
-              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-2 justify-between items-center">
                 {currentPageData.isCompletionPage ? (
                   <>
                     {/* Completion Page Buttons */}
@@ -3872,7 +4403,7 @@
                     {currentPage === 0 ? (
                       <a
                         href="./index.html"
-                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all min-w-[120px]"
+                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all min-w-[90px]"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Go to Home
@@ -3884,7 +4415,7 @@
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                         }
-                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all min-w-[120px] ${
+                        className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all min-w-[90px] ${
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                             ? 'text-slate-400 cursor-not-allowed bg-slate-100'
@@ -3898,7 +4429,7 @@
 
                     <button
                       onClick={() => setShowViewNotesModal(true)}
-                      className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg min-w-[160px]"
+                      className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg min-w-[120px]"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -3914,7 +4445,7 @@
                     {enrolledProviders.length > 0 && (
                       <button
                         onClick={() => setShowEnrolledProvidersModal(true)}
-                        className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[130px]"
+                        className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[100px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -3933,12 +4464,12 @@
                           : (isLastPage ? handleSubmit : handleNext)
                       }
                       disabled={!canProceed}
-                      className={`btn-primary flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 min-w-[180px] ${
+                      className={`btn-primary flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 min-w-[120px] ${
                         canProceed
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
-                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}) : {}}
+                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-cyan), var(--gainwell-teal))'}) : {}}
                     >
                       {getNextButtonText()}
                       {!isLastPage && <ChevronRight className="w-4 h-4" />}

@@ -518,15 +518,15 @@
             },
             {
               name: 'licensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: 'Licenses - APN, CRNA, CNM require RN license and APN license. Doctors are required to have a copy of their license.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'doctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'boardCertificatesVerified',
+              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -578,10 +578,9 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -590,10 +589,9 @@
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -603,10 +601,9 @@
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -615,10 +612,9 @@
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]
@@ -1390,15 +1386,15 @@
             },
             {
               name: 'nextProviderFinalLicensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: 'Licenses - APN, CRNA, CNM require RN license and APN license. Doctors are required to have a copy of their license.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'nextProviderFinalDoctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'nextProviderFinalBoardCertificatesVerified',
+              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
@@ -1546,7 +1542,7 @@
 
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
+          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           // Only save the provider if it hasn't been saved already
@@ -1562,6 +1558,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1592,6 +1589,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1615,6 +1613,7 @@
             delete clearedData.dobVerified;
             delete clearedData.npiVerified;
             delete clearedData.licensesVerified;
+            delete clearedData.boardCertificatesVerified;
             delete clearedData.doctorLicenseVerified;
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
@@ -1646,6 +1645,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1694,6 +1694,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -2301,6 +2302,7 @@
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
@@ -2581,6 +2583,7 @@
           delete clearedData.dobVerified;
           delete clearedData.npiVerified;
           delete clearedData.licensesVerified;
+          delete clearedData.boardCertificatesVerified;
           delete clearedData.doctorLicenseVerified;
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
@@ -2593,6 +2596,7 @@
           delete clearedData.nextProviderFinalDobVerified;
           delete clearedData.nextProviderFinalNpiVerified;
           delete clearedData.nextProviderFinalLicensesVerified;
+          delete clearedData.nextProviderFinalBoardCertificatesVerified;
           delete clearedData.nextProviderFinalDoctorLicenseVerified;
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
@@ -2852,6 +2856,128 @@
               --border-color: #374151;
               --input-bg: #374151;
               --modal-bg: #1f2937;
+            }
+
+            /* Dark mode text overrides */
+            html.dark .text-slate-900,
+            html.dark .text-slate-800,
+            html.dark .text-slate-700 {
+              color: #f3f4f6 !important;
+            }
+
+            html.dark .text-slate-600 {
+              color: #d1d5db !important;
+            }
+
+            html.dark .text-slate-500 {
+              color: #9ca3af !important;
+            }
+
+            html.dark .text-slate-400 {
+              color: #9ca3af !important;
+            }
+
+            html.dark .placeholder-slate-400::placeholder {
+              color: #6b7280 !important;
+            }
+
+            /* Dark mode background overrides */
+            html.dark .bg-slate-50,
+            html.dark .bg-slate-100 {
+              background-color: #374151 !important;
+            }
+
+            html.dark .bg-white {
+              background-color: var(--card-bg) !important;
+            }
+
+            html.dark .bg-indigo-50 {
+              background-color: #1e3a5f !important;
+            }
+
+            html.dark .bg-blue-50,
+            html.dark .bg-blue-100 {
+              background-color: #1e3a5f !important;
+            }
+
+            /* Override text color in blue background sections for dark mode */
+            html.dark .bg-blue-50 *,
+            html.dark .bg-blue-100 *,
+            html.dark .border-blue-200 *,
+            html.dark .border-blue-400 * {
+              color: #f3f4f6 !important;
+            }
+
+            /* Dark mode border overrides */
+            html.dark .border-slate-100,
+            html.dark .border-slate-200,
+            html.dark .border-slate-300 {
+              border-color: #4b5563 !important;
+            }
+
+            html.dark .border-indigo-200,
+            html.dark .border-blue-200,
+            html.dark .border-blue-400 {
+              border-color: #4b5563 !important;
+            }
+
+            /* Ensure text is dark on light selected backgrounds (light mode) */
+            .bg-cyan-50,
+            .bg-cyan-100,
+            .bg-indigo-50 {
+              color: #1f2937 !important;
+            }
+
+            .bg-cyan-50 *,
+            .bg-cyan-100 *,
+            .bg-indigo-50 * {
+              color: #1f2937 !important;
+            }
+
+            /* Override in dark mode for selected states */
+            html.dark .bg-cyan-50,
+            html.dark .bg-cyan-100 {
+              background-color: #0d9488 !important;
+              color: white !important;
+            }
+
+            html.dark .bg-cyan-50 *,
+            html.dark .bg-cyan-100 * {
+              color: white !important;
+            }
+
+            /* Override hardcoded light teal backgrounds in instruction boxes */
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
+            html.dark div[style*="background-color: rgb(224, 242, 241)"],
+            html.dark div[style*="backgroundColor:#e0f2f1"],
+            html.dark div[style*="background-color:#e0f2f1"] {
+              background-color: #1e3a5f !important;
+            }
+
+            /* Ensure text in instruction boxes with teal background is light in dark mode */
+            html.dark div[style*="backgroundColor:#e0f2f1"] *,
+            html.dark div[style*="background-color:#e0f2f1"] *,
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
+            html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
+              color: #f3f4f6 !important;
+            }
+
+            /* Dark mode input and textarea styles */
+            html.dark input[type="text"],
+            html.dark input[type="email"],
+            html.dark input[type="number"],
+            html.dark input[type="tel"],
+            html.dark input[type="date"],
+            html.dark textarea,
+            html.dark select {
+              background-color: var(--input-bg) !important;
+              color: #f3f4f6 !important;
+              border-color: #4b5563 !important;
+            }
+
+            html.dark input::placeholder,
+            html.dark textarea::placeholder {
+              color: #9ca3af !important;
             }
 
             * {
@@ -3442,7 +3568,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 
@@ -3643,7 +3769,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
+                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">
@@ -3938,7 +4064,7 @@
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
-                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}) : {}}
+                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-cyan), var(--gainwell-teal))'}) : {}}
                     >
                       {getNextButtonText()}
                       {!isLastPage && <ChevronRight className="w-4 h-4" />}

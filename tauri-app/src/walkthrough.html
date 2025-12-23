@@ -707,10 +707,9 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -719,10 +718,9 @@
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -732,10 +730,9 @@
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -744,10 +741,9 @@
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'radio',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]

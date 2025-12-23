@@ -500,7 +500,7 @@
             },
             {
               name: 'boardCertificatesVerified',
-              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
+              label: 'Board Certificates - APN, CRNA, CNM require a board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -1372,7 +1372,7 @@
             },
             {
               name: 'nextProviderFinalBoardCertificatesVerified',
-              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
+              label: 'Board Certificates - APN, CRNA, CNM require board a certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),

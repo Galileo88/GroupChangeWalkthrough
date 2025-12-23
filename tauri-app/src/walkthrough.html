@@ -4385,6 +4385,18 @@
                         return false; // Don't show completion buttons
                       }
                     }
+                    // For existing-provider-completion, only show completion buttons if there are no more providers to add
+                    if (currentPageData.id === 'existing-provider-completion') {
+                      const hasMoreProviders = enrolledProviders.some((p, idx) =>
+                        idx > currentAddingProviderIndex &&
+                        (p.status === 'Enrolled - Ready to be Added to Group' ||
+                         p.status === 'Verified - Ready to Add to Group')
+                      );
+                      // If there are more providers, show regular navigation instead
+                      if (hasMoreProviders) {
+                        return false; // Don't show completion buttons
+                      }
+                    }
                     return true; // Show completion buttons
                   }
                   return false; // Not a completion page

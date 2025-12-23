@@ -2700,6 +2700,27 @@
 
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
+
+            // PROVIDER INFORMATION (QUESTION 20)
+            textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
+            textContent += `  • Question 20 Answered: ${provider.question20Answered !== false ? 'Yes' : 'No'}\n`;
+            textContent += `  • Provider Already Enrolled: ${provider.providerAlreadyEnrolled || 'N/A'}\n`;
+            if (provider.providerAlreadyEnrolled === 'Yes') {
+              textContent += `  • Provider In Group: ${provider.providerInGroup || 'N/A'}\n`;
+            }
+            textContent += `\n`;
+
+            // PROVIDER VERIFICATION
+            textContent += `PROVIDER VERIFICATION:\n`;
+            textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
+            textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `\n`;
+
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // Check if this is an existing provider (being added to group)
@@ -2817,6 +2838,27 @@
 
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
+
+            // PROVIDER INFORMATION (QUESTION 20)
+            textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
+            textContent += `  • Question 20 Answered: ${provider.question20Answered !== false ? 'Yes' : 'No'}\n`;
+            textContent += `  • Provider Already Enrolled: ${provider.providerAlreadyEnrolled || 'N/A'}\n`;
+            if (provider.providerAlreadyEnrolled === 'Yes') {
+              textContent += `  • Provider In Group: ${provider.providerInGroup || 'N/A'}\n`;
+            }
+            textContent += `\n`;
+
+            // PROVIDER VERIFICATION
+            textContent += `PROVIDER VERIFICATION:\n`;
+            textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
+            textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `\n`;
+
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // Check if this is an existing provider (being added to group)

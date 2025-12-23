@@ -588,9 +588,7 @@
             },
             {
               name: 'ssnVerified',
-              label: 'SSN
-			  <br/><br/>
-			  Verify SSN using SOVOS if a Social Security Card is not attached to the application',
+              label: 'SSN - Verify SSN using SOVOS if a Social Security Card is not attached to the application',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -599,9 +597,7 @@
             },
             {
               name: 'dexSanctionsCheck',
-              label: 'DEX and Sanctions in WVT
-			  <br/><br/>
-			  Check all providers being added',
+              label: 'DEX and Sanctions in WVT - Check all providers being added',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -609,9 +605,7 @@
             },
             {
               name: 'dobVerified',
-              label: 'DOB
-			  <br/><br/>
-			  Verify DOB in PECOS (new providers may not be in PECOS, so just use their DOB on the application)',
+              label: 'DOB - Verify DOB in PECOS (new providers may not be in PECOS, so just use their DOB on the application)',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -619,9 +613,7 @@
             },
             {
               name: 'npiVerified',
-              label: 'NPI
-			  <br/><br/>
-			  Verify in either the WVT or at npiregistry.cms.hhs.gov to ensure the NPI belongs to the provider',
+              label: 'NPI - Verify in either the WVT or at npiregistry.cms.hhs.gov to ensure the NPI belongs to the provider',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -632,9 +624,7 @@
               name: 'licensesVerified',
               label: () => (
                 <>
-                  Licenses
-				  <br/><br/>
-				  APN, CRNA, CNM require RN license and APN license.
+                  Licenses - APN, CRNA, CNM require RN license and APN license.
                   <br/><br/>
                   Doctors are required to have a copy of their license.
                 </>
@@ -649,9 +639,7 @@
               name: 'boardCertificatesVerified',
               label: () => (
                 <>
-                  Board Certificates
-				  <br/><br/>
-				  APN, CRNA, CNM require a board certificate.
+                  Board Certificates - APN, CRNA, CNM require board certificate.
                   <br/><br/>
                   Doctors are not required to provide a board certificate, but can be added and updated if included.
                 </>
@@ -664,9 +652,7 @@
             },
             {
               name: 'deaEffectiveDates',
-              label: 'DEA effective dates
-			  <br/><br/>
-			  Compare expiration dates and update if newer. Add DEA information for new providers if attached',
+              label: 'DEA effective dates - Compare expiration dates and update if newer. Add DEA information for new providers if attached',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -674,9 +660,7 @@
             },
             {
               name: 'effectiveDatesChecked',
-              label: 'Effective Dates
-			  <br/><br/>
-			  If no Requested Effective Date is provided, effective date goes one year back from stamped date (as long as license covers it)',
+              label: 'Effective Dates - If no Requested Effective Date is provided, effective date goes one year back from stamped date (as long as license covers it)',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -1541,7 +1525,7 @@
               name: 'nextProviderFinalBoardCertificatesVerified',
               label: () => (
                 <>
-                  Board Certificates - APN, CRNA, CNM require a board certificate.
+                  Board Certificates - APN, CRNA, CNM require board certificate.
                   <br/><br/>
                   Doctors are not required to provide a board certificate, but can be added and updated if included.
                 </>

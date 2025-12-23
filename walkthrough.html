@@ -3968,20 +3968,10 @@
                 {(() => {
                   // Check if we should show completion page buttons
                   if (currentPageData.isCompletionPage) {
-                    // For additional-providers-check, only show completion buttons if there are no more providers to enroll AND no providers to add to group
+                    // For additional-providers-check, NEVER show completion buttons
+                    // If we reached this page, we enrolled providers, so we'll ALWAYS need to add them to the group
                     if (currentPageData.id === 'additional-providers-check') {
-                      const hasMoreProvidersToEnroll = enrolledProviders.some((p, idx) =>
-                        idx > currentEnrollingProviderIndex &&
-                        p.status === 'Verified - Ready to Enroll' &&
-                        p.providerAlreadyEnrolled === 'No'
-                      );
-                      const hasProvidersToAddToGroup = enrolledProviders.some(p =>
-                        p.status === 'Enrolled - Ready to be Added to Group'
-                      );
-                      // If there are more providers to enroll OR providers to add to group, show regular navigation instead
-                      if (hasMoreProvidersToEnroll || hasProvidersToAddToGroup) {
-                        return false; // Don't show completion buttons, show "Next Provider" or "Add Providers to Group" button
-                      }
+                      return false; // Always show regular navigation (either "Next Provider" or "Add Providers to Group")
                     }
                     // For existing-provider-completion, only show completion buttons if there are no more providers to add
                     if (currentPageData.id === 'existing-provider-completion') {

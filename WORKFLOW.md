@@ -131,21 +131,24 @@ These pages display embedded documentation and provide access to reference mater
 | 20 | existing-provider-add-to-letter | 18 | Add provider to letter | SNOW | Include provider in notification letter |
 | 21 | existing-provider-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation |
 | 22 | existing-provider-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete |
-| 23 | existing-provider-completion | 21 | **DECISION POINT** | Application | Additional existing providers? |
+| 23 | existing-provider-completion | 21 | **AUTOMATED ROUTING** | Application | System determines if more providers need processing |
 
-**Step 23 Decision Logic**:
-- **"Yes" Selection**:
-  - Saves current provider to `enrolledProviders` array
-  - Clears existing provider-specific form fields
-  - Maintains `providerEnrollmentType = 'Existing Provider'`
-  - **LOOPS BACK** to Step 11 (existing-provider-open-cics)
-  - Allows adding multiple existing providers sequentially
+**Step 23 Automated Logic** (PR #89):
+- System automatically checks `enrolledProviders` array for remaining providers with "Ready to Add" status
+- **More providers need group addition**:
+  - Marks current provider as "Complete"
+  - Loads next provider data from array
+  - **AUTOMATICALLY LOOPS BACK** to Step 11 (existing-provider-open-cics)
+  - Displays context-aware completion message indicating next provider
 
-- **"No" Selection**:
-  - Saves final provider to `enrolledProviders` array
-  - Proceeds to **final-completion** page
+- **No more providers to process**:
+  - Marks final provider as "Complete"
+  - **AUTOMATICALLY PROCEEDS** to **final-completion** page
   - Completes entire workflow
+  - Displays final completion message
   - Enables export of complete application data
+
+**Note**: Users no longer manually select "Yes" or "No" - the system intelligently determines the next step based on provider queue status.
 
 ---
 
@@ -168,22 +171,25 @@ These pages display embedded documentation and provide access to reference mater
 | 34 | claim-type-tab | 32 | Claim types | SNOW | Configure claim submission types (uses Provider Types & Specialties PDF) |
 | 35 | license-dea-tab | 33 | License and DEA | SNOW | Enter license numbers, DEA (if applicable) |
 | 36 | enroll-on-mainframe | 34 | Enroll on mainframe | Mainframe | Complete mainframe enrollment transaction |
-| 37 | additional-providers-check | 35 | **DECISION POINT** | Application | Additional new providers needed? |
+| 37 | new-provider-completion | 35 | **AUTOMATED ROUTING** | Application | System determines if more providers need enrollment |
 
-**Step 37 Decision Logic**:
-- **"Yes" Selection**:
-  - Saves current provider to `enrolledProviders` array
-  - Clears new provider-specific form fields
-  - Maintains `providerEnrollmentType = 'New Provider'`
-  - **LOOPS BACK** to Step 24 (create-enrollment)
+**Step 37 Automated Logic** (PR #89):
+- System automatically checks `enrolledProviders` array for remaining providers with "Ready to Enroll" status
+- **More providers need enrollment**:
+  - Marks current provider as "Enrolled - Ready to be Added to Group"
+  - Loads next provider data from array
+  - **AUTOMATICALLY LOOPS BACK** to Step 24 (create-enrollment)
+  - Displays context-aware completion message indicating next provider
   - Allows enrolling multiple new providers sequentially
 
-- **"No" Selection**:
-  - Saves final new provider to `enrolledProviders` array
-  - Sets `providerEnrollmentType = 'Existing Provider'`
-  - **TRANSITIONS** to Step 11 (existing-provider-open-cics)
-  - Enables adding newly enrolled providers to the group
-  - **Important**: All new providers must be enrolled before existing provider workflow begins
+- **No more "Ready to Enroll" providers, but providers need group addition**:
+  - Marks final new provider as "Enrolled - Ready to be Added to Group"
+  - **AUTOMATICALLY TRANSITIONS** to Step 11 (existing-provider-open-cics)
+  - Begins adding newly enrolled providers to the group
+  - System intelligently sequences workflow from enrollment to group addition
+  - **Important**: All new providers automatically enrolled before group addition workflow begins
+
+**Note**: Users no longer manually select "Yes" or "No" - the system intelligently determines the next step based on provider queue status.
 
 ---
 
@@ -407,17 +413,17 @@ After completing Questions 21-23, the system examines the `enrolledProviders` ar
 - Triggered if ANY provider has status "Verified - Ready to Enroll"
 - Routes to Step 24 (create-enrollment)
 - Processes EACH new provider sequentially through enrollment steps
-- At Step 37, "More providers?" determines if another new provider needs enrollment
-  - **Yes** → Process next "Ready to Enroll" provider, loop to Step 24
-  - **No** → Mark all as "Enrolled - Ready to be Added to Group", transition to Existing Provider Workflow
+- At Step 37 (new-provider-completion), **system automatically determines** if another new provider needs enrollment:
+  - **More "Ready to Enroll" providers exist** → Automatically process next provider, loop to Step 24
+  - **No more new providers** → Mark all as "Enrolled - Ready to be Added to Group", automatically transition to Existing Provider Workflow
 
 **Priority 2 - Existing Provider Workflow** (if applicable):
 - Triggered if providers have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
 - Routes to Step 11 (existing-provider-open-cics)
 - Processes EACH provider sequentially through group addition steps
-- At Step 23, "More providers?" determines if another provider needs to be added
-  - **Yes** → Process next "Ready to Add" provider, loop to Step 11
-  - **No** → Mark all as "Complete", go to Final Completion
+- At Step 23 (existing-provider-completion), **system automatically determines** if another provider needs to be added:
+  - **More "Ready to Add" providers exist** → Automatically process next provider, loop to Step 11
+  - **No more providers** → Mark all as "Complete", automatically go to Final Completion
 
 #### Phase 3: Sequential Batch Processing
 The workflows process providers from the `enrolledProviders` array ONE AT A TIME:
@@ -428,10 +434,11 @@ The workflows process providers from the `enrolledProviders` array ONE AT A TIME
 
 1. **Verification First**: All providers must be verified at Question 20 before any enrollment/group addition begins
 2. **New Provider Priority**: If ANY providers need enrollment, new provider workflow executes first (all new enrollments must complete before group additions)
-3. **Batch Processing**: Providers processed sequentially one at a time, not all at once
-4. **Automatic Transitions**: System automatically transitions from new → existing provider workflows based on enrolledProviders array
+3. **Automated Sequential Processing** (PR #89): Providers processed sequentially one at a time with automatic loop detection - no manual "Yes/No" decisions
+4. **Intelligent Status Detection** (PR #89): System automatically transitions from new → existing provider workflows based on enrolledProviders array status
 5. **Status-Based Routing**: Routing determined by provider status, not user selection
-6. **No Manual Branching**: Users never manually choose between "New Provider" or "Existing Provider" - the system decides automatically
+6. **No Manual Branching**: Users never manually choose between workflows or provider continuation - the system decides automatically
+7. **Context-Aware Messaging** (PR #89): Completion pages display appropriate messages indicating workflow continuation or completion
 
 ---
 
@@ -452,11 +459,13 @@ The workflows process providers from the `enrolledProviders` array ONE AT A TIME
 
 **Implementation**:
 ```javascript
-// Provider saved when "Yes" or "No" selected at decision points
+// Provider automatically saved when completion page is reached (PR #89)
+// System determines next action based on enrolledProviders array status
 enrolledProviders.push({
   type: 'New Provider' | 'Existing Provider',
   data: { /* all provider-specific form fields */ },
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
+  status: 'Complete' | 'Enrolled - Ready to be Added to Group'
 });
 ```
 

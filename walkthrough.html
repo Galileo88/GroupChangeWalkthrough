@@ -3968,12 +3968,17 @@
                 {(() => {
                   // Check if we should show completion page buttons
                   if (currentPageData.isCompletionPage) {
-                    // For additional-providers-check, only show completion buttons if there are no more providers
+                    // For additional-providers-check, NEVER show completion buttons
+                    // If we reached this page, we enrolled providers, so we'll ALWAYS need to add them to the group
                     if (currentPageData.id === 'additional-providers-check') {
+                      return false; // Always show regular navigation (either "Next Provider" or "Add Providers to Group")
+                    }
+                    // For existing-provider-completion, only show completion buttons if there are no more providers to add
+                    if (currentPageData.id === 'existing-provider-completion') {
                       const hasMoreProviders = enrolledProviders.some((p, idx) =>
-                        idx > currentEnrollingProviderIndex &&
-                        p.status === 'Verified - Ready to Enroll' &&
-                        p.providerAlreadyEnrolled === 'No'
+                        idx > currentAddingProviderIndex &&
+                        (p.status === 'Enrolled - Ready to be Added to Group' ||
+                         p.status === 'Verified - Ready to Add to Group')
                       );
                       // If there are more providers, show regular navigation instead
                       if (hasMoreProviders) {
@@ -4289,15 +4294,15 @@
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {enrolledProviders.map((provider, index) => (
-                      <div key={index} className={`bg-gradient-to-br ${
+                      <div key={index} className={`${
                         index === currentEnrollingProviderIndex
-                          ? 'from-blue-50 to-indigo-50 border-2 border-blue-400 ring-2 ring-blue-300'
+                          ? 'bg-gradient-to-br from-blue-100 to-indigo-100 border-4 border-blue-500 shadow-lg shadow-blue-200'
                           : index === currentAddingProviderIndex
-                          ? 'from-purple-50 to-violet-50 border-2 border-purple-400 ring-2 ring-purple-300'
-                          : 'from-green-50 to-emerald-50 border-2 border-green-200'
-                      } rounded-lg p-6 hover:border-green-300 transition-all`}>
+                          ? 'bg-gradient-to-br from-purple-100 to-violet-100 border-4 border-purple-500 shadow-lg shadow-purple-200'
+                          : 'bg-white border-4 border-emerald-400 shadow-lg'
+                      } rounded-xl p-8 transition-all hover:shadow-xl`}>
                         <div className="mb-4">
                           <div className="flex items-center gap-3 mb-2">
                             <div className={`${
@@ -4353,79 +4358,86 @@
                           </div>
                         ) : (
                           <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                              <div className="flex items-start gap-2">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
+                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span className="text-slate-700">
-                                  <span className="font-semibold">Enrollment Created:</span> {provider.createEnrollmentComplete ? 'Yes' : 'No'}
+                                <span className="text-slate-800 font-medium">
+                                  <span className="font-bold text-slate-900">Enrollment Created:</span><br />
+                                  <span className="text-emerald-700">{provider.createEnrollmentComplete ? '✓ Yes' : '✗ No'}</span>
                                 </span>
                               </div>
-                              <div className="flex items-start gap-2">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
+                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span className="text-slate-700">
-                                  <span className="font-semibold">Provider Info:</span> {provider.providerInfoComplete ? 'Complete' : 'Incomplete'}
+                                <span className="text-slate-800 font-medium">
+                                  <span className="font-bold text-slate-900">Provider Info:</span><br />
+                                  <span className="text-emerald-700">{provider.providerInfoComplete ? '✓ Complete' : '✗ Incomplete'}</span>
                                 </span>
                               </div>
-                              <div className="flex items-start gap-2">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
+                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span className="text-slate-700">
-                                  <span className="font-semibold">Group Specialties:</span> {provider.groupSpecialtiesChecked ? 'Verified' : 'Not Verified'}
+                                <span className="text-slate-800 font-medium">
+                                  <span className="font-bold text-slate-900">Group Specialties:</span><br />
+                                  <span className="text-emerald-700">{provider.groupSpecialtiesChecked ? '✓ Verified' : '✗ Not Verified'}</span>
                                 </span>
                               </div>
-                              <div className="flex items-start gap-2">
-                                <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
+                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span className="text-slate-700">
-                                  <span className="font-semibold">Mainframe Enrollment:</span> {provider.enrollOnMainframeComplete ? 'Complete' : 'Incomplete'}
+                                <span className="text-slate-800 font-medium">
+                                  <span className="font-bold text-slate-900">Mainframe Enrollment:</span><br />
+                                  <span className="text-emerald-700">{provider.enrollOnMainframeComplete ? '✓ Complete' : '✗ Incomplete'}</span>
                                 </span>
                               </div>
                             </div>
 
-                            <div className="mt-4 pt-4 border-t border-green-200">
-                              <details className="cursor-pointer">
-                                <summary className="text-sm font-semibold text-green-700 hover:text-green-800">
+                            <div className="mt-6 pt-4 border-t-2 border-emerald-300">
+                              <details className="cursor-pointer group">
+                                <summary className="text-base font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-2 select-none">
+                                  <svg className="w-4 h-4 transition-transform group-open:rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                  </svg>
                                   View All Details
                                 </summary>
-                                <div className="mt-3 pl-4 space-y-2 text-sm text-slate-600">
-                                  <div>• Enrollment Tab: {provider.enrollmentTabComplete ? '✓' : '✗'}</div>
-                                  <div>• Provider Name: {provider.providerNameCorrect ? '✓' : '✗'}</div>
-                                  <div>• Provider Type: {provider.providerTypeCorrect ? '✓' : '✗'}</div>
-                                  <div>• Application Date: {provider.applicationDateAdded ? '✓' : '✗'}</div>
-                                  <div>• Cancel Reason Code: {provider.cancelReasonCode ? '✓' : '✗'}</div>
-                                  <div>• Provider Address: {provider.providerAddressComplete ? '✓' : '✗'}</div>
-                                  <div>• Payment/Mailing Address: {provider.paymentMailingAddressComplete ? '✓' : '✗'}</div>
-                                  <div>• Provider Info Tab: {provider.providerInfoTabComplete ? '✓' : '✗'}</div>
-                                  <div>• NPI Tab: {provider.npiTabComplete ? '✓' : '✗'}</div>
-                                  <div>• Specialty Tab: {provider.specialtyTabComplete ? '✓' : '✗'}</div>
-                                  <div>• Claim Type Tab: {provider.claimTypeTabComplete ? '✓' : '✗'}</div>
-                                  <div>• License/DEA Tab: {provider.licenseDeaTabComplete ? '✓' : '✗'}</div>
+                                <div className="mt-4 pl-4 space-y-2 text-sm bg-slate-50 p-4 rounded-lg border-2 border-slate-200">
+                                  <div className="font-semibold text-slate-900">• Enrollment Tab: <span className={provider.enrollmentTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.enrollmentTabComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Provider Name: <span className={provider.providerNameCorrect ? 'text-emerald-600' : 'text-red-600'}>{provider.providerNameCorrect ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Provider Type: <span className={provider.providerTypeCorrect ? 'text-emerald-600' : 'text-red-600'}>{provider.providerTypeCorrect ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Application Date: <span className={provider.applicationDateAdded ? 'text-emerald-600' : 'text-red-600'}>{provider.applicationDateAdded ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Cancel Reason Code: <span className={provider.cancelReasonCode ? 'text-emerald-600' : 'text-red-600'}>{provider.cancelReasonCode ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Provider Address: <span className={provider.providerAddressComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.providerAddressComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Payment/Mailing Address: <span className={provider.paymentMailingAddressComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.paymentMailingAddressComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Provider Info Tab: <span className={provider.providerInfoTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.providerInfoTabComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• NPI Tab: <span className={provider.npiTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.npiTabComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Specialty Tab: <span className={provider.specialtyTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.specialtyTabComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• Claim Type Tab: <span className={provider.claimTypeTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.claimTypeTabComplete ? '✓' : '✗'}</span></div>
+                                  <div className="font-semibold text-slate-900">• License/DEA Tab: <span className={provider.licenseDeaTabComplete ? 'text-emerald-600' : 'text-red-600'}>{provider.licenseDeaTabComplete ? '✓' : '✗'}</span></div>
                                 </div>
                               </details>
                             </div>
                           </>
                         )}
 
-                        <div className="mt-4 pt-4 border-t border-indigo-200">
+                        <div className="mt-6 pt-4 border-t-2 border-slate-300 bg-slate-50 -m-8 mt-6 p-6 rounded-b-xl">
                           <div className="flex items-center gap-2 mb-3">
-                            <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            <label htmlFor={`manual-note-${index}`} className="text-sm font-semibold text-indigo-800">Manual Notes</label>
+                            <label htmlFor={`manual-note-${index}`} className="text-base font-bold text-slate-900">Manual Notes</label>
                           </div>
                           <textarea
                             id={`manual-note-${index}`}
                             value={providerManualNotes[index] || ''}
                             onChange={(e) => handleProviderManualNoteChange(index, e.target.value)}
                             placeholder="Add any additional notes about this provider..."
-                            className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm text-slate-700 placeholder-slate-400 resize-none"
-                            rows="3"
+                            className="w-full px-4 py-3 border-3 border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-4 focus:ring-emerald-200 transition-all text-sm text-slate-900 placeholder-slate-500 resize-none bg-white font-medium shadow-sm"
+                            rows="4"
                           />
                         </div>
                       </div>

@@ -2896,6 +2896,14 @@
               background-color: #1e3a5f !important;
             }
 
+            /* Override text color in blue background sections for dark mode */
+            html.dark .bg-blue-50 *,
+            html.dark .bg-blue-100 *,
+            html.dark .border-blue-200 *,
+            html.dark .border-blue-400 * {
+              color: #f3f4f6 !important;
+            }
+
             /* Dark mode border overrides */
             html.dark .border-slate-100,
             html.dark .border-slate-200,
@@ -2904,7 +2912,8 @@
             }
 
             html.dark .border-indigo-200,
-            html.dark .border-blue-200 {
+            html.dark .border-blue-200,
+            html.dark .border-blue-400 {
               border-color: #4b5563 !important;
             }
 

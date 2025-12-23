@@ -106,11 +106,11 @@
       const [showOutreachModal, setShowOutreachModal] = useState(false);
       const [currentOutreachReason, setCurrentOutreachReason] = useState('');
       const [showViewNotesModal, setShowViewNotesModal] = useState(false);
-      const [enrolledProviders, setEnrolledProviders] = useState([]);
-      const [showEnrolledProvidersModal, setShowEnrolledProvidersModal] = useState(false);
-      const [providerManualNotes, setProviderManualNotes] = useState({});
-      const [currentEnrollingProviderIndex, setCurrentEnrollingProviderIndex] = useState(null);
-      const [currentAddingProviderIndex, setCurrentAddingProviderIndex] = useState(null);
+      const [enrolledPractitioners, setEnrolledPractitioners] = useState([]);
+      const [showEnrolledPractitionersModal, setShowEnrolledPractitionersModal] = useState(false);
+      const [practitionerManualNotes, setPractitionerManualNotes] = useState({});
+      const [currentEnrollingPractitionerIndex, setCurrentEnrollingPractitionerIndex] = useState(null);
+      const [currentAddingPractitionerIndex, setCurrentAddingPractitionerIndex] = useState(null);
       const [visitedPages, setVisitedPages] = useState(new Set([0]));
       const [unableToVerifyFields, setUnableToVerifyFields] = useState(new Set());
       const [pendingUnableToVerifyField, setPendingUnableToVerifyField] = useState(null);
@@ -144,7 +144,7 @@
             clearTimeout(saveTimeoutRef.current);
           }
         };
-      }, [formData, enrolledProviders, outreachNotes, providerManualNotes, unableToVerifyFields, currentPage, currentEnrollingProviderIndex, currentAddingProviderIndex]);
+      }, [formData, enrolledPractitioners, outreachNotes, practitionerManualNotes, unableToVerifyFields, currentPage, currentEnrollingPractitionerIndex, currentAddingPractitionerIndex]);
 
       // -------------------- Reference Images --------------------
       const groupPracticeAppImage = './images/groupchange_application.jpg';
@@ -247,15 +247,15 @@
           user_name: formData.userName || '',
           current_page: currentPage.toString(),
           form_data: formData,
-          enrolled_providers: enrolledProviders,
+          enrolled_practitioners: enrolledPractitioners,
           outreach_notes: outreachNotes,
-          provider_manual_notes: providerManualNotes,
+          practitioner_manual_notes: practitionerManualNotes,
           unable_to_verify_fields: Array.from(unableToVerifyFields).map(f => String(f)),
           visited_pages: Array.from(visitedPages).map(p => String(p)),
-          current_enrolling_provider_index: currentEnrollingProviderIndex ?? -1,
-          current_adding_provider_index: currentAddingProviderIndex ?? -1,
+          current_enrolling_practitioner_index: currentEnrollingPractitionerIndex ?? -1,
+          current_adding_practitioner_index: currentAddingPractitionerIndex ?? -1,
           last_saved: new Date().toISOString(),
-          has_outreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
+          has_outreach: enrolledPractitioners.some(p => p.status === 'Unable to Verify - Requires Outreach')
         };
 
         try {
@@ -288,13 +288,13 @@
               userName: state.user_name,
               currentPage: parseInt(state.current_page),
               formData: state.form_data,
-              enrolledProviders: state.enrolled_providers,
+              enrolledPractitioners: state.enrolled_practitioners,
               outreachNotes: state.outreach_notes,
-              providerManualNotes: state.provider_manual_notes,
+              practitionerManualNotes: state.practitioner_manual_notes,
               unableToVerifyFields: state.unable_to_verify_fields,
               visitedPages: state.visited_pages.map(p => parseInt(p)),
-              currentEnrollingProviderIndex: state.current_enrolling_provider_index,
-              currentAddingProviderIndex: state.current_adding_provider_index,
+              currentEnrollingPractitionerIndex: state.current_enrolling_practitioner_index,
+              currentAddingPractitionerIndex: state.current_adding_practitioner_index,
               lastSaved: state.last_saved,
               hasOutreach: state.has_outreach
             };
@@ -357,7 +357,7 @@
         // -------------------- Save/Resume Pages --------------------
         {
           id: 'start-choice',
-          title: 'Provider Enrollment Walkthrough',
+          title: 'Practitioner Enrollment Walkthrough',
           description: 'Would you like to start a new application or continue a saved one?',
           fields: [
             {
@@ -561,7 +561,7 @@
               ]
             },
             {
-              name: 'providerAlreadyEnrolled',
+              name: 'practitionerAlreadyEnrolled',
               label: 'Is the practitioner already enrolled?',
               type: 'radio',
               required: true,
@@ -574,12 +574,12 @@
               ]
             },
             {
-              name: 'providerInGroup',
+              name: 'practitionerInGroup',
               label: 'Is the practitioner already in the group?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              showWhen: { field: 'providerAlreadyEnrolled', value: 'Yes' },
+              showWhen: { field: 'practitionerAlreadyEnrolled', value: 'Yes' },
               validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'If Yes, you will be given the option to reject this as a duplicate application.',
@@ -591,7 +591,7 @@
               label: 'SSN - Verify SSN using SOVOS if a Social Security Card is not attached to the application',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true,
               sovosUrl: 'https://taxport.sovos.com/login'
             },
@@ -600,7 +600,7 @@
               label: 'DEX and Sanctions in WVT - Check all practitioners being added',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true
             },
             {
@@ -608,7 +608,7 @@
               label: 'DOB - Verify DOB in PECOS (new practitioners may not be in PECOS, so just use their DOB on the application)',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true
             },
             {
@@ -616,7 +616,7 @@
               label: 'NPI - Verify in either the WVT or at npiregistry.cms.hhs.gov to ensure the NPI belongs to the practitioner',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true,
               npiRegistryUrl: 'https://npiregistry.cms.hhs.gov'
             },
@@ -631,7 +631,7 @@
               ),
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true,
               licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
@@ -640,7 +640,7 @@
               label: 'DEA effective dates - Compare expiration dates and update if newer. Add DEA information for new practitioners if attached',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true
             },
             {
@@ -648,7 +648,7 @@
               label: 'Effective Dates - If no Requested Effective Date is provided, effective date goes one year back from stamped date (as long as license covers it)',
               type: 'checkbox',
               required: true,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.practitionerAlreadyEnrolled === 'No' || (formData.practitionerAlreadyEnrolled === 'Yes' && formData.practitionerInGroup === 'No')),
               validation: (value) => value === true
             }
           ],
@@ -770,12 +770,12 @@
           displayImage: aouImage
         },
         {
-          id: 'provider-agreement',
+          id: 'practitioner-agreement',
           title: 'practitioner Agreement',
           description: 'Does the application have the practitioner Agreement attached?',
           fields: [
             {
-              name: 'providerAgreementAttached',
+              name: 'practitionerAgreementAttached',
               label: 'Does the application have the practitioner Agreement attached?',
               type: 'radio',
               required: true,
@@ -866,13 +866,13 @@
         // ================== EXISTING PROVIDER WORKFLOW ==================
         // These pages handle adding an already-enrolled practitioner to a group
         {
-          id: 'existing-provider-open-cics',
+          id: 'existing-practitioner-open-cics',
           title: 'OPEN CICS',
           description: 'Access the practitioner in CICS',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderOpenCicsComplete',
+              name: 'existingPractitionerOpenCicsComplete',
               label: 'Complete: Access the practitioner in CICS.',
               type: 'checkbox',
               required: true,
@@ -883,13 +883,13 @@
           displayImage: cicsImage
         },
         {
-          id: 'existing-provider-add-to-group',
+          id: 'existing-practitioner-add-to-group',
           title: 'ADDING A PRACTITIONER TO THE GROUP',
           description: 'Add the practitioner to the group in CICS',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderAddToGroupComplete',
+              name: 'existingPractitionerAddToGroupComplete',
               label: 'Complete: Add the practitioner to the group in CICS.',
               type: 'checkbox',
               required: true,
@@ -900,10 +900,10 @@
           displayImage: addProvImage
         },
         {
-          id: 'existing-provider-verify-info',
+          id: 'existing-practitioner-verify-info',
           title: 'VERIFYING PRACTITIONER INFO IS CORRECT',
           description: 'Verify all practitioner information in CICS',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           pageNotes: [
             'Board Certification Indicators:',
             'APN, CRNA, CNM will always remain a 0',
@@ -913,7 +913,7 @@
           ],
           fields: [
             {
-              name: 'providerNameFormatting02',
+              name: 'practitionerNameFormatting02',
               label: 'Check the formatting of the practitioners name on 02 page',
               type: 'checkbox',
               required: true,
@@ -957,13 +957,13 @@
           ]
         },
         {
-          id: 'existing-provider-close-enrollment',
+          id: 'existing-practitioner-close-enrollment',
           title: 'CLOSING THE ENROLLMENT TASK',
           description: 'Close the enrollment task in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderCloseEnrollmentComplete',
+              name: 'existingPractitionerCloseEnrollmentComplete',
               label: 'Complete: Close the enrollment task in SNOW.',
               type: 'checkbox',
               required: true,
@@ -974,13 +974,13 @@
           displayImage: enrollmentTaskImage
         },
         {
-          id: 'existing-provider-finish-group-change',
+          id: 'existing-practitioner-finish-group-change',
           title: 'FINISHING UP THE GROUP CHANGE',
           description: 'Complete the group change process in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderFinishGroupChangeComplete',
+              name: 'existingPractitionerFinishGroupChangeComplete',
               label: 'Complete: Input the email address into the email field in SNOW.',
               type: 'checkbox',
               required: true,
@@ -991,13 +991,13 @@
           displayImage: emailFieldImage
         },
         {
-          id: 'existing-provider-create-checklist',
+          id: 'existing-practitioner-create-checklist',
           title: 'CREATE A CHECKLIST',
           description: 'Add verification checklist in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderCreateChecklistComplete',
+              name: 'existingPractitionerCreateChecklistComplete',
               label: 'Complete: Add verification checklist in SNOW.',
               type: 'checkbox',
               required: true,
@@ -1008,13 +1008,13 @@
           displayImage: checklistImage
         },
         {
-          id: 'existing-provider-approve-group-change',
+          id: 'existing-practitioner-approve-group-change',
           title: 'APPROVING THE GROUP CHANGE',
           description: 'Approve the group change in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderApproveGroupChangeComplete',
+              name: 'existingPractitionerApproveGroupChangeComplete',
               label: 'Complete: Approve the group change in SNOW.',
               type: 'checkbox',
               required: true,
@@ -1025,13 +1025,13 @@
           displayImage: addToGroupImage
         },
         {
-          id: 'existing-provider-open-letter-task',
+          id: 'existing-practitioner-open-letter-task',
           title: 'OPENING THE LETTER TASK',
           description: 'Navigate to the letter task in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderOpenLetterTaskComplete',
+              name: 'existingPractitionerOpenLetterTaskComplete',
               label: 'Complete: Navigate to the letter task in SNOW.',
               type: 'checkbox',
               required: true,
@@ -1042,13 +1042,13 @@
           displayImage: letterTaskImage
         },
         {
-          id: 'existing-provider-select-letter',
+          id: 'existing-practitioner-select-letter',
           title: 'SELECTING THE LETTER',
           description: 'Select the group change letter and enter effective date',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderSelectLetterComplete',
+              name: 'existingPractitionerSelectLetterComplete',
               label: 'Complete: Select the group change letter and enter effective date.',
               type: 'checkbox',
               required: true,
@@ -1059,13 +1059,13 @@
           displayImage: letterSelectImage
         },
         {
-          id: 'existing-provider-add-to-letter',
+          id: 'existing-practitioner-add-to-letter',
           title: 'ADDING THE PRACTITIONER TO THE LETTER',
           description: 'Add practitioner details to the letter',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderAddToLetterComplete',
+              name: 'existingPractitionerAddToLetterComplete',
               label: 'Complete: Add practitioner details to the letter.',
               type: 'checkbox',
               required: true,
@@ -1076,13 +1076,13 @@
           displayImage: letterProvImage
         },
         {
-          id: 'existing-provider-finish-letter',
+          id: 'existing-practitioner-finish-letter',
           title: 'FINISHING THE LETTER',
           description: 'Create, verify, and save the approval letter',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderFinishLetterComplete',
+              name: 'existingPractitionerFinishLetterComplete',
               label: 'Complete: Create, verify, and save the approval letter.',
               type: 'checkbox',
               required: true,
@@ -1093,13 +1093,13 @@
           displayImage: generateLetterImage
         },
         {
-          id: 'existing-provider-close-letter-task',
+          id: 'existing-practitioner-close-letter-task',
           title: 'CLOSING THE LETTER TASK',
           description: 'Close the letter task and complete the group change',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [
             {
-              name: 'existingProviderCloseLetterTaskComplete',
+              name: 'existingPractitionerCloseLetterTaskComplete',
               label: 'Complete: Close the letter task and complete the group change.',
               type: 'checkbox',
               required: true,
@@ -1110,10 +1110,10 @@
           displayImage: closeLetterImage
         },
         {
-          id: 'existing-provider-completion',
+          id: 'existing-practitioner-completion',
           title: 'Practitioner Added to Group',
           description: 'Automatic Practitioner workflow routing',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Practitioner' },
+          showWhen: { field: 'practitionerEnrollmentType', value: 'Existing Practitioner' },
           fields: [],
           instructionText: '',
           isCompletionPage: false,

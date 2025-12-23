@@ -1,7 +1,7 @@
 {
-  "name": "provider-enrollment-walkthrough",
+  "name": "practitioner-enrollment-walkthrough",
   "version": "1.0.0",
-  "description": "Provider Enrollment Walkthrough Desktop Application",
+  "description": "Practitioner Enrollment Walkthrough Desktop Application",
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",

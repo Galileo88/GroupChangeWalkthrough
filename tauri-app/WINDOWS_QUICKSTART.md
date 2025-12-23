@@ -53,7 +53,7 @@ This opens the app and reloads automatically when you make changes.
 ### After Building
 The installer will be at:
 ```
-tauri-app\src-tauri\target\release\bundle\msi\Provider Enrollment Walkthrough_1.0.0_x64_en-US.msi
+tauri-app\src-tauri\target\release\bundle\msi\Practitioner Enrollment Walkthrough_1.0.0_x64_en-US.msi
 ```
 
 Just double-click the `.msi` file to install!
@@ -62,14 +62,14 @@ Just double-click the `.msi` file to install!
 
 After installing, your PWO files will be saved at:
 ```
-C:\Users\<YourUsername>\AppData\Roaming\com.providerenrollment.walkthrough\PWO_<PWO#>\state.json
+C:\Users\<YourUsername>\AppData\Roaming\com.practitionerenrollment.walkthrough\PWO_<PWO#>\state.json
 ```
 
 Each PWO number gets its own folder!
 
 To view your saved files:
 1. Press `Win + R`
-2. Type: `%APPDATA%\com.providerenrollment.walkthrough`
+2. Type: `%APPDATA%\com.practitionerenrollment.walkthrough`
 3. Press Enter
 
 You'll see folders like:

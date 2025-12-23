@@ -2318,6 +2318,7 @@
 
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
+            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // PROVIDER INFORMATION (QUESTION 20)
             textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
@@ -2338,8 +2339,6 @@
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
-
-            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // Check if this is an existing provider (being added to group)
             const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||

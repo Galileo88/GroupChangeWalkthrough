@@ -1,4 +1,4 @@
-# Practitioner Group Change Walkthrough - Complete Workflow Documentation
+# Provider Group Change Walkthrough - Complete Workflow Documentation
 
 ## Table of Contents
 1. [Application Overview](#application-overview)
@@ -13,7 +13,7 @@
 
 ## Application Overview
 
-**Practitioner Group Change Walkthrough** is a desktop application (Tauri) that guides Gainwell enrollment specialists through the complex process of adding healthcare practitioners to group practices. The application provides step-by-step instructions across multiple systems (CICS, SNOW, Mainframe) with intelligent workflow routing and persistent state management.
+**Provider Group Change Walkthrough** is a desktop application (Tauri) that guides Gainwell enrollment specialists through the complex process of adding healthcare providers to group practices. The application provides step-by-step instructions across multiple systems (CICS, SNOW, Mainframe) with intelligent workflow routing and persistent state management.
 
 ### Core Purpose
 - **NOT a data collection tool** - Purely an interactive guide
@@ -59,8 +59,8 @@
 | 5 | questions-9-17 | 4 | Questions 9-17 verification | Verify contact details (phone, email, contact person) |
 | 6 | email-to-snow | 5 | Email to SNOW | Verify group practice application email has been sent to SNOW |
 | 7 | question-20 | 6 | Question 20 verification | Verify requested effective date |
-| 8 | questions-21-23 | 7 | Questions 21-23 verification | Verify practitioner/practitioner details |
-| 9 | practitioner-type-selection | 8 | **AUTOMATIC BRANCH POINT** | System determines workflow path based on enrollment status |
+| 8 | questions-21-23 | 7 | Questions 21-23 verification | Verify practitioner/provider details |
+| 9 | provider-type-selection | 8 | **AUTOMATIC BRANCH POINT** | System determines workflow path based on enrollment status |
 
 **Important Notes**:
 - All fields include "Unable to Verify" option for tracking outreach requirements
@@ -80,13 +80,13 @@
 - Export current state
 - Close application (manual outreach required)
 
-#### Duplicate Practitioner Rejection (Index: duplicate-rejection-completion)
-**Trigger**: Practitioner already exists in enrolled practitioners list
-**Purpose**: Prevents duplicate practitioner enrollment
+#### Duplicate Provider Rejection (Index: duplicate-rejection-completion)
+**Trigger**: Provider already exists in enrolled providers list
+**Purpose**: Prevents duplicate provider enrollment
 **Implementation**: Recent fix (PR #84) ensures proper rejection when using Previous button
 **Next Steps**:
-- Review enrolled practitioners list
-- Continue with different practitioner
+- Review enrolled providers list
+- Continue with different provider
 - Complete workflow
 
 ---
@@ -99,7 +99,7 @@ These pages display embedded documentation and provide access to reference mater
 |---------|---------|-----------|
 | signature-authorization-form | Display signature authorization form requirements | Form template reference |
 | agreement-of-understanding | Agreement of Understanding requirements | Legal document reference |
-| practitioner-agreement | Practitioner agreement details | Contract reference |
+| provider-agreement | Provider agreement details | Contract reference |
 | disclosure-of-ownership | Ownership disclosure requirements | Compliance document |
 | w9-or-irs-letter | W-9 or IRS letter requirements | Tax document reference |
 | authorization-agreement-ach | ACH authorization requirements | Payment setup document |
@@ -107,96 +107,96 @@ These pages display embedded documentation and provide access to reference mater
 
 **Key Features**:
 - Full-screen PDF modal viewer with Gainwell branding
-- Embedded PDFs (2025 Legal Quick Guide, Practitioner Types & Specialties)
+- Embedded PDFs (2025 Legal Quick Guide, Provider Types & Specialties)
 - External links to verification systems (e.g., Miami FRP for license verification)
 - Access to FLOW_MAPPING reference guide
 
 ---
 
-### Existing Practitioner Path (Steps 11-23)
+### Existing Provider Path (Steps 11-23)
 
-**Workflow Purpose**: Add practitioners who are already enrolled in the system to a group practice
+**Workflow Purpose**: Add providers who are already enrolled in the system to a group practice
 
 | Step | Page ID | Array Index | Description | System | Key Actions |
 |------|---------|-------------|-------------|--------|-------------|
-| 11 | existing-practitioner-open-cics | 9 | Open CICS interface | CICS | Navigate to CICS system and access practitioner records |
-| 12 | existing-practitioner-add-to-group | 10 | Add practitioner to group | CICS | Execute group addition transaction |
-| 13 | existing-practitioner-verify-info | 11 | Verify practitioner information | CICS | Confirm practitioner details match application |
-| 14 | existing-practitioner-close-enrollment | 12 | Close enrollment task | SNOW | Mark enrollment task as complete in ServiceNow |
-| 15 | existing-practitioner-finish-group-change | 13 | Finish group change | SNOW | Complete group change transaction |
-| 16 | existing-practitioner-create-checklist | 14 | Create verification checklist | SNOW | Generate checklist for approval workflow |
-| 17 | existing-practitioner-approve-group-change | 15 | Approve group change | SNOW | Submit for approval or approve (based on permissions) |
-| 18 | existing-practitioner-open-letter-task | 16 | Open letter task | SNOW | Access letter generation system |
-| 19 | existing-practitioner-select-letter | 17 | Select letter template | SNOW | Choose appropriate correspondence template |
-| 20 | existing-practitioner-add-to-letter | 18 | Add practitioner to letter | SNOW | Include practitioner in notification letter |
-| 21 | existing-practitioner-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation |
-| 22 | existing-practitioner-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete |
-| 23 | existing-practitioner-completion | 21 | **DECISION POINT** | Application | Additional existing practitioners? |
+| 11 | existing-provider-open-cics | 9 | Open CICS interface | CICS | Navigate to CICS system and access provider records |
+| 12 | existing-provider-add-to-group | 10 | Add provider to group | CICS | Execute group addition transaction |
+| 13 | existing-provider-verify-info | 11 | Verify provider information | CICS | Confirm provider details match application |
+| 14 | existing-provider-close-enrollment | 12 | Close enrollment task | SNOW | Mark enrollment task as complete in ServiceNow |
+| 15 | existing-provider-finish-group-change | 13 | Finish group change | SNOW | Complete group change transaction |
+| 16 | existing-provider-create-checklist | 14 | Create verification checklist | SNOW | Generate checklist for approval workflow |
+| 17 | existing-provider-approve-group-change | 15 | Approve group change | SNOW | Submit for approval or approve (based on permissions) |
+| 18 | existing-provider-open-letter-task | 16 | Open letter task | SNOW | Access letter generation system |
+| 19 | existing-provider-select-letter | 17 | Select letter template | SNOW | Choose appropriate correspondence template |
+| 20 | existing-provider-add-to-letter | 18 | Add provider to letter | SNOW | Include provider in notification letter |
+| 21 | existing-provider-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation |
+| 22 | existing-provider-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete |
+| 23 | existing-provider-completion | 21 | **DECISION POINT** | Application | Additional existing providers? |
 
 **Step 23 Decision Logic**:
 - **"Yes" Selection**:
-  - Saves current practitioner to `enrolledProviders` array
-  - Clears existing practitioner-specific form fields
-  - Maintains `providerEnrollmentType = 'Existing Practitioner'`
-  - **LOOPS BACK** to Step 11 (existing-practitioner-open-cics)
-  - Allows adding multiple existing practitioners sequentially
+  - Saves current provider to `enrolledProviders` array
+  - Clears existing provider-specific form fields
+  - Maintains `providerEnrollmentType = 'Existing Provider'`
+  - **LOOPS BACK** to Step 11 (existing-provider-open-cics)
+  - Allows adding multiple existing providers sequentially
 
 - **"No" Selection**:
-  - Saves final practitioner to `enrolledProviders` array
+  - Saves final provider to `enrolledProviders` array
   - Proceeds to **final-completion** page
   - Completes entire workflow
   - Enables export of complete application data
 
 ---
 
-### New Practitioner Path (Steps 24-37)
+### New Provider Path (Steps 24-37)
 
-**Workflow Purpose**: Enroll practitioners who are not yet in the system, then add them to group practice
+**Workflow Purpose**: Enroll providers who are not yet in the system, then add them to group practice
 
 | Step | Page ID | Array Index | Description | System | Key Actions |
 |------|---------|-------------|-------------|--------|-------------|
-| 24 | create-enrollment | 22 | Create new enrollment | SNOW | Initiate new practitioner enrollment record |
-| 25 | fill-practitioner-info | 23 | Fill practitioner information | SNOW | Enter basic practitioner demographics |
+| 24 | create-enrollment | 22 | Create new enrollment | SNOW | Initiate new provider enrollment record |
+| 25 | fill-provider-info | 23 | Fill provider information | SNOW | Enter basic provider demographics |
 | 26 | check-group-specialties | 24 | Check group specialties | SNOW | Verify specialty alignment with group |
 | 27 | enrollment-applications-tab | 25 | Navigate to enrollment applications | SNOW | Access enrollment applications section |
 | 28 | verify-enrollment-application | 26 | Verify enrollment application | SNOW | Confirm application details are correct |
-| 29 | practitioner-address-tab | 27 | Practitioner address tab | SNOW | Enter practitioner practice address |
+| 29 | provider-address-tab | 27 | Provider address tab | SNOW | Enter provider practice address |
 | 30 | payment-mailing-address-tab | 28 | Payment/Mailing address | SNOW | Configure payment and mailing addresses |
-| 31 | practitioner-information-tab | 29 | Practitioner information | SNOW | Eligibility dates, Medicare info |
-| 32 | npi-tab | 30 | NPI number | SNOW | Enter and verify National Practitioner Identifier |
-| 33 | specialty-tab | 31 | Specialty information | SNOW | Practitioner specialty and effective dates |
-| 34 | claim-type-tab | 32 | Claim types | SNOW | Configure claim submission types (uses Practitioner Types & Specialties PDF) |
+| 31 | provider-information-tab | 29 | Provider information | SNOW | Eligibility dates, Medicare info |
+| 32 | npi-tab | 30 | NPI number | SNOW | Enter and verify National Provider Identifier |
+| 33 | specialty-tab | 31 | Specialty information | SNOW | Provider specialty and effective dates |
+| 34 | claim-type-tab | 32 | Claim types | SNOW | Configure claim submission types (uses Provider Types & Specialties PDF) |
 | 35 | license-dea-tab | 33 | License and DEA | SNOW | Enter license numbers, DEA (if applicable) |
 | 36 | enroll-on-mainframe | 34 | Enroll on mainframe | Mainframe | Complete mainframe enrollment transaction |
-| 37 | additional-practitioners-check | 35 | **DECISION POINT** | Application | Additional new practitioners needed? |
+| 37 | additional-providers-check | 35 | **DECISION POINT** | Application | Additional new providers needed? |
 
 **Step 37 Decision Logic**:
 - **"Yes" Selection**:
-  - Saves current practitioner to `enrolledProviders` array
-  - Clears new practitioner-specific form fields
-  - Maintains `providerEnrollmentType = 'New Practitioner'`
+  - Saves current provider to `enrolledProviders` array
+  - Clears new provider-specific form fields
+  - Maintains `providerEnrollmentType = 'New Provider'`
   - **LOOPS BACK** to Step 24 (create-enrollment)
-  - Allows enrolling multiple new practitioners sequentially
+  - Allows enrolling multiple new providers sequentially
 
 - **"No" Selection**:
-  - Saves final new practitioner to `enrolledProviders` array
-  - Sets `providerEnrollmentType = 'Existing Practitioner'`
-  - **TRANSITIONS** to Step 11 (existing-practitioner-open-cics)
-  - Enables adding newly enrolled practitioners to the group
-  - **Important**: All new practitioners must be enrolled before existing practitioner workflow begins
+  - Saves final new provider to `enrolledProviders` array
+  - Sets `providerEnrollmentType = 'Existing Provider'`
+  - **TRANSITIONS** to Step 11 (existing-provider-open-cics)
+  - Enables adding newly enrolled providers to the group
+  - **Important**: All new providers must be enrolled before existing provider workflow begins
 
 ---
 
 ### Final Completion Pages
 
-#### Next Practitioner Ready Check (Index: next-practitioner-ready-check)
+#### Next Provider Ready Check (Index: next-provider-ready-check)
 **Purpose**: Internal workflow routing page
-**Logic**: Determines whether to route to new practitioner or existing practitioner workflow based on current state
+**Logic**: Determines whether to route to new provider or existing provider workflow based on current state
 
 #### Final Completion (Index: final-completion)
 **Purpose**: Workflow completion and export
 **Features**:
-- Display summary of all enrolled practitioners
+- Display summary of all enrolled providers
 - Export application data (includes PWO number in filename)
 - Review outreach notes (if any)
 - Application state saved automatically
@@ -243,18 +243,18 @@ These pages display embedded documentation and provide access to reference mater
                ▼
 ┌──────────────────────────────────────┐
 │  Step 7: Question 20                 │
-│  PRACTITIONER VERIFICATION LOOP          │
+│  PROVIDER VERIFICATION LOOP          │
 │                                      │
-│  For EACH practitioner:                  │
-│  • Is practitioner already enrolled?     │
+│  For EACH provider:                  │
+│  • Is provider already enrolled?     │
 │    - No  → Status: Ready to Enroll   │
-│    - Yes → Is practitioner in group?     │
+│    - Yes → Is provider in group?     │
 │      - No  → Status: Ready to Add    │
 │      - Yes → DUPLICATE REJECTION     │
 │  • Verify SSN, DOB, NPI, Licenses    │
 │  • Check DEA, Effective Dates        │
 │                                      │
-│  [More practitioners?]                   │
+│  [More providers?]                   │
 │  • Yes → Loop back (verify next)     │
 │  • No  → Continue to Step 8          │
 └──────────────┬───────────────────────┘
@@ -273,34 +273,34 @@ These pages display embedded documentation and provide access to reference mater
 │  AUTOMATIC ROUTING LOGIC             │
 │  (Based on enrolledProviders array)  │
 │                                      │
-│  Check practitioner statuses:            │
+│  Check provider statuses:            │
 │  1. Any "Ready to Enroll"?           │
-│     → New Practitioner Workflow          │
+│     → New Provider Workflow          │
 │  2. Else, any "Ready to Add"?        │
-│     → Existing Practitioner Workflow     │
+│     → Existing Provider Workflow     │
 └────┬─────────────────────┬───────────┘
      │                     │
-     │[New Practitioner]  [Existing Practitioner]
+     │[New Provider]  [Existing Provider]
      │                     │
      ▼                     │
 ┌──────────────────────┐   │
 │ Steps 24-36:         │   │
-│ NEW PRACTITIONER         │   │
+│ NEW PROVIDER         │   │
 │ ENROLLMENT           │   │
 │                      │   │
-│ Process ONE practitioner │   │
+│ Process ONE provider │   │
 │ at a time from       │   │
 │ enrolledProviders    │   │
 │ array with status:   │   │
 │ "Ready to Enroll"    │   │
 │                      │   │
 │ • Create Enrollment  │   │
-│ • Fill Practitioner Info │   │
+│ • Fill Provider Info │   │
 │ • Check Specialties  │   │
 │ • Fill All Tabs:     │   │
 │   - Address          │   │
 │   - Payment/Mailing  │   │
-│   - Practitioner Info    │   │
+│   - Provider Info    │   │
 │   - NPI              │   │
 │   - Specialty        │   │
 │   - Claim Types      │   │
@@ -311,7 +311,7 @@ These pages display embedded documentation and provide access to reference mater
            ▼               │
 ┌──────────────────────┐   │
 │ Step 37:             │   │
-│ More NEW practitioners   │   │
+│ More NEW providers   │   │
 │ to enroll?           │   │
 └───┬──────────┬───────┘   │
     │          │           │
@@ -321,7 +321,7 @@ These pages display embedded documentation and provide access to reference mater
     │    "Enrolled",       │
     │    process next      │
     │    "Ready to Enroll" │
-    │    practitioner]         │
+    │    provider]         │
     │          │           │
     │          └───────────┤
     │                      │
@@ -330,10 +330,10 @@ These pages display embedded documentation and provide access to reference mater
                            ▼
               ┌────────────────────────┐
               │ Steps 11-23:           │
-              │ EXISTING PRACTITIONER      │
+              │ EXISTING PROVIDER      │
               │ ADD TO GROUP           │
               │                        │
-              │ Process ONE practitioner   │
+              │ Process ONE provider   │
               │ at a time from         │
               │ enrolledProviders with │
               │ status: "Ready to Add" │
@@ -358,7 +358,7 @@ These pages display embedded documentation and provide access to reference mater
                            ▼
               ┌────────────────────────┐
               │ Step 23:               │
-              │ More EXISTING practitioners│
+              │ More EXISTING providers│
               │ to add to group?       │
               └───┬────────────┬───────┘
                   │            │
@@ -383,19 +383,19 @@ These pages display embedded documentation and provide access to reference mater
 
 ### How The Workflow Actually Works
 
-**Key Concept**: The application uses a **practitioner verification loop** followed by **batch processing** of practitioners based on their status.
+**Key Concept**: The application uses a **provider verification loop** followed by **batch processing** of providers based on their status.
 
-#### Phase 1: Practitioner Verification (Question 20 Loop)
-At **Step 7 (Question 20)**, you verify EACH practitioner one at a time:
-1. Answer: "Is practitioner already enrolled?" (Yes/No)
-2. If Yes, answer: "Is practitioner in group?" (Yes/No)
-3. Verify practitioner credentials (SSN, DOB, NPI, licenses, DEA)
-4. Click "Next Practitioner" button
-5. System asks: "Are there more practitioners to verify?"
-   - **Yes** → Saves current practitioner to `enrolledProviders` array with appropriate status, clears form, loops back to Question 20
-   - **No** → Saves final practitioner, proceeds to Questions 21-23
+#### Phase 1: Provider Verification (Question 20 Loop)
+At **Step 7 (Question 20)**, you verify EACH provider one at a time:
+1. Answer: "Is provider already enrolled?" (Yes/No)
+2. If Yes, answer: "Is provider in group?" (Yes/No)
+3. Verify provider credentials (SSN, DOB, NPI, licenses, DEA)
+4. Click "Next Provider" button
+5. System asks: "Are there more providers to verify?"
+   - **Yes** → Saves current provider to `enrolledProviders` array with appropriate status, clears form, loops back to Question 20
+   - **No** → Saves final provider, proceeds to Questions 21-23
 
-**Practitioner Statuses Assigned**:
+**Provider Statuses Assigned**:
 - `providerAlreadyEnrolled = 'No'` → Status: **"Verified - Ready to Enroll"**
 - `providerAlreadyEnrolled = 'Yes'` AND `providerInGroup = 'No'` → Status: **"Verified - Ready to Add to Group"**
 - `providerAlreadyEnrolled = 'Yes'` AND `providerInGroup = 'Yes'` → **Duplicate Rejection**
@@ -403,59 +403,59 @@ At **Step 7 (Question 20)**, you verify EACH practitioner one at a time:
 #### Phase 2: Automatic Routing (After Questions 21-23)
 After completing Questions 21-23, the system examines the `enrolledProviders` array and automatically routes to the appropriate workflow:
 
-**Priority 1 - New Practitioner Workflow** (if applicable):
-- Triggered if ANY practitioner has status "Verified - Ready to Enroll"
+**Priority 1 - New Provider Workflow** (if applicable):
+- Triggered if ANY provider has status "Verified - Ready to Enroll"
 - Routes to Step 24 (create-enrollment)
-- Processes EACH new practitioner sequentially through enrollment steps
-- At Step 37, "More practitioners?" determines if another new practitioner needs enrollment
-  - **Yes** → Process next "Ready to Enroll" practitioner, loop to Step 24
-  - **No** → Mark all as "Enrolled - Ready to be Added to Group", transition to Existing Practitioner Workflow
+- Processes EACH new provider sequentially through enrollment steps
+- At Step 37, "More providers?" determines if another new provider needs enrollment
+  - **Yes** → Process next "Ready to Enroll" provider, loop to Step 24
+  - **No** → Mark all as "Enrolled - Ready to be Added to Group", transition to Existing Provider Workflow
 
-**Priority 2 - Existing Practitioner Workflow** (if applicable):
-- Triggered if practitioners have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
-- Routes to Step 11 (existing-practitioner-open-cics)
-- Processes EACH practitioner sequentially through group addition steps
-- At Step 23, "More practitioners?" determines if another practitioner needs to be added
-  - **Yes** → Process next "Ready to Add" practitioner, loop to Step 11
+**Priority 2 - Existing Provider Workflow** (if applicable):
+- Triggered if providers have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
+- Routes to Step 11 (existing-provider-open-cics)
+- Processes EACH provider sequentially through group addition steps
+- At Step 23, "More providers?" determines if another provider needs to be added
+  - **Yes** → Process next "Ready to Add" provider, loop to Step 11
   - **No** → Mark all as "Complete", go to Final Completion
 
 #### Phase 3: Sequential Batch Processing
-The workflows process practitioners from the `enrolledProviders` array ONE AT A TIME:
-- **New Practitioner Workflow**: Finds next practitioner with status "Verified - Ready to Enroll", processes through Steps 24-36
-- **Existing Practitioner Workflow**: Finds next practitioner with status "Ready to Add" or "Enrolled - Ready to be Added to Group", processes through Steps 11-23
+The workflows process providers from the `enrolledProviders` array ONE AT A TIME:
+- **New Provider Workflow**: Finds next provider with status "Verified - Ready to Enroll", processes through Steps 24-36
+- **Existing Provider Workflow**: Finds next provider with status "Ready to Add" or "Enrolled - Ready to be Added to Group", processes through Steps 11-23
 
 ### Workflow Priority Rules
 
-1. **Verification First**: All practitioners must be verified at Question 20 before any enrollment/group addition begins
-2. **New Practitioner Priority**: If ANY practitioners need enrollment, new practitioner workflow executes first (all new enrollments must complete before group additions)
-3. **Batch Processing**: Practitioners processed sequentially one at a time, not all at once
-4. **Automatic Transitions**: System automatically transitions from new → existing practitioner workflows based on enrolledProviders array
-5. **Status-Based Routing**: Routing determined by practitioner status, not user selection
-6. **No Manual Branching**: Users never manually choose between "New Practitioner" or "Existing Practitioner" - the system decides automatically
+1. **Verification First**: All providers must be verified at Question 20 before any enrollment/group addition begins
+2. **New Provider Priority**: If ANY providers need enrollment, new provider workflow executes first (all new enrollments must complete before group additions)
+3. **Batch Processing**: Providers processed sequentially one at a time, not all at once
+4. **Automatic Transitions**: System automatically transitions from new → existing provider workflows based on enrolledProviders array
+5. **Status-Based Routing**: Routing determined by provider status, not user selection
+6. **No Manual Branching**: Users never manually choose between "New Provider" or "Existing Provider" - the system decides automatically
 
 ---
 
 ## Key Functionalities
 
-### 1. Multi-Practitioner Enrollment Management
+### 1. Multi-Provider Enrollment Management
 
-**Purpose**: Track and manage multiple practitioner enrollments in a single application session
+**Purpose**: Track and manage multiple provider enrollments in a single application session
 
 **Features**:
-- `enrolledProviders` array stores all completed practitioner records
-- Each practitioner record includes:
+- `enrolledProviders` array stores all completed provider records
+- Each provider record includes:
   - Enrollment type (New vs. Existing)
-  - All form data specific to that practitioner
+  - All form data specific to that provider
   - Timestamp of enrollment completion
-- View enrolled practitioners modal shows summary list
-- Duplicate detection prevents re-enrolling same practitioner (PR #83, #84)
+- View enrolled providers modal shows summary list
+- Duplicate detection prevents re-enrolling same provider (PR #83, #84)
 
 **Implementation**:
 ```javascript
-// Practitioner saved when "Yes" or "No" selected at decision points
+// Provider saved when "Yes" or "No" selected at decision points
 enrolledProviders.push({
-  type: 'New Practitioner' | 'Existing Practitioner',
-  data: { /* all practitioner-specific form fields */ },
+  type: 'New Provider' | 'Existing Provider',
+  data: { /* all provider-specific form fields */ },
   timestamp: new Date().toISOString()
 });
 ```
@@ -467,15 +467,15 @@ enrolledProviders.push({
 **Purpose**: Automatically route users through appropriate workflows without manual selection
 
 **Auto-Detection Logic**:
-- Step 9 (practitioner-type-selection) analyzes form data
+- Step 9 (provider-type-selection) analyzes form data
 - Checks `providerEnrollmentType` state variable
 - Routes to appropriate first step:
-  - `'New Practitioner'` → Step 24 (create-enrollment)
-  - `'Existing Practitioner'` → Step 11 (existing-practitioner-open-cics)
+  - `'New Provider'` → Step 24 (create-enrollment)
+  - `'Existing Provider'` → Step 11 (existing-provider-open-cics)
 
 **Priority System**:
-- New practitioner workflow takes precedence
-- Only after all new practitioners enrolled does system allow existing practitioner workflow
+- New provider workflow takes precedence
+- Only after all new providers enrolled does system allow existing provider workflow
 - Prevents incomplete enrollments
 
 **Dynamic Page Skipping**:
@@ -522,7 +522,7 @@ if (isFormValid) {
 - Triggers on:
   - Form field changes
   - Page navigation
-  - Practitioner enrollment completion
+  - Provider enrollment completion
 - No manual "save" button required
 
 **File Structure**:
@@ -537,17 +537,17 @@ AppData/Roaming/com.providerenrollment.walkthrough/
 **Saved State Includes**:
 - Current page index
 - All form data
-- Enrolled practitioners array
+- Enrolled providers array
 - Visited pages set
 - Outreach notes
 - Unable-to-verify fields
-- Practitioner enrollment type
+- Provider enrollment type
 
 **Resume Functionality**:
 - Search by PWO number
 - Load complete state from file
 - Return to exact page where user left off
-- Maintain all enrolled practitioner records
+- Maintain all enrolled provider records
 
 **Persistence Benefits**:
 - Survives browser crashes
@@ -559,7 +559,7 @@ AppData/Roaming/com.providerenrollment.walkthrough/
 
 ### 5. Outreach Management System
 
-**Purpose**: Track verification issues requiring manual outreach to practitioners
+**Purpose**: Track verification issues requiring manual outreach to providers
 
 **Unable to Verify Tracking**:
 - Each verification field has "Unable to Verify" option
@@ -625,10 +625,10 @@ AppData/Roaming/com.providerenrollment.walkthrough/
 **Embedded PDFs**:
 1. **2025 Legal Quick Guide** (202.8 KB)
    - Legal and compliance reference
-   - Practitioner agreement requirements
+   - Provider agreement requirements
    - Disclosure regulations
 
-2. **Practitioner Types & Specialties** (35.9 KB)
+2. **Provider Types & Specialties** (35.9 KB)
    - Claim type determination guide
    - Specialty code reference
    - Used during Step 34 (claim-type-tab)
@@ -699,7 +699,7 @@ visitedPages: Set {0, 1, 2, 3, 4, 5, 6, 7, 8, 22, 23}
 
 **Exported Data**:
 - All form fields
-- Complete enrolled practitioners array
+- Complete enrolled providers array
 - Outreach notes
 - Timestamps
 - Workflow path taken
@@ -714,15 +714,15 @@ visitedPages: Set {0, 1, 2, 3, 4, 5, 6, 7, 8, 22, 23}
 
 ---
 
-### 10. Duplicate Practitioner Prevention
+### 10. Duplicate Provider Prevention
 
-**Purpose**: Prevent enrolling the same practitioner multiple times in one application
+**Purpose**: Prevent enrolling the same provider multiple times in one application
 
 **Implementation** (Recent updates PR #83, #84):
 
 **Detection Logic**:
 ```javascript
-// Check if practitioner already in enrolledProviders array
+// Check if provider already in enrolledProviders array
 const isDuplicate = enrolledProviders.some(p =>
   p.data.npiNumber === currentProviderNPI
 );
@@ -733,13 +733,13 @@ if (isDuplicate) {
 ```
 
 **Rejection Flow**:
-1. User attempts to enroll duplicate practitioner
+1. User attempts to enroll duplicate provider
 2. System detects match in `enrolledProviders`
 3. Immediate redirect to `duplicate-rejection-completion` page
-4. Display rejection message with enrolled practitioners list
+4. Display rejection message with enrolled providers list
 5. Options:
-   - Review enrolled practitioners
-   - Continue with different practitioner
+   - Review enrolled providers
+   - Continue with different provider
    - Complete workflow
 
 **Bug Fix** (PR #84 - Commit 707b123):
@@ -748,7 +748,7 @@ if (isDuplicate) {
 - **Impact**: Ensures duplicate rejection occurs regardless of navigation direction
 
 **User Messaging**:
-- Clear indication of which practitioner is duplicate
+- Clear indication of which provider is duplicate
 - Show NPI or identifying information
 - Guide user to next steps
 
@@ -762,7 +762,7 @@ if (isDuplicate) {
 **Commit**: 707b123
 **Date**: Recent
 **Changes**:
-- Fixed bug where Previous button from Questions 21-23 bypassed duplicate practitioner check
+- Fixed bug where Previous button from Questions 21-23 bypassed duplicate provider check
 - Enhanced navigation validation to ensure duplicate rejection occurs
 - Improved state management for rejection workflow
 
@@ -770,16 +770,16 @@ if (isDuplicate) {
 
 ---
 
-#### PR #83: Redirect Duplicate Practitioners to Rejection Screen (Merged)
+#### PR #83: Redirect Duplicate Providers to Rejection Screen (Merged)
 **Commit**: bdc7d93
 **Date**: Recent
 **Changes**:
-- Implemented duplicate practitioner detection logic
+- Implemented duplicate provider detection logic
 - Created `duplicate-rejection-completion` page
-- Added NPI/practitioner identifier comparison in enrolledProviders array
+- Added NPI/provider identifier comparison in enrolledProviders array
 - Redirect flow instead of allowing Questions 21-23 & 25 progression
 
-**Impact**: Major feature preventing duplicate practitioner enrollments
+**Impact**: Major feature preventing duplicate provider enrollments
 
 ---
 
@@ -831,13 +831,13 @@ const [visitedPages, setVisitedPages] = useState(new Set());
 // Form Data
 const [formData, setFormData] = useState({});
 
-// Practitioner Tracking
+// Provider Tracking
 const [enrolledProviders, setEnrolledProviders] = useState([]);
 const [currentEnrollingProviderIndex, setCurrentEnrollingProviderIndex] = useState(0);
 const [currentAddingProviderIndex, setCurrentAddingProviderIndex] = useState(0);
 
 // Workflow Control
-const [providerEnrollmentType, setProviderEnrollmentType] = useState('New Practitioner');
+const [providerEnrollmentType, setProviderEnrollmentType] = useState('New Provider');
 
 // Outreach Management
 const [unableToVerifyFields, setUnableToVerifyFields] = useState(new Set());
@@ -867,9 +867,9 @@ Each page defined with:
   description: 'Instructions for creating enrollment in SNOW',
   content: <FormComponent />,
   validationFunction: validateCreateEnrollment,
-  nextPage: 'fill-practitioner-info',
-  previousPage: 'practitioner-type-selection',
-  conditionalDisplay: (formData) => formData.providerEnrollmentType === 'New Practitioner',
+  nextPage: 'fill-provider-info',
+  previousPage: 'provider-type-selection',
+  conditionalDisplay: (formData) => formData.providerEnrollmentType === 'New Provider',
   images: ['enrollment_create_step1.jpg', 'enrollment_create_step2.jpg'],
   resources: ['2025LegalQuickGuide.pdf']
 }
@@ -934,7 +934,7 @@ const canProceed = validatePage(pages[currentPage].id, formData);
 1. **Next Steps Modal**: Shows upcoming steps preview
 2. **Outreach Notes Modal**: Manage unable-to-verify items
 3. **View Notes Modal**: Display all outreach notes
-4. **Enrolled Practitioners Modal**: Show list of completed practitioners
+4. **Enrolled Providers Modal**: Show list of completed providers
 5. **PDF Viewer Modal**: Full-screen PDF display
 6. **Confirmation Dialog**: Custom confirm prompts
 7. **Alert Dialog**: Custom alert messages
@@ -999,7 +999,7 @@ function customAlert(message, onOk) {
 - Invalid form data submission
 - Failed file save operations
 - Missing required fields
-- Duplicate practitioner detection
+- Duplicate provider detection
 - Navigation validation failures
 
 ---
@@ -1021,12 +1021,12 @@ function customAlert(message, onOk) {
   },
   "enrolledProviders": [
     {
-      "type": "New Practitioner",
+      "type": "New Provider",
       "data": {
         "npiNumber": "1234567890",
         "providerName": "Dr. Jane Doe",
         "specialty": "Family Medicine",
-        // ... practitioner-specific fields
+        // ... provider-specific fields
       },
       "timestamp": "2025-01-15T10:30:00.000Z"
     }
@@ -1041,7 +1041,7 @@ function customAlert(message, onOk) {
       "page": "question-20"
     }
   ],
-  "providerEnrollmentType": "New Practitioner",
+  "providerEnrollmentType": "New Provider",
   "currentEnrollingProviderIndex": 0,
   "currentAddingProviderIndex": 0
 }
@@ -1052,7 +1052,7 @@ function customAlert(message, onOk) {
 ```
 %APPDATA%\com.providerenrollment.walkthrough\
 ├── PWO_12345\
-│   └── state.json (2-50 KB depending on enrolled practitioners)
+│   └── state.json (2-50 KB depending on enrolled providers)
 ├── PWO_67890\
 │   └── state.json
 └── PWO_11111\
@@ -1070,25 +1070,25 @@ function customAlert(message, onOk) {
 
 ## Summary
 
-The **Practitioner Group Change Walkthrough** application is a comprehensive desktop tool designed to guide Gainwell enrollment specialists through complex practitioner enrollment and group change workflows. With intelligent routing, persistent state management, visual guidance, duplicate prevention, and robust error handling, the application ensures consistent, accurate, and efficient processing of practitioner group changes.
+The **Provider Group Change Walkthrough** application is a comprehensive desktop tool designed to guide Gainwell enrollment specialists through complex provider enrollment and group change workflows. With intelligent routing, persistent state management, visual guidance, duplicate prevention, and robust error handling, the application ensures consistent, accurate, and efficient processing of provider group changes.
 
 **Key Achievements**:
 - ✅ 48 distinct pages covering all workflow scenarios
-- ✅ Intelligent auto-routing based on practitioner enrollment status
-- ✅ Multi-practitioner support with loop handling
+- ✅ Intelligent auto-routing based on provider enrollment status
+- ✅ Multi-provider support with loop handling
 - ✅ Persistent state surviving crashes and restarts
 - ✅ Visual reference system with 30+ screenshots
 - ✅ Embedded PDF documentation
-- ✅ Duplicate practitioner prevention
+- ✅ Duplicate provider prevention
 - ✅ Comprehensive outreach tracking
 - ✅ Offline-capable desktop application
 - ✅ Export functionality with audit trail
 
 **Recent Improvements**:
-- Duplicate practitioner detection and rejection
+- Duplicate provider detection and rejection
 - Previous button navigation bug fixes
 - PDF bundling for offline access
 - Enhanced export with PWO number in filename
 - Gainwell branding consistency
 
-This application standardizes practitioner group change processes, reduces errors, eliminates manual tracking, and ensures compliance with all procedural requirements.
+This application standardizes provider group change processes, reduces errors, eliminates manual tracking, and ensures compliance with all procedural requirements.

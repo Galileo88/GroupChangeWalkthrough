@@ -5,8 +5,8 @@ This directory contains PDF files that are bundled with the application for dist
 ## Files
 
 - `2025LegalQuickGuide.pdf` - Legal quick reference guide
-- `FLOW_MAPPING.pdf` - Practitioner enrollment flow diagram
-- `ProviderTypesSpecialties.pdf` - Practitioner types and specialties reference
+- `FLOW_MAPPING.pdf` - Provider enrollment flow diagram
+- `ProviderTypesSpecialties.pdf` - Provider types and specialties reference
 
 ## How It Works
 

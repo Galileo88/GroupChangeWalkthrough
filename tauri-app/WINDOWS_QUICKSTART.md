@@ -53,7 +53,7 @@ This opens the app and reloads automatically when you make changes.
 ### After Building
 The installer will be at:
 ```
-tauri-app\src-tauri\target\release\bundle\msi\Practitioner Enrollment Walkthrough_1.0.0_x64_en-US.msi
+tauri-app\src-tauri\target\release\bundle\msi\Provider Enrollment Walkthrough_1.0.0_x64_en-US.msi
 ```
 
 Just double-click the `.msi` file to install!

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Practitioner Enrollment Walkthrough",
+  "productName": "Provider Enrollment Walkthrough",
   "version": "1.0.0",
-  "identifier": "com.practitionerenrollment.walkthrough",
+  "identifier": "com.providerenrollment.walkthrough",
   "build": {
     "beforeDevCommand": "",
     "beforeBuildCommand": "",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Practitioner Enrollment Walkthrough",
+        "title": "Provider Enrollment Walkthrough",
         "width": 1200,
         "height": 800,
         "minWidth": 800,

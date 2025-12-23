@@ -3316,21 +3316,10 @@
             }
 
             /* Ensure text in instruction boxes with teal background is light in dark mode */
-            html.dark div[style*="backgroundColor:#e0f2f1"] p,
-            html.dark div[style*="backgroundColor:#e0f2f1"] div,
-            html.dark div[style*="backgroundColor:#e0f2f1"] li,
-            html.dark div[style*="backgroundColor:#e0f2f1"] h4,
-            html.dark div[style*="backgroundColor:#e0f2f1"] span,
-            html.dark div[style*="background-color:#e0f2f1"] p,
-            html.dark div[style*="background-color:#e0f2f1"] div,
-            html.dark div[style*="background-color:#e0f2f1"] li,
-            html.dark div[style*="background-color:#e0f2f1"] h4,
-            html.dark div[style*="background-color:#e0f2f1"] span,
-            html.dark div[style*="backgroundColor:#e0f2f1"] li[style*="color"],
-            html.dark div[style*="backgroundColor:#e0f2f1"] h4[style*="color"],
-            html.dark div[style*="backgroundColor:#e0f2f1"] li[style*="var(--gainwell-teal)"],
-            html.dark div[style*="backgroundColor:#e0f2f1"] h4[style*="var(--gainwell-dark)"],
-            html.dark div[style*="backgroundColor:#e0f2f1"] p[style*="var(--gainwell-dark)"] {
+            html.dark div[style*="backgroundColor:#e0f2f1"] *,
+            html.dark div[style*="background-color:#e0f2f1"] *,
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
+            html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
               color: #f3f4f6 !important;
             }
 

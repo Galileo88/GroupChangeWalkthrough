@@ -92,6 +92,18 @@
       </svg>
     );
 
+    const Sun = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    );
+
+    const Moon = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    );
+
     // ============================================================
     // MAIN FORM COMPONENT
     // ============================================================
@@ -117,6 +129,20 @@
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
       const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
+      const [isDarkMode, setIsDarkMode] = useState(() => {
+        return localStorage.getItem('theme') === 'dark';
+      });
+
+      // -------------------- Dark Mode Effect --------------------
+      React.useEffect(() => {
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+      }, [isDarkMode]);
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -3126,7 +3152,7 @@
       // ============================================================
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 p-6 flex items-center justify-center">
+        <div className="min-h-screen p-6 flex items-center justify-center" style={{backgroundColor: 'var(--bg-color)', transition: 'background-color 0.3s ease'}}>
           {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
@@ -3136,6 +3162,26 @@
               --gainwell-cyan: #00e5b4;
               --gainwell-dark: #2a3f4a;
               --gainwell-light-teal: #527584;
+
+              /* Light mode colors */
+              --bg-color: #f3f4f6;
+              --card-bg: white;
+              --text-primary: #1f2937;
+              --text-secondary: #6b7280;
+              --border-color: #e5e7eb;
+              --input-bg: white;
+              --modal-bg: white;
+            }
+
+            html.dark {
+              /* Dark mode colors */
+              --bg-color: #111827;
+              --card-bg: #1f2937;
+              --text-primary: #f9fafb;
+              --text-secondary: #d1d5db;
+              --border-color: #374151;
+              --input-bg: #374151;
+              --modal-bg: #1f2937;
             }
 
             * {
@@ -3209,11 +3255,53 @@
               to { opacity: 1; }
             }
 
+            .theme-toggle {
+              position: fixed;
+              top: 1.5rem;
+              right: 1.5rem;
+              width: 3rem;
+              height: 3rem;
+              border-radius: 50%;
+              background: var(--card-bg);
+              border: 2px solid var(--gainwell-cyan);
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              transition: all 0.3s ease;
+              z-index: 1001;
+            }
+
+            .theme-toggle:hover {
+              transform: scale(1.1);
+              box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
+            }
+
+            .theme-toggle svg {
+              width: 1.5rem;
+              height: 1.5rem;
+              color: var(--gainwell-cyan);
+            }
+
+            body {
+              background-color: var(--bg-color);
+              transition: background-color 0.3s ease;
+            }
           `}</style>
+
+          {/* Dark Mode Toggle */}
+          <button
+            className="theme-toggle"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            aria-label="Toggle dark mode"
+          >
+            {isDarkMode ? <Sun /> : <Moon />}
+          </button>
 
           <div className="max-w-2xl w-full">
             {/* Form Card */}
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 page-enter">
+            <div className="rounded-2xl shadow-2xl overflow-hidden page-enter" style={{backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderWidth: '1px', transition: 'all 0.3s ease'}}>
               {/* Header */}
               <div className="p-8 text-white relative" style={{background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}}>
                 <h1 className="title-font text-4xl font-bold mb-2">

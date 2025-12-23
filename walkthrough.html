@@ -492,15 +492,15 @@
             },
             {
               name: 'licensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: 'Licenses - APN, CRNA, CNM require RN license and APN license. Doctors are required to have a copy of their license.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'doctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'boardCertificatesVerified',
+              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
@@ -1364,15 +1364,15 @@
             },
             {
               name: 'nextProviderFinalLicensesVerified',
-              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              label: 'Licenses - APN, CRNA, CNM require RN license and APN license. Doctors are required to have a copy of their license.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
               validation: (value) => value === true
             },
             {
-              name: 'nextProviderFinalDoctorLicenseVerified',
-              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              name: 'nextProviderFinalBoardCertificatesVerified',
+              label: 'Board Certificates - APN, CRNA, CNM require board certificate. Doctors are not required to provide a board certificate, but can be added and updated if included.',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
@@ -1520,7 +1520,7 @@
 
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
+          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           // Only save the provider if it hasn't been saved already
@@ -1536,6 +1536,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1566,6 +1567,7 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
+                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1589,6 +1591,7 @@
             delete clearedData.dobVerified;
             delete clearedData.npiVerified;
             delete clearedData.licensesVerified;
+            delete clearedData.boardCertificatesVerified;
             delete clearedData.doctorLicenseVerified;
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
@@ -1620,6 +1623,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1668,6 +1672,7 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
+                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -2275,6 +2280,7 @@
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
+            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
@@ -2555,6 +2561,7 @@
           delete clearedData.dobVerified;
           delete clearedData.npiVerified;
           delete clearedData.licensesVerified;
+          delete clearedData.boardCertificatesVerified;
           delete clearedData.doctorLicenseVerified;
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
@@ -2567,6 +2574,7 @@
           delete clearedData.nextProviderFinalDobVerified;
           delete clearedData.nextProviderFinalNpiVerified;
           delete clearedData.nextProviderFinalLicensesVerified;
+          delete clearedData.nextProviderFinalBoardCertificatesVerified;
           delete clearedData.nextProviderFinalDoctorLicenseVerified;
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
@@ -3353,7 +3361,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 

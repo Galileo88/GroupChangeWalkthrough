@@ -135,7 +135,6 @@
 
           if (pwoNumber && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
-            console.log('Auto-saved application state (debounced) for PWO#:', pwoNumber);
           }
         }, 1000); // 1 second debounce
 
@@ -236,18 +235,7 @@
       // Debug: Log what's available
       React.useEffect(() => {
         if (isTauri) {
-          const tauriKeys = Object.keys(window.__TAURI__ || {});
-          console.log('Tauri detected. Available keys:', tauriKeys);
-          console.log('Invoke function found:', !!tauriInvoke);
-
-          // Show debug alert if invoke not found
-          if (!tauriInvoke) {
-            alert('Tauri Debug Info:\n\n' +
-                  'Tauri detected: Yes\n' +
-                  'Available __TAURI__ keys: ' + tauriKeys.join(', ') + '\n' +
-                  'Invoke function found: No\n\n' +
-                  'Using localStorage fallback for saves.');
-          }
+          // Tauri detection check
         }
       }, []);
 
@@ -275,18 +263,14 @@
 
           if (tauriInvoke) {
             // Use Tauri's invoke to save to filesystem
-            console.log('Attempting to save state for PWO:', pwoNumber);
             const result = await tauriInvoke('save_pwo_state', { state: stateToSave });
-            console.log('Save successful:', result);
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           } else {
             // Fallback to localStorage for web version
-            console.log('Using localStorage fallback');
             localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
             setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
           }
         } catch (error) {
-          console.error('Save failed - Error details:', error);
           const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Save failed');
           setSaveStatus({ saving: false, lastSaved: null, error: errorMsg });
         }
@@ -298,9 +282,7 @@
         try {
           if (tauriInvoke) {
             // Use Tauri's invoke to load from filesystem
-            console.log('Attempting to load state for PWO:', pwoNumber);
             const state = await tauriInvoke('load_pwo_state', { pwoNumber });
-            console.log('Load successful');
             return {
               pwoNumber: state.pwo_number,
               userName: state.user_name,
@@ -322,7 +304,6 @@
             return saved ? JSON.parse(saved) : null;
           }
         } catch (error) {
-          console.error('Load failed - Error details:', error);
           return null;
         }
       };
@@ -333,15 +314,13 @@
         try {
           if (tauriInvoke) {
             // Use Tauri's invoke to delete from filesystem
-            console.log('Attempting to delete state for PWO:', pwoNumber);
             const result = await tauriInvoke('delete_pwo_state', { pwoNumber });
-            console.log('Delete successful:', result);
           } else {
             // Fallback to localStorage for web version
             localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
           }
         } catch (error) {
-          console.error('Delete failed - Error details:', error);
+          // Delete failed
         }
       };
 
@@ -358,14 +337,12 @@
 
           // For non-PDF URLs, open externally
           if (tauriInvoke) {
-            console.log('Opening URL with Tauri:', url);
             await tauriInvoke('open_url', { url });
           } else {
             window.open(url, '_blank', 'noopener,noreferrer');
           }
         } catch (error) {
-          console.error('Failed to open URL:', error);
-          alert(`Failed to open link: ${error}. Please try again.`);
+          // Failed to open URL
         }
       };
 
@@ -1608,7 +1585,6 @@
                 ...updated[currentEnrollingProviderIndex],
                 [fieldName]: value
               };
-              console.log(`Updated enrollment detail for provider ${currentEnrollingProviderIndex + 1}: ${fieldName} = ${value}`);
             }
             return updated;
           });
@@ -1650,7 +1626,6 @@
           }
 
           // Restore all saved state
-          console.log('Restoring saved application for PWO#:', pwoToResume);
           setFormData(savedState.formData);
           setEnrolledProviders(savedState.enrolledProviders);
           setOutreachNotes(savedState.outreachNotes);
@@ -1674,10 +1649,6 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
-          console.log('=== Question 20 Save Check ===');
-          console.log('Expected provider count:', expectedProviderCount);
-          console.log('Current enrolled providers length:', enrolledProviders.length);
-          console.log('Provider already saved?', providerAlreadySaved);
 
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
@@ -1685,14 +1656,10 @@
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           // Debug: Log unable to verify check
-          console.log('=== Question 20 Verification Check ===');
-          console.log('Unable to verify fields:', Array.from(unableToVerifyFields));
-          console.log('Has unable to verify:', hasUnableToVerify);
 
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
             if (hasUnableToVerify) {
-              console.log('Saving provider with OUTREACH status');
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
@@ -1711,7 +1678,6 @@
 
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
-                console.log(`Provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
                 return updatedProviders;
               });
             } else if (moreProviders) {
@@ -1724,7 +1690,6 @@
                 }
               }
 
-              console.log('Saving provider with VERIFIED status:', providerStatus);
 
               const providerData = {
                 status: providerStatus,
@@ -1744,12 +1709,10 @@
 
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
-                console.log(`Fully verified provider saved. Total providers: ${updatedProviders.length}`);
                 return updatedProviders;
               });
             }
           } else {
-            console.log(`Provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
           }
 
           if (moreProviders) {
@@ -1771,10 +1734,6 @@
             const providerJustSaved = !providerAlreadySaved ? 1 : 0;
             clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
 
-            console.log('=== Setting Expected Provider Count ===');
-            console.log('enrolledProviders.length:', enrolledProviders.length);
-            console.log('providerJustSaved:', providerJustSaved);
-            console.log('New expectedProviderCount:', clearedData.expectedProviderCount);
 
             setFormData(clearedData);
 
@@ -1806,7 +1765,6 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
-                  console.log(`Final provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1816,7 +1774,6 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
-                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
                 if (completionIndex !== -1) {
@@ -1838,7 +1795,6 @@
                   }
                 }
 
-                console.log('Saving FINAL provider with VERIFIED status:', providerStatus);
 
                 const providerData = {
                   status: providerStatus,
@@ -1858,7 +1814,6 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
-                  console.log(`Final verified provider saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1871,18 +1826,15 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
-                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 // Check if this is a duplicate (only provider and already enrolled and in group)
                 if (allProviders.length === 1 && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
-                  console.log('>>> DUPLICATE DETECTED: Only provider is already enrolled and in group <<<');
                   const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
                   const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only provider is already enrolled and in group`;
                   setOutreachNotes(prev => [...prev, rejectionNote]);
 
                   const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
                   if (completionIndex !== -1) {
-                    console.log('>>> ROUTING TO DUPLICATE-REJECTION-COMPLETION at index', completionIndex);
                     setCurrentPage(completionIndex);
                     setVisitedPages(prev => new Set([...prev, completionIndex]));
                     setTimeout(() => {
@@ -1893,11 +1845,8 @@
                 }
 
                 // Navigate to questions-21-23 after saving final provider
-                console.log('>>> ATTEMPTING TO ROUTE TO QUESTIONS-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
-                console.log('questions2123Index:', questions2123Index);
                 if (questions2123Index !== -1) {
-                  console.log('>>> ROUTING TO QUESTIONS-21-23 at index', questions2123Index);
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
                   // Scroll to top after navigation
@@ -1905,14 +1854,12 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }, 100);
                 } else {
-                  console.error('>>> ERROR: questions-21-23 page not found in pages array!');
                 }
                 return;  // CRITICAL: Prevent general navigation logic from overriding this routing
 
               }
             } else {
               // Provider already saved, just navigate to appropriate next page
-              console.log(`Final provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
 
               // Determine the appropriate next page based on existing providers
               if (hasUnableToVerify) {
@@ -1928,7 +1875,6 @@
                 return;
               } else {
                 // Navigate to questions-21-23 (navigating back case)
-                console.log('>>> NAVIGATING BACK: Routing to questions-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
@@ -1951,7 +1897,6 @@
                                         enrolledProviders[0].status === 'Verified - Already in the Group';
 
           if (isDuplicateApplication) {
-            console.log('Duplicate application detected - only provider is already enrolled and in group');
             const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
             if (duplicateIndex !== -1) {
               setCurrentPage(duplicateIndex);
@@ -1974,7 +1919,6 @@
           const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
           if (requiresOutreach) {
-            console.log('Routing to outreach completion page due to outreach requirements');
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -2023,7 +1967,6 @@
               });
 
               setCurrentEnrollingProviderIndex(firstReadyIndex);
-              console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
 
               const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
               if (createEnrollmentIndex !== -1) {
@@ -2044,7 +1987,6 @@
           );
 
           if (hasExistingProviders) {
-            console.log('Routing to existing provider workflow');
             setEnrolledProviders(prev => {
               const updatedProviders = [...prev];
               updatedProviders.forEach((provider, idx) => {
@@ -2072,7 +2014,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2085,9 +2026,6 @@
           }
 
           // Fallback: If no routing condition matched, log error
-          console.error('ERROR: No routing condition matched at request-for-paper-updates!');
-          console.error('Enrolled providers:', enrolledProviders);
-          console.error('This should not happen - please check provider statuses');
         }
 
         if (currentPageData.id === 'existing-provider-completion') {
@@ -2119,14 +2057,12 @@
                   ...updated[currentAddingProviderIndex],
                   status: 'Complete - Enrolled and Added to Group'
                 };
-                console.log(`Provider ${currentAddingProviderIndex + 1} added to group.`);
               }
 
               return updated;
             });
 
             setCurrentAddingProviderIndex(nextReadyIndex);
-            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             setFormData(prev => {
               const clearedData = { ...prev };
@@ -2174,7 +2110,6 @@
                     ...updated[currentAddingProviderIndex],
                     status: 'Complete - Enrolled and Added to Group'
                   };
-                  console.log(`Final provider ${currentAddingProviderIndex + 1} added to group.`);
                 }
                 return updated;
               });
@@ -2220,7 +2155,6 @@
                   ...updated[currentEnrollingProviderIndex],
                   status: 'Enrolled - Ready to be Added to Group'
                 };
-                console.log(`Provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
 
               if (updated[nextReadyIndex]) {
@@ -2249,7 +2183,6 @@
             });
 
             setCurrentEnrollingProviderIndex(nextReadyIndex);
-            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             const clearedData = { ...formData };
             delete clearedData.createEnrollmentComplete;
@@ -2304,7 +2237,6 @@
                     ...updated[currentEnrollingProviderIndex],
                     status: 'Enrolled - Ready to be Added to Group'
                   };
-                  console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
                 }
 
                 return updated.map(provider => {
@@ -2345,7 +2277,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2376,7 +2307,6 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
-                console.log(`Starting existing provider branch - adding provider ${firstProviderIndex + 1} to group`);
               }
             }
 
@@ -2392,7 +2322,6 @@
           const pwoNumber = formData.pwoNumber;
           if (pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
-            console.log('Auto-saved application state for PWO#:', pwoNumber);
           }
         }, 100);
       };
@@ -2427,18 +2356,15 @@
               const pwoNumber = formData.pwoNumber;
               if (pwoNumber) {
                 saveApplicationState(pwoNumber);
-                console.log('Auto-saved application state for PWO#:', pwoNumber);
               }
             }, 100);
           } else {
-            console.log('Navigation blocked: Cannot go back before the start of the provider enrollment workflow');
           }
         }
       };
 
       const handleSubmit = async () => {
         if (isPageValid()) {
-          console.log('Form submitted:', formData);
           await showAlert('Form submitted successfully! Check console for data.');
         }
       };
@@ -2448,15 +2374,12 @@
         if (tauriInvoke) {
           // Tauri desktop app - use custom command
           try {
-            console.log('Attempting to save file with Tauri...');
             const result = await tauriInvoke('save_file_dialog', {
               content: content,
               defaultFilename: defaultFilename
             });
-            console.log('File saved:', result);
             await showAlert('File saved successfully!');
           } catch (error) {
-            console.error('Tauri save failed:', error);
             const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Unknown error');
             if (errorMsg.includes('cancelled')) {
               // User cancelled, don't show error
@@ -2894,7 +2817,6 @@
           const currentPwoNumber = formData.pwoNumber;
           if (currentPwoNumber) {
             await deleteApplicationState(currentPwoNumber);
-            console.log('Deleted saved application state for PWO#:', currentPwoNumber);
           }
 
           setFormData({});
@@ -2950,7 +2872,6 @@
           // Save the duplicate provider and prepare for the next provider
           setEnrolledProviders(prev => {
             const updatedProviders = [...prev, providerData];
-            console.log(`Provider saved as duplicate. Total providers: ${updatedProviders.length}`);
             return updatedProviders;
           });
           const clearedData = { ...formData };
@@ -3067,7 +2988,6 @@
                 });
 
                 setCurrentEnrollingProviderIndex(firstReadyIndex);
-                console.log(`Starting enrollment for provider ${firstReadyIndex + 1}`);
 
                 const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                 if (createEnrollmentIndex !== -1) {
@@ -3097,7 +3017,6 @@
 
                 if (firstProviderIndex !== -1) {
                   setCurrentAddingProviderIndex(firstProviderIndex);
-                  console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
                 }
 
                 setCurrentPage(addToGroupIndex);

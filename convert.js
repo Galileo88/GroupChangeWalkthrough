@@ -173,5 +173,3 @@ ${htmlContent}
 
 // Write the HTML file
 fs.writeFileSync('FLOW_MAPPING.html', styledHTML, 'utf8');
-
-console.log('✅ HTML file created successfully: FLOW_MAPPING.html');

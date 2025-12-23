@@ -1925,6 +1925,9 @@
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
+              // Find first provider accounting for the state update that just happened
+              // The state update changes 'Verified - Ready to Add to Group' to 'Enrolled - Ready to be Added to Group'
+              // but enrolledProviders still has the old state, so we need to check for both statuses
               const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Verified - Ready to Add to Group' ||
                 p.status === 'Enrolled - Ready to be Added to Group'
@@ -2208,10 +2211,23 @@
 
           const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
           if (openCicsIndex !== -1) {
-            const firstProviderIndex = enrolledProviders.findIndex(p =>
-              p.status === 'Enrolled - Ready to be Added to Group' ||
-              p.status === 'Verified - Ready to Add to Group'
-            );
+            // Find first provider accounting for the state updates that just happened
+            // - The current enrolling provider (currentEnrollingProviderIndex) will become "Enrolled - Ready to be Added to Group"
+            // - All "Verified - Ready to Add to Group" will become "Enrolled - Ready to be Added to Group"
+            // But enrolledProviders still has the old state, so we need to account for these changes
+            let firstProviderIndex = -1;
+
+            for (let i = 0; i < enrolledProviders.length; i++) {
+              const provider = enrolledProviders[i];
+
+              // Check if this provider will be ready to add after the state update
+              if (i === currentEnrollingProviderIndex ||
+                  provider.status === 'Verified - Ready to Add to Group' ||
+                  provider.status === 'Enrolled - Ready to be Added to Group') {
+                firstProviderIndex = i;
+                break;
+              }
+            }
 
             if (firstProviderIndex !== -1) {
               setCurrentAddingProviderIndex(firstProviderIndex);

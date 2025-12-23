@@ -2942,8 +2942,6 @@
             }
 
             /* Override hardcoded light teal backgrounds in instruction boxes */
-            html.dark .border-l-4,
-            html.dark .border-2,
             html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
             html.dark div[style*="background-color: rgb(224, 242, 241)"],
             html.dark div[style*="backgroundColor:#e0f2f1"],
@@ -2951,12 +2949,30 @@
               background-color: #1e3a5f !important;
             }
 
-            /* Ensure text in these instruction boxes is light in dark mode */
-            html.dark .border-l-4 p,
-            html.dark .border-2 p,
-            html.dark .border-l-4 div,
-            html.dark .border-2 div {
+            /* Ensure text in instruction boxes with teal background is light in dark mode */
+            html.dark div[style*="backgroundColor:#e0f2f1"] p,
+            html.dark div[style*="backgroundColor:#e0f2f1"] div,
+            html.dark div[style*="backgroundColor:#e0f2f1"] li,
+            html.dark div[style*="background-color:#e0f2f1"] p,
+            html.dark div[style*="background-color:#e0f2f1"] div,
+            html.dark div[style*="background-color:#e0f2f1"] li {
               color: #f3f4f6 !important;
+            }
+
+            /* Dark mode input and textarea text color */
+            html.dark input[type="text"],
+            html.dark input[type="email"],
+            html.dark input[type="number"],
+            html.dark input[type="tel"],
+            html.dark input[type="date"],
+            html.dark textarea,
+            html.dark select {
+              color: #f3f4f6 !important;
+            }
+
+            html.dark input::placeholder,
+            html.dark textarea::placeholder {
+              color: #9ca3af !important;
             }
 
             * {

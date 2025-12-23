@@ -2829,7 +2829,8 @@
         if (currentPageData.id === 'existing-provider-completion') {
           const providerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
           const buttonText = getNextButtonText();
-          return `You have successfully added Provider ${providerNum} to the group.\n\nPlease click "${buttonText}" to continue.`;
+          const action = buttonText === 'Finish' ? 'to complete this application.' : 'to continue.';
+          return `You have successfully added Provider ${providerNum} to the group.\n\nPlease click "${buttonText}" ${action}`;
         }
 
         return currentPageData.instructionText;

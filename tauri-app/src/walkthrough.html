@@ -2159,7 +2159,7 @@
           } else {
             // No more providers - all done!
             const confirmed = await showConfirm(
-              `You have successfully added Provider ${currentProviderNum} to the group.\n\nAll providers have been processed!`
+              `You have successfully added all providers to the group.`
             );
 
             if (!confirmed) {
@@ -2289,7 +2289,7 @@
           } else {
             // No more providers to enroll - move to adding providers to group
             const confirmed = await showConfirm(
-              `You have successfully Enrolled Provider ${currentProviderNum}.\n\nNow adding providers to the group.`
+              `You have successfully enrolled all new providers. You will now begin adding the providers to the group.`
             );
 
             if (!confirmed) {
@@ -3155,11 +3155,23 @@
 
       const getNextButtonText = () => {
         if (currentPageData.id === 'existing-provider-completion') {
-          return 'Next Provider';
+          // Check if there are more providers to add to group
+          const hasMoreProviders = enrolledProviders.some((p, idx) =>
+            idx > currentAddingProviderIndex &&
+            (p.status === 'Enrolled - Ready to be Added to Group' ||
+             p.status === 'Verified - Ready to Add to Group')
+          );
+          return hasMoreProviders ? 'Next Provider' : 'Finish';
         }
 
         if (currentPageData.id === 'additional-providers-check') {
-          return 'Next Provider';
+          // Check if there are more providers to enroll
+          const hasMoreProviders = enrolledProviders.some((p, idx) =>
+            idx > currentEnrollingProviderIndex &&
+            p.status === 'Verified - Ready to Enroll' &&
+            p.providerAlreadyEnrolled === 'No'
+          );
+          return hasMoreProviders ? 'Next Provider' : 'Add Providers to Group';
         }
 
         if (currentPageData.id === 'question-20') {

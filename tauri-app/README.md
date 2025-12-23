@@ -1,13 +1,13 @@
-# Provider Group Change Walkthrough
+# Practitioner Group Change Walkthrough
 
 ## What It Does
 
-A step-by-step walkthrough tool for Gainwell provider group change processes. This application guides users through complex workflows across multiple systems (CICS, SNOW, mainframe) without gathering any provider information - it's purely an interactive guide showing what steps to take and in what order.
+A step-by-step walkthrough tool for Gainwell practitioner group change processes. This application guides users through complex workflows across multiple systems (CICS, SNOW, mainframe) without gathering any practitioner information - it's purely an interactive guide showing what steps to take and in what order.
 
-The app provides a structured walkthrough for adding providers to groups with intelligent branching:
-- **Existing Provider Path**: For providers already enrolled in the system who need to be added to a group
-- **New Provider Path**: For providers who need to be enrolled first, then added to a group
-- **Auto-detection**: Automatically routes users through the correct workflow based on provider enrollment status
+The app provides a structured walkthrough for adding practitioners to groups with intelligent branching:
+- **Existing Practitioner Path**: For practitioners already enrolled in the system who need to be added to a group
+- **New Practitioner Path**: For practitioners who need to be enrolled first, then added to a group
+- **Auto-detection**: Automatically routes users through the correct workflow based on practitioner enrollment status
 - **State Persistence**: Tracks progress through the workflow and allows resuming exactly where you left off, even after system restarts
 
 ## Tech Stack
@@ -31,57 +31,57 @@ Initial verification and data gathering phase:
 - Email to SNOW
 - Question 20 verification
 - Questions 21-23 verification
-- Provider type selection (automatic branch point)
+- Practitioner type selection (automatic branch point)
 
 ### Branch Point (Step 9)
-System automatically determines the workflow path based on provider enrollment status:
+System automatically determines the workflow path based on practitioner enrollment status:
 
-**New Provider Path (Steps 24-37)**:
+**New Practitioner Path (Steps 24-37)**:
 - Create new enrollment in the system
-- Fill complete provider information across multiple tabs (address, payment/mailing, NPI, specialty, license/DEA, claim types)
+- Fill complete practitioner information across multiple tabs (address, payment/mailing, NPI, specialty, license/DEA, claim types)
 - Verify enrollment application
 - Enroll on mainframe
-- Decision point: Additional new providers needed?
-  - **Yes**: Loop back to Step 24 for next provider
-  - **No**: Transition to existing provider workflow
+- Decision point: Additional new practitioners needed?
+  - **Yes**: Loop back to Step 24 for next practitioner
+  - **No**: Transition to existing practitioner workflow
 
-**Existing Provider Path (Steps 11-23)**:
-- Open CICS and add provider to group
-- Verify provider information
+**Existing Practitioner Path (Steps 11-23)**:
+- Open CICS and add practitioner to group
+- Verify practitioner information
 - Close enrollment task and finish group change
 - Create checklist and approve group change
-- Complete letter generation workflow (open task, select letter, add provider, finish letter, close task)
-- Completion page with decision: Additional existing providers?
-  - **Yes**: Loop back to Step 11 for next provider
+- Complete letter generation workflow (open task, select letter, add practitioner, finish letter, close task)
+- Completion page with decision: Additional existing practitioners?
+  - **Yes**: Loop back to Step 11 for next practitioner
   - **No**: Final completion
 
 ### Workflow Priority
 The system enforces a specific order:
-1. All new providers must be enrolled first (Steps 24-37 loop)
-2. Only after new provider enrollment is complete, existing providers are added to the group (Steps 11-23 loop)
-3. Final completion when all providers (new and existing) have been processed
+1. All new practitioners must be enrolled first (Steps 24-37 loop)
+2. Only after new practitioner enrollment is complete, existing practitioners are added to the group (Steps 11-23 loop)
+3. Final completion when all practitioners (new and existing) have been processed
 
 ## Impact
 
 ### Problem Statement
-Provider group changes involve complex, multi-step processes spanning multiple disconnected systems:
-- **CICS**: Legacy mainframe system for provider enrollment
+Practitioner group changes involve complex, multi-step processes spanning multiple disconnected systems:
+- **CICS**: Legacy mainframe system for practitioner enrollment
 - **SNOW**: ServiceNow for task and checklist management
 - **Mainframe**: Core enrollment database
-- **Letter Generation System**: Provider correspondence
+- **Letter Generation System**: Practitioner correspondence
 
 Without structured guidance, staff frequently:
 - Miss critical steps in the process
 - Perform steps out of order, causing errors
 - Lose progress when systems disconnect or browsers crash
-- Struggle to remember which providers have been processed
+- Struggle to remember which practitioners have been processed
 - Require constant reference to external documentation
 
 ### Solution Benefits
 
 **Operational Excellence**:
 - Ensures all steps are completed in the correct order, every time
-- Eliminates manual tracking of which providers have been processed
+- Eliminates manual tracking of which practitioners have been processed
 - Standardizes the process across all staff members
 - Reduces training time for new employees
 

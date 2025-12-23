@@ -2542,44 +2542,6 @@
         }
         textContent += `\n`;
 
-        // Provider Information (Question 20)
-        textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
-        if (formData.question20Answered !== undefined) {
-          textContent += `  • Question 20 Answered: ${formData.question20Answered}\n`;
-        }
-        if (formData.providerAlreadyEnrolled !== undefined) {
-          textContent += `  • Provider Already Enrolled: ${formData.providerAlreadyEnrolled}\n`;
-        }
-        if (formData.providerInGroup !== undefined) {
-          textContent += `  • Provider Already in Group: ${formData.providerInGroup}\n`;
-        }
-        textContent += `\n`;
-
-        // Provider Verification
-        textContent += `PROVIDER VERIFICATION:\n`;
-        if (formData.ssnVerified !== undefined) {
-          textContent += `  • SSN Verified: ${formData.ssnVerified ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.dexSanctionsCheck !== undefined) {
-          textContent += `  • DEX and Sanctions Check: ${formData.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.dobVerified !== undefined) {
-          textContent += `  • DOB Verified: ${formData.dobVerified ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.npiVerified !== undefined) {
-          textContent += `  • NPI Verified: ${formData.npiVerified ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.licensesVerified !== undefined) {
-          textContent += `  • Licenses Verified: ${formData.licensesVerified ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.deaEffectiveDates !== undefined) {
-          textContent += `  • DEA Effective Dates Checked: ${formData.deaEffectiveDates ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.effectiveDatesChecked !== undefined) {
-          textContent += `  • Effective Dates Checked: ${formData.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
-        }
-        textContent += `\n`;
-
         // Additional Questions 21-23 & 25
         textContent += `ADDITIONAL QUESTIONS (21-23 & 25):\n`;
         if (formData.question21Answered !== undefined) {
@@ -2700,6 +2662,7 @@
 
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
+            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // PROVIDER INFORMATION (QUESTION 20)
             textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
@@ -2720,8 +2683,6 @@
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
-
-            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // Check if this is an existing provider (being added to group)
             const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
@@ -2838,6 +2799,7 @@
 
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
+            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // PROVIDER INFORMATION (QUESTION 20)
             textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
@@ -2858,8 +2820,6 @@
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
-
-            textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
 
             // Check if this is an existing provider (being added to group)
             const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||

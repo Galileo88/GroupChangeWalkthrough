@@ -2076,6 +2076,22 @@
           return;
         }
 
+        if (currentPageData.id === 'create-enrollment') {
+          if (!isPageValid()) {
+            return;
+          }
+
+          const fillProviderInfoIndex = pages.findIndex(page => page.id === 'fill-provider-info');
+          if (fillProviderInfoIndex !== -1) {
+            setCurrentPage(fillProviderInfoIndex);
+            setVisitedPages(prev => new Set([...prev, fillProviderInfoIndex]));
+            setTimeout(() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+          }
+          return;
+        }
+
         if (currentPageData.id === 'additional-providers-check') {
           // Automatically check if there are more providers to enroll
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>

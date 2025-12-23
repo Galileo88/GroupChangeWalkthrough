@@ -3955,38 +3955,33 @@
                   ) : currentPageData.id === 'questions-21-23' ? (
                     <div className="space-y-6">
                       {currentPageData.fields.map((field, idx) => {
-                        const value = formData[field.name] || '';
+                        const value = formData[field.name] || false;
                         const isValid = field.validation ? field.validation(value) : !!value;
 
                         return (
                           <div key={field.name} className="space-y-3">
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                              {typeof field.label === 'function' ? field.label(formData) : field.label}
-                              {field.required && <span className="text-red-500 ml-1">*</span>}
+                            <label
+                              className={`flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all ${
+                                value
+                                  ? 'bg-cyan-50'
+                                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                              }`}
+                              style={value ? {borderColor: 'var(--gainwell-cyan)'} : {}}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={value}
+                                onChange={(e) => handleFieldChange(field.name, e.target.checked)}
+                                className="w-6 h-6 rounded"
+                                style={{accentColor: 'var(--gainwell-cyan)'}}
+                              />
+                              <div className="ml-4 flex-1">
+                                <span className="font-semibold text-slate-800">
+                                  {typeof field.label === 'function' ? field.label(formData) : field.label}
+                                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                                </span>
+                              </div>
                             </label>
-
-                            <div className="space-y-3">
-                              {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
-                                <label
-                                  key={option}
-                                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                    value === option
-                                      ? 'border-indigo-500 bg-indigo-50'
-                                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                                  }`}
-                                >
-                                  <input
-                                    type="radio"
-                                    name={field.name}
-                                    value={option}
-                                    checked={value === option}
-                                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                                    className="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                  <span className="ml-3 font-medium text-slate-700">{option}</span>
-                                </label>
-                              ))}
-                            </div>
 
                             {field.helperNotes && (
                               <div className="mt-3 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
@@ -4005,7 +4000,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
+                      {(!formData.question21Answered || !formData.question22Answered || !formData.question23Answered || !formData.question25Signed) && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">

@@ -3182,6 +3182,22 @@
         return 'Continue';
       };
 
+      const getInstructionText = () => {
+        if (currentPageData.id === 'additional-providers-check') {
+          const providerNum = currentEnrollingProviderIndex !== null ? currentEnrollingProviderIndex + 1 : '';
+          const buttonText = getNextButtonText();
+          return `You have successfully enrolled Provider ${providerNum}.\n\nPlease click "${buttonText}" to continue.`;
+        }
+
+        if (currentPageData.id === 'existing-provider-completion') {
+          const providerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
+          const buttonText = getNextButtonText();
+          return `You have successfully added Provider ${providerNum} to the group.\n\nPlease click "${buttonText}" to continue.`;
+        }
+
+        return currentPageData.instructionText;
+      };
+
       // ============================================================
       // COMPONENT RENDERING
       // ============================================================
@@ -3355,19 +3371,19 @@
               {/* Form Content */}
               <div className="p-8 space-y-6">
                 {/* Instruction Text */}
-                {currentPageData.instructionText && !currentPageData.isCompletionPage && (
+                {getInstructionText() && !currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
                     <p className="text-slate-800 font-medium whitespace-pre-line">
-                      {currentPageData.instructionText}
+                      {getInstructionText()}
                     </p>
                   </div>
                 )}
 
                 {/* Completion Page Instruction Text */}
-                {currentPageData.instructionText && currentPageData.isCompletionPage && (
+                {getInstructionText() && currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
                     <div className="text-slate-800 font-medium whitespace-pre-line">
-                      {currentPageData.instructionText}
+                      {getInstructionText()}
                     </div>
                   </div>
                 )}

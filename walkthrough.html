@@ -2899,6 +2899,11 @@
               background-color: #1e3a5f !important;
             }
 
+            html.dark .bg-blue-50,
+            html.dark .bg-blue-100 {
+              background-color: #1e3a5f !important;
+            }
+
             /* Dark mode border overrides */
             html.dark .border-slate-100,
             html.dark .border-slate-200,
@@ -2906,7 +2911,8 @@
               border-color: #4b5563 !important;
             }
 
-            html.dark .border-indigo-200 {
+            html.dark .border-indigo-200,
+            html.dark .border-blue-200 {
               border-color: #4b5563 !important;
             }
 
@@ -2933,6 +2939,24 @@
             html.dark .bg-cyan-50 *,
             html.dark .bg-cyan-100 * {
               color: white !important;
+            }
+
+            /* Override hardcoded light teal backgrounds in instruction boxes */
+            html.dark .border-l-4,
+            html.dark .border-2,
+            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
+            html.dark div[style*="background-color: rgb(224, 242, 241)"],
+            html.dark div[style*="backgroundColor:#e0f2f1"],
+            html.dark div[style*="background-color:#e0f2f1"] {
+              background-color: #1e3a5f !important;
+            }
+
+            /* Ensure text in these instruction boxes is light in dark mode */
+            html.dark .border-l-4 p,
+            html.dark .border-2 p,
+            html.dark .border-l-4 div,
+            html.dark .border-2 div {
+              color: #f3f4f6 !important;
             }
 
             * {

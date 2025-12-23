@@ -92,18 +92,6 @@
       </svg>
     );
 
-    const Sun = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    );
-
-    const Moon = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    );
-
     // ============================================================
     // MAIN FORM COMPONENT
     // ============================================================
@@ -129,20 +117,6 @@
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
       const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
-      const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem('theme') === 'dark';
-      });
-
-      // -------------------- Dark Mode Effect --------------------
-      React.useEffect(() => {
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
-        }
-      }, [isDarkMode]);
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -722,9 +696,10 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -733,9 +708,10 @@
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -745,9 +721,10 @@
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -756,9 +733,10 @@
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]
@@ -1948,8 +1926,6 @@
           }
         }
 
-        }
-
         // Handler for request-for-paper-updates: Route to appropriate provider workflow
         if (currentPageData.id === 'request-for-paper-updates') {
           // PRIORITY 1: Check for duplicate application first
@@ -3136,25 +3112,6 @@
       const currentPageData = pages[currentPage];
       const isLastPage = currentPage === pages.length - 1;
 
-      // Safety check: if currentPageData is undefined, something went wrong with navigation
-      if (!currentPageData) {
-        console.error('currentPageData is undefined! currentPage:', currentPage, 'pages.length:', pages.length);
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl p-8 shadow-xl max-w-md">
-              <h2 className="text-2xl font-bold text-red-600 mb-4">Navigation Error</h2>
-              <p className="text-slate-700 mb-4">Something went wrong with page navigation. Please refresh and try again.</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Refresh Page
-              </button>
-            </div>
-          </div>
-        );
-      }
-
       const canProceed = isPageValid();
 
       const getNextButtonText = () => {
@@ -3208,7 +3165,7 @@
       // ============================================================
 
       return (
-        <div className="min-h-screen p-6 flex items-center justify-center" style={{backgroundColor: 'var(--bg-color)', transition: 'background-color 0.3s ease'}}>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 p-6 flex items-center justify-center">
           {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
@@ -3218,148 +3175,6 @@
               --gainwell-cyan: #00e5b4;
               --gainwell-dark: #2a3f4a;
               --gainwell-light-teal: #527584;
-
-              /* Light mode colors */
-              --bg-color: #f3f4f6;
-              --card-bg: white;
-              --text-primary: #1f2937;
-              --text-secondary: #6b7280;
-              --border-color: #e5e7eb;
-              --input-bg: white;
-              --modal-bg: white;
-            }
-
-            html.dark {
-              /* Dark mode colors */
-              --bg-color: #111827;
-              --card-bg: #1f2937;
-              --text-primary: #f9fafb;
-              --text-secondary: #d1d5db;
-              --border-color: #374151;
-              --input-bg: #374151;
-              --modal-bg: #1f2937;
-            }
-
-            /* Dark mode text overrides */
-            html.dark .text-slate-900,
-            html.dark .text-slate-800,
-            html.dark .text-slate-700 {
-              color: #f3f4f6 !important;
-            }
-
-            html.dark .text-slate-600 {
-              color: #d1d5db !important;
-            }
-
-            html.dark .text-slate-500 {
-              color: #9ca3af !important;
-            }
-
-            html.dark .text-slate-400 {
-              color: #9ca3af !important;
-            }
-
-            html.dark .placeholder-slate-400::placeholder {
-              color: #6b7280 !important;
-            }
-
-            /* Dark mode background overrides */
-            html.dark .bg-slate-50,
-            html.dark .bg-slate-100 {
-              background-color: #374151 !important;
-            }
-
-            html.dark .bg-white {
-              background-color: var(--card-bg) !important;
-            }
-
-            html.dark .bg-indigo-50 {
-              background-color: #1e3a5f !important;
-            }
-
-            html.dark .bg-blue-50,
-            html.dark .bg-blue-100 {
-              background-color: #1e3a5f !important;
-            }
-
-            /* Override text color in blue background sections for dark mode */
-            html.dark .bg-blue-50 *,
-            html.dark .bg-blue-100 *,
-            html.dark .border-blue-200 *,
-            html.dark .border-blue-400 * {
-              color: #f3f4f6 !important;
-            }
-
-            /* Dark mode border overrides */
-            html.dark .border-slate-100,
-            html.dark .border-slate-200,
-            html.dark .border-slate-300 {
-              border-color: #4b5563 !important;
-            }
-
-            html.dark .border-indigo-200,
-            html.dark .border-blue-200,
-            html.dark .border-blue-400 {
-              border-color: #4b5563 !important;
-            }
-
-            /* Ensure text is dark on light selected backgrounds (light mode) */
-            .bg-cyan-50,
-            .bg-cyan-100,
-            .bg-indigo-50 {
-              color: #1f2937 !important;
-            }
-
-            .bg-cyan-50 *,
-            .bg-cyan-100 *,
-            .bg-indigo-50 * {
-              color: #1f2937 !important;
-            }
-
-            /* Override in dark mode for selected states */
-            html.dark .bg-cyan-50,
-            html.dark .bg-cyan-100 {
-              background-color: #0d9488 !important;
-              color: white !important;
-            }
-
-            html.dark .bg-cyan-50 *,
-            html.dark .bg-cyan-100 * {
-              color: white !important;
-            }
-
-            /* Override hardcoded light teal backgrounds in instruction boxes */
-            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
-            html.dark div[style*="background-color: rgb(224, 242, 241)"],
-            html.dark div[style*="backgroundColor:#e0f2f1"],
-            html.dark div[style*="background-color:#e0f2f1"] {
-              background-color: #1e3a5f !important;
-            }
-
-            /* Ensure text in instruction boxes with teal background is light in dark mode */
-            html.dark div[style*="backgroundColor:#e0f2f1"] *,
-            html.dark div[style*="background-color:#e0f2f1"] *,
-            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
-            html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
-              color: #f3f4f6 !important;
-            }
-
-            /* Dark mode input and textarea styles */
-            html.dark input[type="text"],
-            html.dark input[type="email"],
-            html.dark input[type="number"],
-            html.dark input[type="tel"],
-            html.dark input[type="date"],
-            html.dark textarea,
-            html.dark select {
-              background-color: var(--input-bg) !important;
-              color: #f3f4f6 !important;
-              border-color: #4b5563 !important;
-            }
-
-            html.dark input::placeholder,
-            html.dark textarea::placeholder {
-              color: #9ca3af !important;
             }
 
             * {
@@ -3433,53 +3248,11 @@
               to { opacity: 1; }
             }
 
-            .theme-toggle {
-              position: fixed;
-              top: 1.5rem;
-              right: 1.5rem;
-              width: 3rem;
-              height: 3rem;
-              border-radius: 50%;
-              background: var(--card-bg);
-              border: 2px solid var(--gainwell-cyan);
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-              transition: all 0.3s ease;
-              z-index: 1001;
-            }
-
-            .theme-toggle:hover {
-              transform: scale(1.1);
-              box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
-            }
-
-            .theme-toggle svg {
-              width: 1.5rem;
-              height: 1.5rem;
-              color: var(--gainwell-cyan);
-            }
-
-            body {
-              background-color: var(--bg-color);
-              transition: background-color 0.3s ease;
-            }
           `}</style>
-
-          {/* Dark Mode Toggle */}
-          <button
-            className="theme-toggle"
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            aria-label="Toggle dark mode"
-          >
-            {isDarkMode ? <Sun /> : <Moon />}
-          </button>
 
           <div className="max-w-2xl w-full">
             {/* Form Card */}
-            <div className="rounded-2xl shadow-2xl overflow-hidden page-enter" style={{backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderWidth: '1px', transition: 'all 0.3s ease'}}>
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 page-enter">
               {/* Header */}
               <div className="p-8 text-white relative" style={{background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}}>
                 <h1 className="title-font text-4xl font-bold mb-2">
@@ -4195,7 +3968,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
+                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">
@@ -4362,7 +4135,7 @@
                         </div>
                       </div>
                     </div>
-                  ) : currentPageData.id !== 'question-20' && currentPageData.id !== 'next-provider-ready-check' && currentPageData.id !== 'questions-21-23' ? (
+                  ) : currentPageData.id !== 'question-20' && currentPageData.id !== 'questions-21-23' ? (
                     <ul className="space-y-2">
                       {currentPageData.fields
                         .filter(f => {
@@ -4490,7 +4263,7 @@
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
-                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-cyan), var(--gainwell-teal))'}) : {}}
+                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}) : {}}
                     >
                       {getNextButtonText()}
                       {!isLastPage && <ChevronRight className="w-4 h-4" />}

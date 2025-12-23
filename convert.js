@@ -1,12 +1,24 @@
+// ============================================================
+// IMPORTS
+// ============================================================
+
 import { marked } from 'marked';
 import fs from 'fs';
 import path from 'path';
+
+// ============================================================
+// MARKDOWN TO HTML CONVERSION
+// ============================================================
 
 // Read the markdown file
 const mdContent = fs.readFileSync('FLOW_MAPPING.md', 'utf8');
 
 // Convert markdown to HTML
 const htmlContent = marked.parse(mdContent);
+
+// ============================================================
+// HTML TEMPLATE WITH STYLING
+// ============================================================
 
 // Create a complete HTML document with styling
 const styledHTML = `<!DOCTYPE html>
@@ -171,7 +183,9 @@ ${htmlContent}
 </body>
 </html>`;
 
+// ============================================================
+// FILE OUTPUT
+// ============================================================
+
 // Write the HTML file
 fs.writeFileSync('FLOW_MAPPING.html', styledHTML, 'utf8');
-
-console.log('✅ HTML file created successfully: FLOW_MAPPING.html');

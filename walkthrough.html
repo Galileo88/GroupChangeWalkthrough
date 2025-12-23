@@ -1673,6 +1673,14 @@
                   return updatedProviders;
                 });
 
+                // Set expectedProviderCount to prevent duplicate saves when navigating back and forth
+                const allProviders = [...enrolledProviders, providerData];
+                setFormData(prev => ({
+                  ...prev,
+                  expectedProviderCount: allProviders.length
+                }));
+                console.log('Set expectedProviderCount to:', allProviders.length);
+
                 const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
                 if (completionIndex !== -1) {
                   setCurrentPage(completionIndex);
@@ -1719,6 +1727,33 @@
 
                 // Clear unable to verify fields after saving final provider
                 setUnableToVerifyFields(new Set());
+
+                // Set expectedProviderCount to prevent duplicate saves when navigating back and forth
+                const allProviders = [...enrolledProviders, providerData];
+                setFormData(prev => ({
+                  ...prev,
+                  expectedProviderCount: allProviders.length
+                }));
+                console.log('Set expectedProviderCount to:', allProviders.length);
+
+                // Check if this is a duplicate (only provider and already enrolled and in group)
+                if (allProviders.length === 1 && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
+                  console.log('>>> DUPLICATE DETECTED: Only provider is already enrolled and in group <<<');
+                  const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
+                  const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only provider is already enrolled and in group`;
+                  setOutreachNotes(prev => [...prev, rejectionNote]);
+
+                  const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
+                  if (completionIndex !== -1) {
+                    console.log('>>> ROUTING TO DUPLICATE-REJECTION-COMPLETION at index', completionIndex);
+                    setCurrentPage(completionIndex);
+                    setVisitedPages(prev => new Set([...prev, completionIndex]));
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                  }
+                  return;
+                }
 
                 // Navigate to questions-21-23 after saving final provider
                 console.log('>>> ATTEMPTING TO ROUTE TO QUESTIONS-21-23 <<<');

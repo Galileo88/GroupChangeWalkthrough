@@ -12,51 +12,8 @@
 <body>
   <div id="root"></div>
 
-  <!-- PDF Modal (Full Screen) -->
-  <div id="pdf-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000;">
-    <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
-      <div style="padding: 16px 24px; border-bottom: 2px solid #2a3f4a; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to right, #3d5a66, #2a3f4a); box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-        <h2 id="pdf-modal-title" style="margin: 0; font-size: 18px; font-weight: 700; color: white;">PDF Viewer</h2>
-        <button onclick="closePdfModal()" style="background: #dc3545; color: white; border: none; font-size: 16px; font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 6px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);" onmouseover="this.style.background='#c82333'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.4)'" onmouseout="this.style.background='#dc3545'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.3)'">✕ Close</button>
-      </div>
-      <iframe id="pdf-iframe" style="flex: 1; border: none; width: 100%; height: 100%;"></iframe>
-    </div>
-  </div>
-
   <script type="text/babel">
     const { useState } = React;
-
-    // ============================================================
-    // PDF MODAL FUNCTIONS
-    // ============================================================
-
-    window.openPdfModal = (pdfUrl, title) => {
-      const modal = document.getElementById('pdf-modal');
-      const iframe = document.getElementById('pdf-iframe');
-      const titleEl = document.getElementById('pdf-modal-title');
-
-      iframe.src = pdfUrl;
-      titleEl.textContent = title || 'PDF Viewer';
-      modal.style.display = 'block';
-    };
-
-    window.closePdfModal = () => {
-      const modal = document.getElementById('pdf-modal');
-      const iframe = document.getElementById('pdf-iframe');
-
-      modal.style.display = 'none';
-      iframe.src = '';
-    };
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const modal = document.getElementById('pdf-modal');
-        if (modal.style.display === 'block') {
-          closePdfModal();
-        }
-      }
-    });
 
     // ============================================================
     // ICON COMPONENTS
@@ -92,18 +49,6 @@
       </svg>
     );
 
-    const Sun = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    );
-
-    const Moon = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    );
-
     // ============================================================
     // MAIN FORM COMPONENT
     // ============================================================
@@ -128,21 +73,6 @@
       const [pendingUnableToVerifyField, setPendingUnableToVerifyField] = useState(null);
       const [confirmDialog, setConfirmDialog] = useState({ show: false, message: '', onConfirm: null, onCancel: null });
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
-      const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
-      const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem('theme') === 'dark';
-      });
-
-      // -------------------- Dark Mode Effect --------------------
-      React.useEffect(() => {
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
-        }
-      }, [isDarkMode]);
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -161,6 +91,7 @@
 
           if (pwoNumber && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
+            console.log('Auto-saved application state (debounced) for PWO#:', pwoNumber);
           }
         }, 1000); // 1 second debounce
 
@@ -245,130 +176,55 @@
         });
       };
 
-      // -------------------- Save/Load Utilities --------------------
+      // -------------------- LocalStorage Utilities --------------------
 
       const STORAGE_PREFIX = 'pwo-application-';
 
-      // Check if we're running in Tauri and get the invoke function
-      const isTauri = typeof window !== 'undefined' && window.__TAURI__;
-      const tauriInvoke = isTauri ? (
-        window.__TAURI__.invoke ||
-        window.__TAURI__.tauri?.invoke ||
-        window.__TAURI_INTERNALS__?.invoke ||
-        null
-      ) : null;
-
-      // Debug: Log what's available
-      React.useEffect(() => {
-        if (isTauri) {
-          // Tauri detection check
-        }
-      }, []);
-
-      const saveApplicationState = async (pwoNumber) => {
+      const saveApplicationState = (pwoNumber) => {
         if (!pwoNumber) return;
 
         const stateToSave = {
-          pwo_number: pwoNumber,
-          user_name: formData.userName || '',
-          current_page: currentPage.toString(),
-          form_data: formData,
-          enrolled_providers: enrolledProviders,
-          outreach_notes: outreachNotes,
-          provider_manual_notes: providerManualNotes,
-          unable_to_verify_fields: Array.from(unableToVerifyFields).map(f => String(f)),
-          visited_pages: Array.from(visitedPages).map(p => String(p)),
-          current_enrolling_provider_index: currentEnrollingProviderIndex ?? -1,
-          current_adding_provider_index: currentAddingProviderIndex ?? -1,
-          last_saved: new Date().toISOString(),
-          has_outreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
+          pwoNumber,
+          userName: formData.userName,
+          currentPage,
+          formData,
+          enrolledProviders,
+          outreachNotes,
+          providerManualNotes,
+          unableToVerifyFields: Array.from(unableToVerifyFields),
+          visitedPages: Array.from(visitedPages),
+          currentEnrollingProviderIndex,
+          currentAddingProviderIndex,
+          lastSaved: new Date().toISOString(),
+          hasOutreach: enrolledProviders.some(p => p.status === 'Unable to Verify - Requires Outreach')
         };
 
         try {
-          setSaveStatus({ saving: true, lastSaved: null, error: null });
-
-          if (tauriInvoke) {
-            // Use Tauri's invoke to save to filesystem
-            const result = await tauriInvoke('save_pwo_state', { state: stateToSave });
-            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
-          } else {
-            // Fallback to localStorage for web version
-            localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
-            setSaveStatus({ saving: false, lastSaved: new Date(), error: null });
-          }
+          localStorage.setItem(`${STORAGE_PREFIX}${pwoNumber}`, JSON.stringify(stateToSave));
         } catch (error) {
-          const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Save failed');
-          setSaveStatus({ saving: false, lastSaved: null, error: errorMsg });
+          console.error('Failed to save application state:', error);
         }
       };
 
-      const loadApplicationState = async (pwoNumber) => {
+      const loadApplicationState = (pwoNumber) => {
         if (!pwoNumber) return null;
 
         try {
-          if (tauriInvoke) {
-            // Use Tauri's invoke to load from filesystem
-            const state = await tauriInvoke('load_pwo_state', { pwoNumber });
-            return {
-              pwoNumber: state.pwo_number,
-              userName: state.user_name,
-              currentPage: parseInt(state.current_page),
-              formData: state.form_data,
-              enrolledProviders: state.enrolled_providers,
-              outreachNotes: state.outreach_notes,
-              providerManualNotes: state.provider_manual_notes,
-              unableToVerifyFields: state.unable_to_verify_fields,
-              visitedPages: state.visited_pages.map(p => parseInt(p)),
-              currentEnrollingProviderIndex: state.current_enrolling_provider_index,
-              currentAddingProviderIndex: state.current_adding_provider_index,
-              lastSaved: state.last_saved,
-              hasOutreach: state.has_outreach
-            };
-          } else {
-            // Fallback to localStorage for web version
-            const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
-            return saved ? JSON.parse(saved) : null;
-          }
+          const saved = localStorage.getItem(`${STORAGE_PREFIX}${pwoNumber}`);
+          return saved ? JSON.parse(saved) : null;
         } catch (error) {
+          console.error('Failed to load application state:', error);
           return null;
         }
       };
 
-      const deleteApplicationState = async (pwoNumber) => {
+      const deleteApplicationState = (pwoNumber) => {
         if (!pwoNumber) return;
 
         try {
-          if (tauriInvoke) {
-            // Use Tauri's invoke to delete from filesystem
-            const result = await tauriInvoke('delete_pwo_state', { pwoNumber });
-          } else {
-            // Fallback to localStorage for web version
-            localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
-          }
+          localStorage.removeItem(`${STORAGE_PREFIX}${pwoNumber}`);
         } catch (error) {
-          // Delete failed
-        }
-      };
-
-      // Helper function to open external URLs and PDFs
-      const openExternalUrl = async (url, title = 'PDF Viewer') => {
-        if (!url) return;
-
-        try {
-          // Check if it's a PDF - open in modal
-          if (url.endsWith('.pdf')) {
-            window.openPdfModal(url, title);
-            return;
-          }
-
-          // For non-PDF URLs, open externally
-          if (tauriInvoke) {
-            await tauriInvoke('open_url', { url });
-          } else {
-            window.open(url, '_blank', 'noopener,noreferrer');
-          }
-        } catch (error) {
-          // Failed to open URL
+          console.error('Failed to delete application state:', error);
         }
       };
 
@@ -409,13 +265,8 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'PWO1234567',
-              validation: (value) => {
-                if (!value) return false;
-                const pwoPattern = /^PWO\d{7}$/;
-                return pwoPattern.test(value.trim().toUpperCase());
-              },
-              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
+              placeholder: 'Enter PWO number',
+              validation: (value) => value && value.trim().length > 0
             }
           ]
         },
@@ -440,13 +291,8 @@
               label: 'PWO #',
               type: 'text',
               required: true,
-              placeholder: 'PWO1234567',
-              validation: (value) => {
-                if (!value) return false;
-                const pwoPattern = /^PWO\d{7}$/;
-                return pwoPattern.test(value.trim().toUpperCase());
-              },
-              validationMessage: 'PWO number must be in format: PWO followed by 7 digits (e.g., PWO1234567)'
+              placeholder: 'Enter PWO number',
+              validation: (value) => value && value.trim().length > 0
             }
           ]
         },
@@ -648,33 +494,19 @@
             },
             {
               name: 'licensesVerified',
-              label: () => (
-                <>
-                  Licenses - APN, CRNA, CNM require RN license and APN license.
-                  <br/><br/>
-                  Doctors are required to have a copy of their license.
-                </>
-              ),
+              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
-              validation: (value) => value === true,
-              licenseVerifyUrl: 'https://miamifrp.com/verification/'
+              validation: (value) => value === true
             },
             {
-              name: 'boardCertificatesVerified',
-              label: () => (
-                <>
-                  Board Certificates - APN, CRNA, CNM require board certificate.
-                  <br/><br/>
-                  Doctors are not required to provide a board certificate, but can be added and updated if included.
-                </>
-              ),
+              name: 'doctorLicenseVerified',
+              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
               type: 'checkbox',
               required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
-              validation: (value) => value === true,
-              licenseVerifyUrl: 'https://miamifrp.com/verification/'
+              validation: (value) => value === true
             },
             {
               name: 'deaEffectiveDates',
@@ -722,9 +554,10 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -733,9 +566,10 @@
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -745,9 +579,10 @@
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -756,9 +591,10 @@
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]
@@ -1153,7 +989,7 @@
           showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
           fields: [],
           instructionText: '',
-          isCompletionPage: true,
+          isCompletionPage: false,
           isInformational: true
         },
         {
@@ -1447,8 +1283,119 @@
           showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
           fields: [],
           instructionText: '',
-          isCompletionPage: true,
           isInformational: true
+        },
+        {
+          id: 'next-provider-ready-check',
+          title: 'Final Provider Verification',
+          description: 'Last chance to verify all provider information before enrollment',
+          showWhen: { field: 'additionalProvidersNeeded', value: 'Yes' },
+          fields: [
+            {
+              name: 'nextProviderFinalVerificationConfirm',
+              label: 'Is question 20 answered on the Group Practice Application?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'Practitioner Name, SSN, NPI and DOB are required.',
+                'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
+              ]
+            },
+            {
+              name: 'nextProviderAlreadyEnrolled',
+              label: 'Is the provider already enrolled?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              showWhen: { field: 'nextProviderFinalVerificationConfirm', value: 'Yes' },
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'If Yes, this will be noted for the provider and you will proceed to the next question.',
+                'If No, the checklist will be displayed.'
+              ]
+            },
+            {
+              name: 'nextProviderInGroup',
+              label: 'Is the provider already in the group?',
+              type: 'radio',
+              required: true,
+              options: ['Yes', 'No'],
+              showWhen: { field: 'nextProviderAlreadyEnrolled', value: 'Yes' },
+              validation: (value) => value === 'Yes' || value === 'No',
+              helperNotes: [
+                'If Yes, you will be given the option to reject this as a duplicate application.',
+                'If No, this will be noted for the provider and the checklist will be displayed.'
+              ]
+            },
+            {
+              name: 'nextProviderFinalSsnVerified',
+              label: 'SSN - Verify SSN using SOVOS if a Social Security Card is not attached to the application',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true,
+              sovosUrl: 'https://taxport.sovos.com/login'
+            },
+            {
+              name: 'nextProviderFinalDexSanctionsCheck',
+              label: 'DEX and Sanctions in WVT - Check all providers being added',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            },
+            {
+              name: 'nextProviderFinalDobVerified',
+              label: 'DOB - Verify DOB in PECOS (new providers may not be in PECOS, so just use their DOB on the application)',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            },
+            {
+              name: 'nextProviderFinalNpiVerified',
+              label: 'NPI - Verify in either the WVT or at npiregistry.cms.hhs.gov to ensure the NPI belongs to the provider',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true,
+              npiRegistryUrl: 'https://npiregistry.cms.hhs.gov'
+            },
+            {
+              name: 'nextProviderFinalLicensesVerified',
+              label: 'Licenses and Board Certificates - APN, CRNA, CNM require RN license, APN license, and board certification',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            },
+            {
+              name: 'nextProviderFinalDoctorLicenseVerified',
+              label: 'Doctors are required to have a copy of their license (Board Certification is not required, but can be updated if included)',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            },
+            {
+              name: 'nextProviderFinalDeaEffectiveDates',
+              label: 'DEA effective dates - Compare expiration dates and update if newer. Add DEA information for new providers if attached',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            },
+            {
+              name: 'nextProviderFinalEffectiveDatesChecked',
+              label: 'Effective Dates - If no Requested Effective Date is provided, effective date goes one year back from stamped date (as long as license covers it)',
+              type: 'checkbox',
+              required: true,
+              showWhen: (formData) => formData.nextProviderFinalVerificationConfirm === 'Yes' && (formData.nextProviderAlreadyEnrolled === 'No' || (formData.nextProviderAlreadyEnrolled === 'Yes' && formData.nextProviderInGroup === 'No')),
+              validation: (value) => value === true
+            }
+          ]
         }
       ];
 
@@ -1479,10 +1426,6 @@
       };
 
       const handleFieldChange = (fieldName, value) => {
-        // Auto-format PWO number fields to uppercase
-        if (fieldName === 'pwoNumber' || fieldName === 'resumePwoNumber') {
-          value = value.toUpperCase();
-        }
         setFormData(prev => ({ ...prev, [fieldName]: value }));
 
         const enrollmentFields = [
@@ -1512,6 +1455,7 @@
                 ...updated[currentEnrollingProviderIndex],
                 [fieldName]: value
               };
+              console.log(`Updated enrollment detail for provider ${currentEnrollingProviderIndex + 1}: ${fieldName} = ${value}`);
             }
             return updated;
           });
@@ -1535,7 +1479,7 @@
         // Handle resume-lookup page: Load saved application
         if (currentPageData.id === 'resume-lookup') {
           const pwoToResume = formData.resumePwoNumber;
-          const savedState = await loadApplicationState(pwoToResume);
+          const savedState = loadApplicationState(pwoToResume);
 
           if (!savedState) {
             await showAlert(`No saved application found for PWO# ${pwoToResume}. Please check the PWO# and try again, or start a new application.`);
@@ -1553,6 +1497,7 @@
           }
 
           // Restore all saved state
+          console.log('Restoring saved application for PWO#:', pwoToResume);
           setFormData(savedState.formData);
           setEnrolledProviders(savedState.enrolledProviders);
           setOutreachNotes(savedState.outreachNotes);
@@ -1576,17 +1521,25 @@
           const expectedProviderCount = formData.expectedProviderCount || 0;
           const providerAlreadySaved = expectedProviderCount > 0 && enrolledProviders.length >= expectedProviderCount;
 
+          console.log('=== Question 20 Save Check ===');
+          console.log('Expected provider count:', expectedProviderCount);
+          console.log('Current enrolled providers length:', enrolledProviders.length);
+          console.log('Provider already saved?', providerAlreadySaved);
 
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
+          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           // Debug: Log unable to verify check
+          console.log('=== Question 20 Verification Check ===');
+          console.log('Unable to verify fields:', Array.from(unableToVerifyFields));
+          console.log('Has unable to verify:', hasUnableToVerify);
 
           // Only save the provider if it hasn't been saved already
           if (!providerAlreadySaved) {
             if (hasUnableToVerify) {
+              console.log('Saving provider with OUTREACH status');
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
                 question20Answered: formData.question20Answered,
@@ -1597,7 +1550,6 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
-                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1606,6 +1558,7 @@
 
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
+                console.log(`Provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
                 return updatedProviders;
               });
             } else if (moreProviders) {
@@ -1618,6 +1571,7 @@
                 }
               }
 
+              console.log('Saving provider with VERIFIED status:', providerStatus);
 
               const providerData = {
                 status: providerStatus,
@@ -1629,7 +1583,6 @@
                 dobVerified: formData.dobVerified,
                 npiVerified: formData.npiVerified,
                 licensesVerified: formData.licensesVerified,
-                boardCertificatesVerified: formData.boardCertificatesVerified,
                 doctorLicenseVerified: formData.doctorLicenseVerified,
                 deaEffectiveDates: formData.deaEffectiveDates,
                 effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1638,10 +1591,12 @@
 
               setEnrolledProviders(prev => {
                 const updatedProviders = [...prev, providerData];
+                console.log(`Fully verified provider saved. Total providers: ${updatedProviders.length}`);
                 return updatedProviders;
               });
             }
           } else {
+            console.log(`Provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
           }
 
           if (moreProviders) {
@@ -1654,7 +1609,6 @@
             delete clearedData.dobVerified;
             delete clearedData.npiVerified;
             delete clearedData.licensesVerified;
-            delete clearedData.boardCertificatesVerified;
             delete clearedData.doctorLicenseVerified;
             delete clearedData.deaEffectiveDates;
             delete clearedData.effectiveDatesChecked;
@@ -1664,6 +1618,10 @@
             const providerJustSaved = !providerAlreadySaved ? 1 : 0;
             clearedData.expectedProviderCount = enrolledProviders.length + providerJustSaved + 1;
 
+            console.log('=== Setting Expected Provider Count ===');
+            console.log('enrolledProviders.length:', enrolledProviders.length);
+            console.log('providerJustSaved:', providerJustSaved);
+            console.log('New expectedProviderCount:', clearedData.expectedProviderCount);
 
             setFormData(clearedData);
 
@@ -1687,7 +1645,6 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
-                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1696,6 +1653,7 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
+                  console.log(`Final provider with unable-to-verify items saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1705,6 +1663,7 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
+                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
                 if (completionIndex !== -1) {
@@ -1726,6 +1685,7 @@
                   }
                 }
 
+                console.log('Saving FINAL provider with VERIFIED status:', providerStatus);
 
                 const providerData = {
                   status: providerStatus,
@@ -1737,7 +1697,6 @@
                   dobVerified: formData.dobVerified,
                   npiVerified: formData.npiVerified,
                   licensesVerified: formData.licensesVerified,
-                  boardCertificatesVerified: formData.boardCertificatesVerified,
                   doctorLicenseVerified: formData.doctorLicenseVerified,
                   deaEffectiveDates: formData.deaEffectiveDates,
                   effectiveDatesChecked: formData.effectiveDatesChecked,
@@ -1746,6 +1705,7 @@
 
                 setEnrolledProviders(prev => {
                   const updatedProviders = [...prev, providerData];
+                  console.log(`Final verified provider saved. Total providers: ${updatedProviders.length}`);
                   return updatedProviders;
                 });
 
@@ -1758,15 +1718,18 @@
                   ...prev,
                   expectedProviderCount: allProviders.length
                 }));
+                console.log('Set expectedProviderCount to:', allProviders.length);
 
                 // Check if this is a duplicate (only provider and already enrolled and in group)
                 if (allProviders.length === 1 && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
+                  console.log('>>> DUPLICATE DETECTED: Only provider is already enrolled and in group <<<');
                   const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
                   const rejectionNote = `[${stepInfo}] Application rejected as duplicate - only provider is already enrolled and in group`;
                   setOutreachNotes(prev => [...prev, rejectionNote]);
 
                   const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
                   if (completionIndex !== -1) {
+                    console.log('>>> ROUTING TO DUPLICATE-REJECTION-COMPLETION at index', completionIndex);
                     setCurrentPage(completionIndex);
                     setVisitedPages(prev => new Set([...prev, completionIndex]));
                     setTimeout(() => {
@@ -1777,8 +1740,11 @@
                 }
 
                 // Navigate to questions-21-23 after saving final provider
+                console.log('>>> ATTEMPTING TO ROUTE TO QUESTIONS-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
+                console.log('questions2123Index:', questions2123Index);
                 if (questions2123Index !== -1) {
+                  console.log('>>> ROUTING TO QUESTIONS-21-23 at index', questions2123Index);
                   setCurrentPage(questions2123Index);
                   setVisitedPages(prev => new Set([...prev, questions2123Index]));
                   // Scroll to top after navigation
@@ -1786,12 +1752,14 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }, 100);
                 } else {
+                  console.error('>>> ERROR: questions-21-23 page not found in pages array!');
                 }
                 return;  // CRITICAL: Prevent general navigation logic from overriding this routing
 
               }
             } else {
               // Provider already saved, just navigate to appropriate next page
+              console.log(`Final provider already saved (navigating back). Skipping duplicate save. Total providers: ${enrolledProviders.length}`);
 
               // Determine the appropriate next page based on existing providers
               if (hasUnableToVerify) {
@@ -1807,6 +1775,7 @@
                 return;
               } else {
                 // Navigate to questions-21-23 (navigating back case)
+                console.log('>>> NAVIGATING BACK: Routing to questions-21-23 <<<');
                 const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
                 if (questions2123Index !== -1) {
                   setCurrentPage(questions2123Index);
@@ -1829,6 +1798,7 @@
                                         enrolledProviders[0].status === 'Verified - Already in the Group';
 
           if (isDuplicateApplication) {
+            console.log('Duplicate application detected - only provider is already enrolled and in group');
             const duplicateIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
             if (duplicateIndex !== -1) {
               setCurrentPage(duplicateIndex);
@@ -1851,6 +1821,7 @@
           const requiresOutreach = hasProvidersRequiringOutreach || hasProviderOutreachNotes || hasGeneralOutreachNotes;
 
           if (requiresOutreach) {
+            console.log('Routing to outreach completion page due to outreach requirements');
             const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
             if (completionIndex !== -1) {
               setCurrentPage(completionIndex);
@@ -1899,6 +1870,7 @@
               });
 
               setCurrentEnrollingProviderIndex(firstReadyIndex);
+              console.log(`Starting enrollment for provider ${firstReadyIndex + 1} of ${enrolledProviders.length}`);
 
               const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
               if (createEnrollmentIndex !== -1) {
@@ -1919,6 +1891,7 @@
           );
 
           if (hasExistingProviders) {
+            console.log('Routing to existing provider workflow');
             setEnrolledProviders(prev => {
               const updatedProviders = [...prev];
               updatedProviders.forEach((provider, idx) => {
@@ -1946,6 +1919,7 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
+                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -1958,6 +1932,9 @@
           }
 
           // Fallback: If no routing condition matched, log error
+          console.error('ERROR: No routing condition matched at request-for-paper-updates!');
+          console.error('Enrolled providers:', enrolledProviders);
+          console.error('This should not happen - please check provider statuses');
         }
 
         if (currentPageData.id === 'existing-provider-completion') {
@@ -1989,12 +1966,14 @@
                   ...updated[currentAddingProviderIndex],
                   status: 'Complete - Enrolled and Added to Group'
                 };
+                console.log(`Provider ${currentAddingProviderIndex + 1} added to group.`);
               }
 
               return updated;
             });
 
             setCurrentAddingProviderIndex(nextReadyIndex);
+            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             setFormData(prev => {
               const clearedData = { ...prev };
@@ -2023,6 +2002,10 @@
             if (openCicsIndex !== -1) {
               setCurrentPage(openCicsIndex);
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
+              // Scroll to top after navigation
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
             }
           } else {
             // No more providers - all done!
@@ -2042,6 +2025,7 @@
                     ...updated[currentAddingProviderIndex],
                     status: 'Complete - Enrolled and Added to Group'
                   };
+                  console.log(`Final provider ${currentAddingProviderIndex + 1} added to group.`);
                 }
                 return updated;
               });
@@ -2053,6 +2037,10 @@
             if (finalCompletionIndex !== -1) {
               setCurrentPage(finalCompletionIndex);
               setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
+              // Scroll to top after navigation
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
             }
           }
           return;
@@ -2087,6 +2075,7 @@
                   ...updated[currentEnrollingProviderIndex],
                   status: 'Enrolled - Ready to be Added to Group'
                 };
+                console.log(`Provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
               }
 
               if (updated[nextReadyIndex]) {
@@ -2115,6 +2104,7 @@
             });
 
             setCurrentEnrollingProviderIndex(nextReadyIndex);
+            console.log(`Moving to next provider: ${nextReadyIndex + 1}`);
 
             const clearedData = { ...formData };
             delete clearedData.createEnrollmentComplete;
@@ -2169,6 +2159,7 @@
                     ...updated[currentEnrollingProviderIndex],
                     status: 'Enrolled - Ready to be Added to Group'
                   };
+                  console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
                 }
 
                 return updated.map(provider => {
@@ -2209,6 +2200,7 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
+                console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
               }
 
               setCurrentPage(openCicsIndex);
@@ -2239,6 +2231,7 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
+                console.log(`Starting existing provider branch - adding provider ${firstProviderIndex + 1} to group`);
               }
             }
 
@@ -2254,6 +2247,7 @@
           const pwoNumber = formData.pwoNumber;
           if (pwoNumber && currentPageData.id !== 'start-choice' && currentPageData.id !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
+            console.log('Auto-saved application state for PWO#:', pwoNumber);
           }
         }, 100);
       };
@@ -2288,52 +2282,23 @@
               const pwoNumber = formData.pwoNumber;
               if (pwoNumber) {
                 saveApplicationState(pwoNumber);
+                console.log('Auto-saved application state for PWO#:', pwoNumber);
               }
             }, 100);
           } else {
+            console.log('Navigation blocked: Cannot go back before the start of the provider enrollment workflow');
           }
         }
       };
 
       const handleSubmit = async () => {
         if (isPageValid()) {
+          console.log('Form submitted:', formData);
           await showAlert('Form submitted successfully! Check console for data.');
         }
       };
 
-      // Helper function to save file (works in both Tauri and browser)
-      const saveFile = async (content, defaultFilename) => {
-        if (tauriInvoke) {
-          // Tauri desktop app - use custom command
-          try {
-            const result = await tauriInvoke('save_file_dialog', {
-              content: content,
-              defaultFilename: defaultFilename
-            });
-            await showAlert('File saved successfully!');
-          } catch (error) {
-            const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Unknown error');
-            if (errorMsg.includes('cancelled')) {
-              // User cancelled, don't show error
-              return;
-            }
-            await showAlert('Failed to save file: ' + errorMsg);
-          }
-        } else {
-          // Browser fallback
-          const dataBlob = new Blob([content], { type: 'text/plain' });
-          const url = URL.createObjectURL(dataBlob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = defaultFilename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }
-      };
-
-      const handleDownloadNotes = async () => {
+      const handleDownloadNotes = () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2345,170 +2310,6 @@
 
         let textContent = `PROVIDER ENROLLMENT NOTES\n`;
         textContent += `Generated: ${dateStr}\n`;
-        textContent += `${'='.repeat(80)}\n\n`;
-
-        // Add User Answers Section for Accountability
-        textContent += `USER ANSWERS & SELECTIONS\n`;
-        textContent += `${'-'.repeat(80)}\n\n`;
-
-        // Application Setup
-        textContent += `APPLICATION SETUP:\n`;
-        if (formData.userName) {
-          textContent += `  • User Name: ${formData.userName}\n`;
-        }
-        if (formData.pwoNumber) {
-          textContent += `  • PWO Number: ${formData.pwoNumber}\n`;
-        }
-        if (formData.applicationChoice) {
-          textContent += `  • Application Choice: ${formData.applicationChoice}\n`;
-        }
-        textContent += `\n`;
-
-        // Group Practice Application
-        textContent += `GROUP PRACTICE APPLICATION:\n`;
-        if (formData.groupPracticeAttached !== undefined) {
-          textContent += `  • Group Practice Application Attached: ${formData.groupPracticeAttached}\n`;
-        }
-        if (formData.questionsAnswered !== undefined) {
-          textContent += `  • Questions 2, 4, 5, 5C Answered: ${formData.questionsAnswered}\n`;
-        }
-        if (formData.question6Answered !== undefined) {
-          textContent += `  • Question 6 (Practice Address) Answered: ${formData.question6Answered}\n`;
-        }
-        textContent += `\n`;
-
-        // Pay To / Mail To
-        textContent += `PAY TO / MAIL TO ADDRESS:\n`;
-        if (formData.paytoMailtoMatch !== undefined) {
-          textContent += `  • Pay-to/Mail-to Match CICS: ${formData.paytoMailtoMatch}\n`;
-        }
-        if (formData.paytoMailtoComplete !== undefined) {
-          textContent += `  • Pay-to/Mail-to Updated in CICS: ${formData.paytoMailtoComplete ? 'Yes' : 'No'}\n`;
-        }
-        textContent += `\n`;
-
-        // Additional Questions 9-17
-        textContent += `ADDITIONAL QUESTIONS (9-17):\n`;
-        if (formData.questions9to17Answered !== undefined) {
-          textContent += `  • Questions 9, 11, 12, 16, 17 Answered: ${formData.questions9to17Answered}\n`;
-        }
-        if (formData.emailAddedToSNOW !== undefined) {
-          textContent += `  • Contact Email Added to SNOW: ${formData.emailAddedToSNOW ? 'Yes' : 'No'}\n`;
-        }
-        textContent += `\n`;
-
-        // Additional Questions 21-23 & 25
-        textContent += `ADDITIONAL QUESTIONS (21-23 & 25):\n`;
-        if (formData.question21Answered !== undefined) {
-          textContent += `  • Question 21 (a-e) Answered: ${formData.question21Answered}\n`;
-        }
-        if (formData.question22Answered !== undefined) {
-          textContent += `  • Question 22 Answered: ${formData.question22Answered}\n`;
-        }
-        if (formData.question23Answered !== undefined) {
-          textContent += `  • Question 23 Answered: ${formData.question23Answered}\n`;
-        }
-        if (formData.question25Signed !== undefined) {
-          textContent += `  • Question 25 Signed: ${formData.question25Signed}\n`;
-        }
-        textContent += `\n`;
-
-        // Required Forms
-        textContent += `REQUIRED FORMS:\n`;
-        if (formData.signatureAuthFormAttached !== undefined) {
-          textContent += `  • Signature Authorization Form Attached: ${formData.signatureAuthFormAttached}\n`;
-        }
-        if (formData.agreementOfUnderstandingAttached !== undefined) {
-          textContent += `  • Agreement of Understanding Attached: ${formData.agreementOfUnderstandingAttached}\n`;
-        }
-        if (formData.providerAgreementAttached !== undefined) {
-          textContent += `  • Provider Agreement Attached: ${formData.providerAgreementAttached}\n`;
-        }
-        if (formData.disclosureOfOwnershipAttached !== undefined) {
-          textContent += `  • Disclosure of Ownership Attached: ${formData.disclosureOfOwnershipAttached}\n`;
-        }
-        if (formData.w9OrIrsLetterAttached !== undefined) {
-          textContent += `  • W9 or IRS Letter Attached: ${formData.w9OrIrsLetterAttached}\n`;
-        }
-        if (formData.authorizationAgreementComplete !== undefined) {
-          textContent += `  • Authorization Agreement Reviewed: ${formData.authorizationAgreementComplete ? 'Yes' : 'No'}\n`;
-        }
-        if (formData.requestForPaperUpdatesComplete !== undefined) {
-          textContent += `  • Request for Paper Updates Reviewed: ${formData.requestForPaperUpdatesComplete ? 'Yes' : 'No'}\n`;
-        }
-        textContent += `\n`;
-
-        // Existing Provider Workflow (if applicable)
-        const hasExistingProviderData = formData.existingProviderOpenCicsComplete !== undefined ||
-                                         formData.existingProviderAddToGroupComplete !== undefined ||
-                                         formData.providerNameFormatting02 !== undefined;
-
-        if (hasExistingProviderData) {
-          textContent += `EXISTING PROVIDER WORKFLOW:\n`;
-          if (formData.existingProviderOpenCicsComplete !== undefined) {
-            textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderAddToGroupComplete !== undefined) {
-            textContent += `  • Provider Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.providerNameFormatting02 !== undefined) {
-            textContent += `  • Provider Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.mailToPayToAddresses !== undefined) {
-            textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.cancelCodes !== undefined) {
-            textContent += `  • Cancel Codes Checked: ${formData.cancelCodes ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.effectiveDates !== undefined) {
-            textContent += `  • Effective Dates Checked: ${formData.effectiveDates ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.boardCertificationIndicators !== undefined) {
-            textContent += `  • Board Certification Indicators Checked: ${formData.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.programCode54PA !== undefined) {
-            textContent += `  • Program Code 54 for PA (04 page): ${formData.programCode54PA ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCloseEnrollmentComplete !== undefined) {
-            textContent += `  • Enrollment Task Closed: ${formData.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderFinishGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Completed: ${formData.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCreateChecklistComplete !== undefined) {
-            textContent += `  • Checklist Created: ${formData.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderApproveGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Approved: ${formData.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderOpenLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Opened: ${formData.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderSelectLetterComplete !== undefined) {
-            textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderAddToLetterComplete !== undefined) {
-            textContent += `  • Provider Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderFinishLetterComplete !== undefined) {
-            textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCloseLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Closed: ${formData.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
-          }
-          textContent += `\n`;
-        }
-
-        // Unable to Verify Fields
-        if (unableToVerifyFields && unableToVerifyFields.size > 0) {
-          textContent += `UNABLE TO VERIFY FIELDS:\n`;
-          const fieldsArray = Array.from(unableToVerifyFields);
-          fieldsArray.forEach(field => {
-            textContent += `  • ${field}\n`;
-          });
-          textContent += `\n`;
-        }
-
         textContent += `${'='.repeat(80)}\n\n`;
 
         if (enrolledProviders.length > 0) {
@@ -2535,7 +2336,6 @@
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
@@ -2596,12 +2396,19 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
+        const dataBlob = new Blob([textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
         const pwoNumber = formData.pwoNumber || 'UNKNOWN';
-        const filename = `${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
-        await saveFile(textContent, filename);
+        link.download = `PWO${pwoNumber}-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       };
 
-      const handleDownloadOutreachNotes = async () => {
+      const handleDownloadOutreachNotes = () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2629,12 +2436,18 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
-        const filename = `${pwoNumber}-outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
-        await saveFile(textContent, filename);
+        const dataBlob = new Blob([textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `outreach-notes-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       };
 
-      const handleDownloadEnrolledProviders = async () => {
+      const handleDownloadEnrolledProviders = () => {
         const date = new Date();
         const dateStr = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -2656,27 +2469,6 @@
           enrolledProviders.forEach((provider, index) => {
             textContent += `PROVIDER ${index + 1}\n`;
             textContent += `Status: ${provider.status || 'Successfully Enrolled'}\n\n`;
-
-            // PROVIDER INFORMATION (QUESTION 20)
-            textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
-            textContent += `  • Question 20 Answered: ${provider.question20Answered !== false ? 'Yes' : 'No'}\n`;
-            textContent += `  • Provider Already Enrolled: ${provider.providerAlreadyEnrolled || 'N/A'}\n`;
-            if (provider.providerAlreadyEnrolled === 'Yes') {
-              textContent += `  • Provider In Group: ${provider.providerInGroup || 'N/A'}\n`;
-            }
-            textContent += `\n`;
-
-            // PROVIDER VERIFICATION
-            textContent += `PROVIDER VERIFICATION:\n`;
-            textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
-            textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
-            textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
-            textContent += `\n`;
 
             // Check if this is an existing provider (being added to group)
             const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
@@ -2740,9 +2532,15 @@
         textContent += `\n${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
-        const pwoNumber = formData.pwoNumber || 'UNKNOWN';
-        const filename = `${pwoNumber}-providers-${new Date().toISOString().split('T')[0]}.txt`;
-        await saveFile(textContent, filename);
+        const dataBlob = new Blob([textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `enrolled-providers-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       };
 
       const handleStartNewApplication = async () => {
@@ -2750,7 +2548,8 @@
           // Delete saved application state if it exists
           const currentPwoNumber = formData.pwoNumber;
           if (currentPwoNumber) {
-            await deleteApplicationState(currentPwoNumber);
+            deleteApplicationState(currentPwoNumber);
+            console.log('Deleted saved application state for PWO#:', currentPwoNumber);
           }
 
           setFormData({});
@@ -2806,6 +2605,7 @@
           // Save the duplicate provider and prepare for the next provider
           setEnrolledProviders(prev => {
             const updatedProviders = [...prev, providerData];
+            console.log(`Provider saved as duplicate. Total providers: ${updatedProviders.length}`);
             return updatedProviders;
           });
           const clearedData = { ...formData };
@@ -2818,7 +2618,6 @@
           delete clearedData.dobVerified;
           delete clearedData.npiVerified;
           delete clearedData.licensesVerified;
-          delete clearedData.boardCertificatesVerified;
           delete clearedData.doctorLicenseVerified;
           delete clearedData.deaEffectiveDates;
           delete clearedData.effectiveDatesChecked;
@@ -2831,7 +2630,6 @@
           delete clearedData.nextProviderFinalDobVerified;
           delete clearedData.nextProviderFinalNpiVerified;
           delete clearedData.nextProviderFinalLicensesVerified;
-          delete clearedData.nextProviderFinalBoardCertificatesVerified;
           delete clearedData.nextProviderFinalDoctorLicenseVerified;
           delete clearedData.nextProviderFinalDeaEffectiveDates;
           delete clearedData.nextProviderFinalEffectiveDatesChecked;
@@ -2842,7 +2640,7 @@
 
           setFormData(clearedData);
 
-          const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified', 'nextProviderFinalDoctorLicenseVerified'];
+          const fieldsToRemove = ['nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'];
           setUnableToVerifyFields(prev => {
             const newSet = new Set(prev);
             fieldsToRemove.forEach(field => newSet.delete(field));
@@ -2924,6 +2722,7 @@
                 });
 
                 setCurrentEnrollingProviderIndex(firstReadyIndex);
+                console.log(`Starting enrollment for provider ${firstReadyIndex + 1}`);
 
                 const createEnrollmentIndex = pages.findIndex(page => page.id === 'create-enrollment');
                 if (createEnrollmentIndex !== -1) {
@@ -2953,6 +2752,7 @@
 
                 if (firstProviderIndex !== -1) {
                   setCurrentAddingProviderIndex(firstProviderIndex);
+                  console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
                 }
 
                 setCurrentPage(addToGroupIndex);
@@ -3061,7 +2861,7 @@
       // ============================================================
 
       return (
-        <div className="min-h-screen p-6 flex items-center justify-center" style={{backgroundColor: 'var(--bg-color)', transition: 'background-color 0.3s ease'}}>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 p-6 flex items-center justify-center">
           {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
@@ -3071,148 +2871,6 @@
               --gainwell-cyan: #00e5b4;
               --gainwell-dark: #2a3f4a;
               --gainwell-light-teal: #527584;
-
-              /* Light mode colors */
-              --bg-color: #f3f4f6;
-              --card-bg: white;
-              --text-primary: #1f2937;
-              --text-secondary: #6b7280;
-              --border-color: #e5e7eb;
-              --input-bg: white;
-              --modal-bg: white;
-            }
-
-            html.dark {
-              /* Dark mode colors */
-              --bg-color: #111827;
-              --card-bg: #1f2937;
-              --text-primary: #f9fafb;
-              --text-secondary: #d1d5db;
-              --border-color: #374151;
-              --input-bg: #374151;
-              --modal-bg: #1f2937;
-            }
-
-            /* Dark mode text overrides */
-            html.dark .text-slate-900,
-            html.dark .text-slate-800,
-            html.dark .text-slate-700 {
-              color: #f3f4f6 !important;
-            }
-
-            html.dark .text-slate-600 {
-              color: #d1d5db !important;
-            }
-
-            html.dark .text-slate-500 {
-              color: #9ca3af !important;
-            }
-
-            html.dark .text-slate-400 {
-              color: #9ca3af !important;
-            }
-
-            html.dark .placeholder-slate-400::placeholder {
-              color: #6b7280 !important;
-            }
-
-            /* Dark mode background overrides */
-            html.dark .bg-slate-50,
-            html.dark .bg-slate-100 {
-              background-color: #374151 !important;
-            }
-
-            html.dark .bg-white {
-              background-color: var(--card-bg) !important;
-            }
-
-            html.dark .bg-indigo-50 {
-              background-color: #1e3a5f !important;
-            }
-
-            html.dark .bg-blue-50,
-            html.dark .bg-blue-100 {
-              background-color: #1e3a5f !important;
-            }
-
-            /* Override text color in blue background sections for dark mode */
-            html.dark .bg-blue-50 *,
-            html.dark .bg-blue-100 *,
-            html.dark .border-blue-200 *,
-            html.dark .border-blue-400 * {
-              color: #f3f4f6 !important;
-            }
-
-            /* Dark mode border overrides */
-            html.dark .border-slate-100,
-            html.dark .border-slate-200,
-            html.dark .border-slate-300 {
-              border-color: #4b5563 !important;
-            }
-
-            html.dark .border-indigo-200,
-            html.dark .border-blue-200,
-            html.dark .border-blue-400 {
-              border-color: #4b5563 !important;
-            }
-
-            /* Ensure text is dark on light selected backgrounds (light mode) */
-            .bg-cyan-50,
-            .bg-cyan-100,
-            .bg-indigo-50 {
-              color: #1f2937 !important;
-            }
-
-            .bg-cyan-50 *,
-            .bg-cyan-100 *,
-            .bg-indigo-50 * {
-              color: #1f2937 !important;
-            }
-
-            /* Override in dark mode for selected states */
-            html.dark .bg-cyan-50,
-            html.dark .bg-cyan-100 {
-              background-color: #0d9488 !important;
-              color: white !important;
-            }
-
-            html.dark .bg-cyan-50 *,
-            html.dark .bg-cyan-100 * {
-              color: white !important;
-            }
-
-            /* Override hardcoded light teal backgrounds in instruction boxes */
-            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"],
-            html.dark div[style*="background-color: rgb(224, 242, 241)"],
-            html.dark div[style*="backgroundColor:#e0f2f1"],
-            html.dark div[style*="background-color:#e0f2f1"] {
-              background-color: #1e3a5f !important;
-            }
-
-            /* Ensure text in instruction boxes with teal background is light in dark mode */
-            html.dark div[style*="backgroundColor:#e0f2f1"] *,
-            html.dark div[style*="background-color:#e0f2f1"] *,
-            html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
-            html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
-              color: #f3f4f6 !important;
-            }
-
-            /* Dark mode input and textarea styles */
-            html.dark input[type="text"],
-            html.dark input[type="email"],
-            html.dark input[type="number"],
-            html.dark input[type="tel"],
-            html.dark input[type="date"],
-            html.dark textarea,
-            html.dark select {
-              background-color: var(--input-bg) !important;
-              color: #f3f4f6 !important;
-              border-color: #4b5563 !important;
-            }
-
-            html.dark input::placeholder,
-            html.dark textarea::placeholder {
-              color: #9ca3af !important;
             }
 
             * {
@@ -3285,54 +2943,11 @@
               from { opacity: 0; }
               to { opacity: 1; }
             }
-
-            .theme-toggle {
-              position: fixed;
-              top: 1.5rem;
-              right: 1.5rem;
-              width: 3rem;
-              height: 3rem;
-              border-radius: 50%;
-              background: var(--card-bg);
-              border: 2px solid var(--gainwell-cyan);
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-              transition: all 0.3s ease;
-              z-index: 1001;
-            }
-
-            .theme-toggle:hover {
-              transform: scale(1.1);
-              box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
-            }
-
-            .theme-toggle svg {
-              width: 1.5rem;
-              height: 1.5rem;
-              color: var(--gainwell-cyan);
-            }
-
-            body {
-              background-color: var(--bg-color);
-              transition: background-color 0.3s ease;
-            }
           `}</style>
-
-          {/* Dark Mode Toggle */}
-          <button
-            className="theme-toggle"
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            aria-label="Toggle dark mode"
-          >
-            {isDarkMode ? <Sun /> : <Moon />}
-          </button>
 
           <div className="max-w-2xl w-full">
             {/* Form Card */}
-            <div className="rounded-2xl shadow-2xl overflow-hidden page-enter" style={{backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderWidth: '1px', transition: 'all 0.3s ease'}}>
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 page-enter">
               {/* Header */}
               <div className="p-8 text-white relative" style={{background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}}>
                 <h1 className="title-font text-4xl font-bold mb-2">
@@ -3352,34 +2967,6 @@
                         PWO#: {formData.pwoNumber}
                       </span>
                     </div>
-                  </div>
-                )}
-                {/* Save Status Indicator */}
-                {formData.pwoNumber && (
-                  <div className="mt-3 flex items-center gap-2 text-sm">
-                    {saveStatus.saving ? (
-                      <div className="flex items-center gap-2 text-cyan-100">
-                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>Saving...</span>
-                      </div>
-                    ) : saveStatus.error ? (
-                      <div className="flex items-center gap-2 text-red-200" title={saveStatus.error}>
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Save failed: {saveStatus.error}</span>
-                      </div>
-                    ) : saveStatus.lastSaved ? (
-                      <div className="flex items-center gap-2 text-cyan-100">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Saved at {saveStatus.lastSaved.toLocaleTimeString()}</span>
-                      </div>
-                    ) : null}
                   </div>
                 )}
                 {/* Current Provider Indicator */}
@@ -3412,17 +2999,6 @@
 
               {/* Form Content */}
               <div className="p-8 space-y-6">
-                {/* Display Image */}
-                {currentPageData.displayImage && (
-                  <div className="mb-6">
-                    <img
-                      src={currentPageData.displayImage}
-                      alt="Reference"
-                      className="w-full rounded-lg border-2 border-slate-200 shadow-md"
-                    />
-                  </div>
-                )}
-
                 {/* Instruction Text */}
                 {getInstructionText() && !currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
@@ -3455,6 +3031,17 @@
                   </div>
                 )}
 
+                {/* Display Image */}
+                {currentPageData.displayImage && (
+                  <div className="mb-6">
+                    <img
+                      src={currentPageData.displayImage}
+                      alt="Reference"
+                      className="w-full rounded-lg border-2 border-slate-200 shadow-md"
+                    />
+                  </div>
+                )}
+
                 {/* Note Text */}
                 {currentPageData.noteText && (
                   <div className="bg-amber-50 border-2 border-amber-400 rounded-lg p-4 mb-6">
@@ -3473,22 +3060,27 @@
 
                 {/* Resource Text and Buttons */}
                 {currentPageData.resourceText && currentPageData.resources && (
-                  <div className="bg-slate-50 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 rounded-lg p-5 mb-6">
-                    <p className="text-slate-800 dark:text-slate-100 font-semibold mb-4">
+                  <div className="bg-slate-50 border-2 border-slate-300 rounded-lg p-5 mb-6">
+                    <p className="text-slate-800 font-semibold mb-4">
                       {currentPageData.resourceText}
                     </p>
                     <div className="flex flex-wrap gap-3">
                       {currentPageData.resources.map((resource, idx) => (
-                        <button
+                        <a
                           key={idx}
-                          onClick={() => openExternalUrl(resource.url, resource.label)}
-                          className="inline-flex items-center gap-2 px-5 py-3 bg-teal-600 dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
+                          href={resource.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg"
+                          style={{backgroundColor: 'var(--gainwell-teal)'}}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>
                           {resource.label}
-                        </button>
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -3514,6 +3106,9 @@
                     return null;
                   }
 
+                  if (currentPageData.id === 'next-provider-ready-check' && field.type === 'checkbox') {
+                    return null;
+                  }
 
                   if (currentPageData.id === 'questions-21-23') {
                     return null;
@@ -3823,7 +3418,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'doctorLicenseVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalDoctorLicenseVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 
@@ -3849,40 +3444,33 @@
                                   {isUnableToVerify && <span className="ml-2 text-xs font-semibold text-amber-600">(UNABLE TO VERIFY)</span>}
                                 </span>
                               </label>
-                              {(field.sovosUrl || field.npiRegistryUrl || field.licenseVerifyUrl || hasUnableToVerifyButton) && (
+                              {(field.sovosUrl || field.npiRegistryUrl || hasUnableToVerifyButton) && (
                                 <div className="mt-3 flex justify-end gap-2">
                                   {field.sovosUrl && !isUnableToVerify && (
-                                    <button
-                                      onClick={() => openExternalUrl(field.sovosUrl)}
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
+                                    <a
+                                      href={field.sovosUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to SOVOS
-                                    </button>
+                                    </a>
                                   )}
                                   {field.npiRegistryUrl && !isUnableToVerify && (
-                                    <button
-                                      onClick={() => openExternalUrl(field.npiRegistryUrl)}
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
+                                    <a
+                                      href={field.npiRegistryUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                       </svg>
                                       Go to NPI Registry
-                                    </button>
-                                  )}
-                                  {field.licenseVerifyUrl && !isUnableToVerify && (
-                                    <button
-                                      onClick={() => openExternalUrl(field.licenseVerifyUrl)}
-                                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm cursor-pointer"
-                                    >
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                      </svg>
-                                      Verify License
-                                    </button>
+                                    </a>
                                   )}
                                   {hasUnableToVerifyButton && !isUnableToVerify && (
                                     <button
@@ -3901,32 +3489,121 @@
                           );
                         })}
                     </div>
-                  ) : currentPageData.id === 'questions-21-23' ? (
+                  ) : currentPageData.id === 'next-provider-ready-check' && formData.nextProviderFinalVerificationConfirm === 'No' ? (
+                    <div className="bg-amber-50 border-2 border-amber-400 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-amber-400 rounded-full p-1 mt-0.5">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-amber-900 text-lg mb-2">RETURN TO PROVIDER</h4>
+                          <p className="text-amber-800 font-medium">
+                            Return to provider, notating that Question 20 was not answered completely.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'next-provider-ready-check' && formData.nextProviderFinalVerificationConfirm === 'Yes' ? (
                     <div className="space-y-3">
+                      {currentPageData.fields
+                        .filter(f => {
+                          if (f.type !== 'checkbox') return false;
+                          if (f.showWhen) {
+                            if (typeof f.showWhen === 'function') {
+                              return f.showWhen(formData);
+                            } else {
+                              return formData[f.showWhen.field] === f.showWhen.value;
+                            }
+                          }
+                          return true;
+                        })
+                        .map((field, idx) => {
+                          const value = formData[field.name] || false;
+                          const isValid = field.validation ? field.validation(value) : !!value;
+
+                          const isUnableToVerify = unableToVerifyFields.has(field.name);
+
+                          return (
+                            <div key={field.name} className={`p-4 border-2 rounded-xl transition-all page-enter ${
+                              isUnableToVerify
+                                ? 'border-slate-300 bg-slate-100 opacity-60'
+                                : value
+                                ? 'border-indigo-500 bg-indigo-50'
+                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                            }`}>
+                              <label className={`flex items-start ${isUnableToVerify ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                <input
+                                  type="checkbox"
+                                  checked={value || false}
+                                  onChange={(e) => handleFieldChange(field.name, e.target.checked)}
+                                  disabled={isUnableToVerify}
+                                  className="w-5 h-5 text-indigo-600 focus:ring-indigo-500 mt-0.5 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                                <span className={`ml-3 font-medium flex-1 ${isUnableToVerify ? 'text-slate-400' : 'text-slate-700'}`}>
+                                  {typeof field.label === 'function' ? field.label(formData) : field.label}
+                                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                                  {isUnableToVerify && <span className="ml-2 text-xs font-semibold text-amber-600">(UNABLE TO VERIFY)</span>}
+                                </span>
+                              </label>
+                              {field.sovosUrl && (
+                                <div className="mt-3 ml-8">
+                                  <a
+                                    href={field.sovosUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    Go to SOVOS
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' ? (
+                    <div className="space-y-6">
                       {currentPageData.fields.map((field, idx) => {
-                        const value = formData[field.name] || false;
+                        const value = formData[field.name] || '';
                         const isValid = field.validation ? field.validation(value) : !!value;
 
                         return (
-                          <div key={field.name} className={`p-4 border-2 rounded-xl transition-all page-enter ${
-                            value
-                              ? 'border-indigo-500 bg-indigo-50'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
-                          }`}>
-                            <label className="flex items-start cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={value || false}
-                                onChange={(e) => handleFieldChange(field.name, e.target.checked)}
-                                className="w-5 h-5 text-indigo-600 focus:ring-indigo-500 mt-0.5 flex-shrink-0"
-                              />
-                              <span className="ml-3 font-medium flex-1 text-slate-700">
-                                {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                {field.required && <span className="text-red-500 ml-1">*</span>}
-                              </span>
+                          <div key={field.name} className="space-y-3">
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              {typeof field.label === 'function' ? field.label(formData) : field.label}
+                              {field.required && <span className="text-red-500 ml-1">*</span>}
                             </label>
+
+                            <div className="space-y-3">
+                              {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                                <label
+                                  key={option}
+                                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                    value === option
+                                      ? 'border-indigo-500 bg-indigo-50'
+                                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name={field.name}
+                                    value={option}
+                                    checked={value === option}
+                                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                                    className="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
+                                  />
+                                  <span className="ml-3 font-medium text-slate-700">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+
                             {field.helperNotes && (
-                              <div className="mt-3 ml-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                              <div className="mt-3 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                                 <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                                 <ul className="space-y-2">
                                   {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, noteIdx) => (
@@ -3942,7 +3619,7 @@
                         );
                       })}
 
-                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
+                      {(formData.question21Answered === 'No' || formData.question22Answered === 'No' || formData.question23Answered === 'No' || formData.question25Signed === 'No') && (
                         <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
                           <div className="flex items-start gap-3">
                             <div className="bg-blue-400 rounded-full p-1 mt-0.5">
@@ -4142,7 +3819,7 @@
               </div>
 
               {/* Navigation */}
-              <div className="p-8 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-2 justify-between items-center">
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
                 {currentPageData.isCompletionPage ? (
                   <>
                     {/* Completion Page Buttons */}
@@ -4171,7 +3848,7 @@
                     {currentPage === 0 ? (
                       <a
                         href="./index.html"
-                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all min-w-[90px]"
+                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-200 transition-all min-w-[120px]"
                       >
                         <ChevronLeft className="w-4 h-4" />
                         Go to Home
@@ -4183,7 +3860,7 @@
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                         }
-                        className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all min-w-[90px] ${
+                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all min-w-[120px] ${
                           (formData.providerEnrollmentType === 'New Provider' && pages[currentPage]?.id === 'create-enrollment') ||
                           (formData.providerEnrollmentType === 'Existing Provider' && pages[currentPage]?.id === 'existing-provider-open-cics')
                             ? 'text-slate-400 cursor-not-allowed bg-slate-100'
@@ -4197,7 +3874,7 @@
 
                     <button
                       onClick={() => setShowViewNotesModal(true)}
-                      className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg min-w-[120px]"
+                      className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all hover:shadow-lg min-w-[160px]"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -4213,7 +3890,7 @@
                     {enrolledProviders.length > 0 && (
                       <button
                         onClick={() => setShowEnrolledProvidersModal(true)}
-                        className="relative flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[100px]"
+                        className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg min-w-[130px]"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -4226,14 +3903,18 @@
                     )}
 
                     <button
-                      onClick={isLastPage ? handleSubmit : handleNext}
+                      onClick={
+                        currentPageData.id === 'next-provider-ready-check'
+                          ? handleNext
+                          : (isLastPage ? handleSubmit : handleNext)
+                      }
                       disabled={!canProceed}
-                      className={`btn-primary flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 min-w-[120px] ${
+                      className={`btn-primary flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all text-white hover:shadow-lg hover:scale-105 min-w-[180px] ${
                         canProceed
                           ? ''
                           : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
-                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-cyan), var(--gainwell-teal))'}) : {}}
+                      style={canProceed ? (isLastPage ? {background: 'linear-gradient(to right, #059669, #10b981)'} : {background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}) : {}}
                     >
                       {getNextButtonText()}
                       {!isLastPage && <ChevronRight className="w-4 h-4" />}

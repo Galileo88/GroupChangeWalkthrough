@@ -1,16 +1,8 @@
-// ============================================================
-// IMPORTS
-// ============================================================
-
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
-
-// ============================================================
-// DATA STRUCTURES
-// ============================================================
 
 #[derive(Debug, Serialize, Deserialize)]
 struct PwoState {
@@ -29,10 +21,6 @@ struct PwoState {
     has_outreach: bool,
 }
 
-// ============================================================
-// HELPER FUNCTIONS
-// ============================================================
-
 fn get_app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     app.path()
         .app_data_dir()
@@ -45,12 +33,6 @@ fn get_pwo_folder_path(app: &tauri::AppHandle, pwo_number: &str) -> Result<PathB
     let pwo_folder = app_data_dir.join(pwo_number);
     Ok(pwo_folder)
 }
-
-// ============================================================
-// TAURI COMMANDS
-// ============================================================
-
-// -------------------- State Management Commands --------------------
 
 #[tauri::command]
 fn save_pwo_state(app: tauri::AppHandle, state: PwoState) -> Result<String, String> {
@@ -108,8 +90,6 @@ fn get_save_location(app: tauri::AppHandle) -> Result<String, String> {
     let app_data_dir = get_app_data_dir(&app)?;
     Ok(app_data_dir.to_string_lossy().to_string())
 }
-
-// -------------------- URL and File Operations --------------------
 
 #[tauri::command]
 async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
@@ -194,10 +174,6 @@ async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filena
         None => Err("User cancelled save dialog".to_string())
     }
 }
-
-// ============================================================
-// APPLICATION INITIALIZATION
-// ============================================================
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

@@ -2483,6 +2483,208 @@
         textContent += `Generated: ${dateStr}\n`;
         textContent += `${'='.repeat(80)}\n\n`;
 
+        // Add User Answers Section for Accountability
+        textContent += `USER ANSWERS & SELECTIONS\n`;
+        textContent += `${'-'.repeat(80)}\n\n`;
+
+        // Application Setup
+        textContent += `APPLICATION SETUP:\n`;
+        if (formData.userName) {
+          textContent += `  • User Name: ${formData.userName}\n`;
+        }
+        if (formData.pwoNumber) {
+          textContent += `  • PWO Number: ${formData.pwoNumber}\n`;
+        }
+        if (formData.applicationChoice) {
+          textContent += `  • Application Choice: ${formData.applicationChoice}\n`;
+        }
+        textContent += `\n`;
+
+        // Group Practice Application
+        textContent += `GROUP PRACTICE APPLICATION:\n`;
+        if (formData.groupPracticeAttached !== undefined) {
+          textContent += `  • Group Practice Application Attached: ${formData.groupPracticeAttached}\n`;
+        }
+        if (formData.questionsAnswered !== undefined) {
+          textContent += `  • Questions 2, 4, 5, 5C Answered: ${formData.questionsAnswered}\n`;
+        }
+        if (formData.question6Answered !== undefined) {
+          textContent += `  • Question 6 (Practice Address) Answered: ${formData.question6Answered}\n`;
+        }
+        textContent += `\n`;
+
+        // Pay To / Mail To
+        textContent += `PAY TO / MAIL TO ADDRESS:\n`;
+        if (formData.paytoMailtoMatch !== undefined) {
+          textContent += `  • Pay-to/Mail-to Match CICS: ${formData.paytoMailtoMatch}\n`;
+        }
+        if (formData.paytoMailtoComplete !== undefined) {
+          textContent += `  • Pay-to/Mail-to Updated in CICS: ${formData.paytoMailtoComplete ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Additional Questions 9-17
+        textContent += `ADDITIONAL QUESTIONS (9-17):\n`;
+        if (formData.questions9to17Answered !== undefined) {
+          textContent += `  • Questions 9, 11, 12, 16, 17 Answered: ${formData.questions9to17Answered}\n`;
+        }
+        if (formData.emailAddedToSNOW !== undefined) {
+          textContent += `  • Contact Email Added to SNOW: ${formData.emailAddedToSNOW ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Provider Information (Question 20)
+        textContent += `PROVIDER INFORMATION (QUESTION 20):\n`;
+        if (formData.question20Answered !== undefined) {
+          textContent += `  • Question 20 Answered: ${formData.question20Answered}\n`;
+        }
+        if (formData.providerAlreadyEnrolled !== undefined) {
+          textContent += `  • Provider Already Enrolled: ${formData.providerAlreadyEnrolled}\n`;
+        }
+        if (formData.providerInGroup !== undefined) {
+          textContent += `  • Provider Already in Group: ${formData.providerInGroup}\n`;
+        }
+        textContent += `\n`;
+
+        // Provider Verification
+        textContent += `PROVIDER VERIFICATION:\n`;
+        if (formData.ssnVerified !== undefined) {
+          textContent += `  • SSN Verified: ${formData.ssnVerified ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.dexSanctionsCheck !== undefined) {
+          textContent += `  • DEX and Sanctions Check: ${formData.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.dobVerified !== undefined) {
+          textContent += `  • DOB Verified: ${formData.dobVerified ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.npiVerified !== undefined) {
+          textContent += `  • NPI Verified: ${formData.npiVerified ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.licensesVerified !== undefined) {
+          textContent += `  • Licenses Verified: ${formData.licensesVerified ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.deaEffectiveDates !== undefined) {
+          textContent += `  • DEA Effective Dates Checked: ${formData.deaEffectiveDates ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.effectiveDatesChecked !== undefined) {
+          textContent += `  • Effective Dates Checked: ${formData.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Additional Questions 21-23 & 25
+        textContent += `ADDITIONAL QUESTIONS (21-23 & 25):\n`;
+        if (formData.question21Answered !== undefined) {
+          textContent += `  • Question 21 (a-e) Answered: ${formData.question21Answered}\n`;
+        }
+        if (formData.question22Answered !== undefined) {
+          textContent += `  • Question 22 Answered: ${formData.question22Answered}\n`;
+        }
+        if (formData.question23Answered !== undefined) {
+          textContent += `  • Question 23 Answered: ${formData.question23Answered}\n`;
+        }
+        if (formData.question25Signed !== undefined) {
+          textContent += `  • Question 25 Signed: ${formData.question25Signed}\n`;
+        }
+        textContent += `\n`;
+
+        // Required Forms
+        textContent += `REQUIRED FORMS:\n`;
+        if (formData.signatureAuthFormAttached !== undefined) {
+          textContent += `  • Signature Authorization Form Attached: ${formData.signatureAuthFormAttached}\n`;
+        }
+        if (formData.agreementOfUnderstandingAttached !== undefined) {
+          textContent += `  • Agreement of Understanding Attached: ${formData.agreementOfUnderstandingAttached}\n`;
+        }
+        if (formData.providerAgreementAttached !== undefined) {
+          textContent += `  • Provider Agreement Attached: ${formData.providerAgreementAttached}\n`;
+        }
+        if (formData.disclosureOfOwnershipAttached !== undefined) {
+          textContent += `  • Disclosure of Ownership Attached: ${formData.disclosureOfOwnershipAttached}\n`;
+        }
+        if (formData.w9OrIrsLetterAttached !== undefined) {
+          textContent += `  • W9 or IRS Letter Attached: ${formData.w9OrIrsLetterAttached}\n`;
+        }
+        if (formData.authorizationAgreementComplete !== undefined) {
+          textContent += `  • Authorization Agreement Reviewed: ${formData.authorizationAgreementComplete ? 'Yes' : 'No'}\n`;
+        }
+        if (formData.requestForPaperUpdatesComplete !== undefined) {
+          textContent += `  • Request for Paper Updates Reviewed: ${formData.requestForPaperUpdatesComplete ? 'Yes' : 'No'}\n`;
+        }
+        textContent += `\n`;
+
+        // Existing Provider Workflow (if applicable)
+        const hasExistingProviderData = formData.existingProviderOpenCicsComplete !== undefined ||
+                                         formData.existingProviderAddToGroupComplete !== undefined ||
+                                         formData.providerNameFormatting02 !== undefined;
+
+        if (hasExistingProviderData) {
+          textContent += `EXISTING PROVIDER WORKFLOW:\n`;
+          if (formData.existingProviderOpenCicsComplete !== undefined) {
+            textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderAddToGroupComplete !== undefined) {
+            textContent += `  • Provider Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.providerNameFormatting02 !== undefined) {
+            textContent += `  • Provider Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.mailToPayToAddresses !== undefined) {
+            textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.cancelCodes !== undefined) {
+            textContent += `  • Cancel Codes Checked: ${formData.cancelCodes ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.effectiveDates !== undefined) {
+            textContent += `  • Effective Dates Checked: ${formData.effectiveDates ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.boardCertificationIndicators !== undefined) {
+            textContent += `  • Board Certification Indicators Checked: ${formData.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.programCode54PA !== undefined) {
+            textContent += `  • Program Code 54 for PA (04 page): ${formData.programCode54PA ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCloseEnrollmentComplete !== undefined) {
+            textContent += `  • Enrollment Task Closed: ${formData.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderFinishGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Completed: ${formData.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCreateChecklistComplete !== undefined) {
+            textContent += `  • Checklist Created: ${formData.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderApproveGroupChangeComplete !== undefined) {
+            textContent += `  • Group Change Approved: ${formData.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderOpenLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Opened: ${formData.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderSelectLetterComplete !== undefined) {
+            textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderAddToLetterComplete !== undefined) {
+            textContent += `  • Provider Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderFinishLetterComplete !== undefined) {
+            textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
+          }
+          if (formData.existingProviderCloseLetterTaskComplete !== undefined) {
+            textContent += `  • Letter Task Closed: ${formData.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
+          }
+          textContent += `\n`;
+        }
+
+        // Unable to Verify Fields
+        if (unableToVerifyFields && unableToVerifyFields.size > 0) {
+          textContent += `UNABLE TO VERIFY FIELDS:\n`;
+          const fieldsArray = Array.from(unableToVerifyFields);
+          fieldsArray.forEach(field => {
+            textContent += `  • ${field}\n`;
+          });
+          textContent += `\n`;
+        }
+
+        textContent += `${'='.repeat(80)}\n\n`;
+
         if (enrolledProviders.length > 0) {
           textContent += `ENROLLED PROVIDERS (${enrolledProviders.length} total)\n`;
           textContent += `${'-'.repeat(80)}\n\n`;

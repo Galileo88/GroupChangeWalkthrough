@@ -217,12 +217,12 @@
 </tr>
 <tr>
 <td>9</td>
-<td>provider-type-selection</td>
+<td>practitioner-type-selection</td>
 <td>8</td>
-<td><strong>BRANCH POINT</strong>: Auto-determined based on provider enrollment status</td>
+<td><strong>BRANCH POINT</strong>: Auto-determined based on practitioner enrollment status</td>
 </tr>
 </tbody></table>
-<h3>Existing Provider Path (Steps 11-23)</h3>
+<h3>Existing Practitioner Path (Steps 11-23)</h3>
 <table>
 <thead>
 <tr>
@@ -234,84 +234,84 @@
 </thead>
 <tbody><tr>
 <td>11</td>
-<td>existing-provider-open-cics</td>
+<td>existing-practitioner-open-cics</td>
 <td>9</td>
 <td>Open CICS</td>
 </tr>
 <tr>
 <td>12</td>
-<td>existing-provider-add-to-group</td>
+<td>existing-practitioner-add-to-group</td>
 <td>10</td>
-<td>Add provider to group</td>
+<td>Add practitioner to group</td>
 </tr>
 <tr>
 <td>13</td>
-<td>existing-provider-verify-info</td>
+<td>existing-practitioner-verify-info</td>
 <td>11</td>
-<td>Verify provider information</td>
+<td>Verify practitioner information</td>
 </tr>
 <tr>
 <td>14</td>
-<td>existing-provider-close-enrollment</td>
+<td>existing-practitioner-close-enrollment</td>
 <td>12</td>
 <td>Close enrollment task</td>
 </tr>
 <tr>
 <td>15</td>
-<td>existing-provider-finish-group-change</td>
+<td>existing-practitioner-finish-group-change</td>
 <td>13</td>
 <td>Finish group change</td>
 </tr>
 <tr>
 <td>16</td>
-<td>existing-provider-create-checklist</td>
+<td>existing-practitioner-create-checklist</td>
 <td>14</td>
 <td>Create checklist</td>
 </tr>
 <tr>
 <td>17</td>
-<td>existing-provider-approve-group-change</td>
+<td>existing-practitioner-approve-group-change</td>
 <td>15</td>
 <td>Approve group change</td>
 </tr>
 <tr>
 <td>18</td>
-<td>existing-provider-open-letter-task</td>
+<td>existing-practitioner-open-letter-task</td>
 <td>16</td>
 <td>Open letter task</td>
 </tr>
 <tr>
 <td>19</td>
-<td>existing-provider-select-letter</td>
+<td>existing-practitioner-select-letter</td>
 <td>17</td>
 <td>Select letter</td>
 </tr>
 <tr>
 <td>20</td>
-<td>existing-provider-add-to-letter</td>
+<td>existing-practitioner-add-to-letter</td>
 <td>18</td>
-<td>Add provider to letter</td>
+<td>Add practitioner to letter</td>
 </tr>
 <tr>
 <td>21</td>
-<td>existing-provider-finish-letter</td>
+<td>existing-practitioner-finish-letter</td>
 <td>19</td>
 <td>Finish letter</td>
 </tr>
 <tr>
 <td>22</td>
-<td>existing-provider-close-letter-task</td>
+<td>existing-practitioner-close-letter-task</td>
 <td>20</td>
 <td>Close letter task</td>
 </tr>
 <tr>
 <td>23</td>
-<td>existing-provider-completion</td>
+<td>existing-practitioner-completion</td>
 <td>21</td>
 <td>Completion page</td>
 </tr>
 </tbody></table>
-<h3>New Provider Path (Steps 24-37)</h3>
+<h3>New Practitioner Path (Steps 24-37)</h3>
 <table>
 <thead>
 <tr>
@@ -329,9 +329,9 @@
 </tr>
 <tr>
 <td>25</td>
-<td>fill-provider-info</td>
+<td>fill-practitioner-info</td>
 <td>23</td>
-<td>Fill provider information</td>
+<td>Fill practitioner information</td>
 </tr>
 <tr>
 <td>26</td>
@@ -353,9 +353,9 @@
 </tr>
 <tr>
 <td>29</td>
-<td>provider-address-tab</td>
+<td>practitioner-address-tab</td>
 <td>27</td>
-<td>Provider address tab</td>
+<td>Practitioner address tab</td>
 </tr>
 <tr>
 <td>30</td>
@@ -365,9 +365,9 @@
 </tr>
 <tr>
 <td>31</td>
-<td>provider-information-tab</td>
+<td>practitioner-information-tab</td>
 <td>29</td>
-<td>Provider information tab</td>
+<td>Practitioner information tab</td>
 </tr>
 <tr>
 <td>32</td>
@@ -401,45 +401,45 @@
 </tr>
 <tr>
 <td>37</td>
-<td>additional-providers-check</td>
+<td>additional-practitioners-check</td>
 <td>35</td>
-<td><strong>DECISION POINT</strong>: Additional providers needed?</td>
+<td><strong>DECISION POINT</strong>: Additional practitioners needed?</td>
 </tr>
 </tbody></table>
-<h3>New Provider Loop Handlers</h3>
+<h3>New Practitioner Loop Handlers</h3>
 <ol>
-<li><p><strong>Step 37 &quot;Yes&quot; Handler</strong> (additional-providers-check with &quot;Yes&quot;)</p>
+<li><p><strong>Step 37 &quot;Yes&quot; Handler</strong> (additional-practitioners-check with &quot;Yes&quot;)</p>
 <ul>
-<li>Saves provider data to enrolledProviders</li>
-<li>Clears provider-specific form fields</li>
-<li>Sets <code>providerEnrollmentType</code> to <code>&#39;New Provider&#39;</code></li>
+<li>Saves practitioner data to enrolledProviders</li>
+<li>Clears practitioner-specific form fields</li>
+<li>Sets <code>providerEnrollmentType</code> to <code>&#39;New Practitioner&#39;</code></li>
 <li>Navigates directly to create-enrollment (Step 24, index 22)</li>
-<li>This implements the &quot;Repeat Steps 24-36&quot; loop for additional new providers</li>
+<li>This implements the &quot;Repeat Steps 24-36&quot; loop for additional new practitioners</li>
 </ul>
 </li>
-<li><p><strong>Step 37 &quot;No&quot; Handler</strong> (additional-providers-check with &quot;No&quot;)</p>
+<li><p><strong>Step 37 &quot;No&quot; Handler</strong> (additional-practitioners-check with &quot;No&quot;)</p>
 <ul>
-<li>Saves final provider data to enrolledProviders</li>
-<li>Sets <code>providerEnrollmentType</code> to <code>&#39;Existing Provider&#39;</code></li>
-<li>Navigates to existing-provider-open-cics (Step 11, index 9)</li>
+<li>Saves final practitioner data to enrolledProviders</li>
+<li>Sets <code>providerEnrollmentType</code> to <code>&#39;Existing Practitioner&#39;</code></li>
+<li>Navigates to existing-practitioner-open-cics (Step 11, index 9)</li>
 <li>Enables access to completion steps (Steps 11-23)</li>
 </ul>
 </li>
 </ol>
-<h3>Existing Provider Loop Handlers</h3>
+<h3>Existing Practitioner Loop Handlers</h3>
 <ol start="3">
-<li><p><strong>Step 23 &quot;Yes&quot; Handler</strong> (existing-provider-completion with &quot;Yes&quot;)</p>
+<li><p><strong>Step 23 &quot;Yes&quot; Handler</strong> (existing-practitioner-completion with &quot;Yes&quot;)</p>
 <ul>
-<li>Saves provider data to enrolledProviders</li>
-<li>Clears existing provider-specific form fields</li>
-<li>Keeps <code>providerEnrollmentType</code> as <code>&#39;Existing Provider&#39;</code></li>
-<li>Navigates directly to existing-provider-open-cics (Step 11, index 9)</li>
-<li>This implements the loop for adding multiple existing providers to the group</li>
+<li>Saves practitioner data to enrolledProviders</li>
+<li>Clears existing practitioner-specific form fields</li>
+<li>Keeps <code>providerEnrollmentType</code> as <code>&#39;Existing Practitioner&#39;</code></li>
+<li>Navigates directly to existing-practitioner-open-cics (Step 11, index 9)</li>
+<li>This implements the loop for adding multiple existing practitioners to the group</li>
 </ul>
 </li>
-<li><p><strong>Step 23 &quot;No&quot; Handler</strong> (existing-provider-completion with &quot;No&quot;)</p>
+<li><p><strong>Step 23 &quot;No&quot; Handler</strong> (existing-practitioner-completion with &quot;No&quot;)</p>
 <ul>
-<li>Saves final provider data to enrolledProviders</li>
+<li>Saves final practitioner data to enrolledProviders</li>
 <li>Navigates to final completion page</li>
 <li>Completes the entire workflow</li>
 </ul>
@@ -449,18 +449,18 @@
 <p>The implementation correctly handles:</p>
 <ul>
 <li>✅ Sequential flow through Steps 1-9</li>
-<li>✅ Auto-branching at Step 9 based on provider enrollment status with priority logic:<ul>
-<li>New Provider workflow takes priority if any providers need enrollment</li>
-<li>All new providers are enrolled before existing providers are added</li>
+<li>✅ Auto-branching at Step 9 based on practitioner enrollment status with priority logic:<ul>
+<li>New Practitioner workflow takes priority if any practitioners need enrollment</li>
+<li>All new practitioners are enrolled before existing practitioners are added</li>
 </ul>
 </li>
-<li>✅ Existing Provider path (Steps 11-23)</li>
-<li>✅ New Provider path (Steps 24-37)</li>
-<li>✅ New Provider loop (Step 37 &quot;Yes&quot; → Step 24)</li>
-<li>✅ Existing Provider loop (Step 23 &quot;Yes&quot; → Step 11)</li>
-<li>✅ Transition from New Provider to Existing Provider workflow (Step 37 &quot;No&quot; → Step 11)</li>
-<li>✅ Final completion from Existing Provider workflow (Step 23 &quot;No&quot; → Final completion)</li>
-<li>✅ Provider enrollment data tracking in <code>enrolledProviders</code> array</li>
+<li>✅ Existing Practitioner path (Steps 11-23)</li>
+<li>✅ New Practitioner path (Steps 24-37)</li>
+<li>✅ New Practitioner loop (Step 37 &quot;Yes&quot; → Step 24)</li>
+<li>✅ Existing Practitioner loop (Step 23 &quot;Yes&quot; → Step 11)</li>
+<li>✅ Transition from New Practitioner to Existing Practitioner workflow (Step 37 &quot;No&quot; → Step 11)</li>
+<li>✅ Final completion from Existing Practitioner workflow (Step 23 &quot;No&quot; → Final completion)</li>
+<li>✅ Practitioner enrollment data tracking in <code>enrolledProviders</code> array</li>
 <li>✅ Proper <code>providerEnrollmentType</code> management for conditional page display</li>
 </ul>
 

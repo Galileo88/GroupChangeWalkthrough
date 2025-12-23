@@ -3473,8 +3473,8 @@
 
                 {/* Resource Text and Buttons */}
                 {currentPageData.resourceText && currentPageData.resources && (
-                  <div className="bg-slate-50 border-2 border-slate-300 rounded-lg p-5 mb-6">
-                    <p className="text-slate-800 font-semibold mb-4">
+                  <div className="bg-slate-50 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 rounded-lg p-5 mb-6">
+                    <p className="text-slate-800 dark:text-slate-100 font-semibold mb-4">
                       {currentPageData.resourceText}
                     </p>
                     <div className="flex flex-wrap gap-3">
@@ -3482,10 +3482,7 @@
                         <button
                           key={idx}
                           onClick={() => openExternalUrl(resource.url, resource.label)}
-                          className="inline-flex items-center gap-2 px-5 py-3 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
-                          style={{backgroundColor: 'var(--gainwell-teal)'}}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-dark)'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--gainwell-teal)'}
+                          className="inline-flex items-center gap-2 px-5 py-3 bg-teal-600 dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600 text-white font-semibold rounded-lg transition-all hover:shadow-lg cursor-pointer"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

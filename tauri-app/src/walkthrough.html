@@ -1135,20 +1135,12 @@
         {
           id: 'existing-provider-completion',
           title: 'Provider Added to Group',
-          description: 'Check if there are more providers to add to the group',
+          description: 'Automatic provider workflow routing',
           showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
-          fields: [
-            {
-              name: 'additionalExistingProvidersNeeded',
-              label: 'Are there additional providers that need to be added to the group?',
-              type: 'radio',
-              required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No'
-            }
-          ],
-          instructionText: 'If you have more providers to add to this group, select "Yes" to continue adding another provider. The current provider information will be saved.\n\nIf you have finished adding all providers to the group, select "No" to complete the walkthrough.',
-          isCompletionPage: false
+          fields: [],
+          instructionText: '',
+          isCompletionPage: false,
+          isInformational: true
         },
         {
           id: 'final-completion',
@@ -1436,20 +1428,12 @@
         },
         {
           id: 'additional-providers-check',
-          title: 'Additional Provider Enrollment',
-          description: 'Check if there are more providers to enroll',
+          title: 'Provider Enrollment Status',
+          description: 'Automatic provider workflow routing',
           showWhen: { field: 'providerEnrollmentType', value: 'New Provider' },
-          fields: [
-            {
-              name: 'additionalProvidersNeeded',
-              label: 'Are there additional providers that need to be enrolled?',
-              type: 'radio',
-              required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No'
-            }
-          ],
-          instructionText: 'If you have more providers to enroll for this group change, select "Yes" to continue enrolling another provider. Your previous enrollment information will be saved.\n\nIf you have finished enrolling all providers, select "No" to continue to the next step.'
+          fields: [],
+          instructionText: '',
+          isInformational: true
         },
         {
           id: 'next-provider-ready-check',
@@ -2078,6 +2062,9 @@
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
+              // Find first provider accounting for the state update that just happened
+              // The state update changes 'Verified - Ready to Add to Group' to 'Enrolled - Ready to be Added to Group'
+              // but enrolledProviders still has the old state, so we need to check for both statuses
               const firstProviderIndex = enrolledProviders.findIndex(p =>
                 p.status === 'Verified - Ready to Add to Group' ||
                 p.status === 'Enrolled - Ready to be Added to Group'
@@ -2103,14 +2090,27 @@
           console.error('This should not happen - please check provider statuses');
         }
 
-        if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {
+        if (currentPageData.id === 'existing-provider-completion') {
+          // Automatically check if there are more providers to add to group
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
 
+          const currentProviderNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
+
           if (nextReadyIndex !== -1) {
+            // There are more providers to add to group
+            const nextProviderNum = nextReadyIndex + 1;
+            const confirmed = await showConfirm(
+              `You have successfully added Provider ${currentProviderNum} to the group.\n\nNow adding Provider ${nextProviderNum} to the group.`
+            );
+
+            if (!confirmed) {
+              return; // User cancelled
+            }
+
             setEnrolledProviders(prev => {
               const updated = [...prev];
 
@@ -2157,6 +2157,15 @@
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
           } else {
+            // No more providers - all done!
+            const confirmed = await showConfirm(
+              `You have successfully added Provider ${currentProviderNum} to the group.\n\nAll providers have been processed!`
+            );
+
+            if (!confirmed) {
+              return; // User cancelled
+            }
+
             if (currentAddingProviderIndex !== null) {
               setEnrolledProviders(prev => {
                 const updated = [...prev];
@@ -2172,43 +2181,37 @@
 
               setCurrentAddingProviderIndex(null);
             }
+
+            const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
+            if (finalCompletionIndex !== -1) {
+              setCurrentPage(finalCompletionIndex);
+              setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
+            }
           }
           return;
         }
 
-        if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'No') {
-          if (currentAddingProviderIndex !== null) {
-            setEnrolledProviders(prev => {
-              const updated = [...prev];
-              if (updated[currentAddingProviderIndex]) {
-                updated[currentAddingProviderIndex] = {
-                  ...updated[currentAddingProviderIndex],
-                  status: 'Complete - Enrolled and Added to Group'
-                };
-                console.log(`Final provider ${currentAddingProviderIndex + 1} added to group.`);
-              }
-              return updated;
-            });
-
-            setCurrentAddingProviderIndex(null);
-          }
-
-          const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
-          if (finalCompletionIndex !== -1) {
-            setCurrentPage(finalCompletionIndex);
-            setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
-          }
-          return;
-        }
-
-        if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'Yes') {
+        if (currentPageData.id === 'additional-providers-check') {
+          // Automatically check if there are more providers to enroll
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentEnrollingProviderIndex &&
             p.status === 'Verified - Ready to Enroll' &&
             p.providerAlreadyEnrolled === 'No'
           );
 
+          const currentProviderNum = currentEnrollingProviderIndex !== null ? currentEnrollingProviderIndex + 1 : '';
+
           if (nextReadyIndex !== -1) {
+            // There are more providers to enroll
+            const nextProviderNum = nextReadyIndex + 1;
+            const confirmed = await showConfirm(
+              `You have successfully Enrolled Provider ${currentProviderNum}.\n\nNow starting enrollment for Provider ${nextProviderNum}.`
+            );
+
+            if (!confirmed) {
+              return; // User cancelled
+            }
+
             setEnrolledProviders(prev => {
               const updated = [...prev];
 
@@ -2284,16 +2287,36 @@
               }, 100);
             }
           } else {
-            await showAlert('No more providers are ready to enroll. You will be directed to complete the existing provider steps.');
+            // No more providers to enroll - move to adding providers to group
+            const confirmed = await showConfirm(
+              `You have successfully Enrolled Provider ${currentProviderNum}.\n\nNow adding providers to the group.`
+            );
 
-            setEnrolledProviders(prev => {
-              return prev.map(provider => {
-                if (provider.status === 'Verified - Ready to Add to Group') {
-                  return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+            if (!confirmed) {
+              return; // User cancelled
+            }
+
+            if (currentEnrollingProviderIndex !== null) {
+              setEnrolledProviders(prev => {
+                const updated = [...prev];
+                if (updated[currentEnrollingProviderIndex]) {
+                  updated[currentEnrollingProviderIndex] = {
+                    ...updated[currentEnrollingProviderIndex],
+                    status: 'Enrolled - Ready to be Added to Group'
+                  };
+                  console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
                 }
-                return provider;
+
+                return updated.map(provider => {
+                  if (provider.status === 'Verified - Ready to Add to Group') {
+                    return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
+                  }
+                  return provider;
+                });
               });
-            });
+
+              setCurrentEnrollingProviderIndex(null);
+            }
 
             setFormData(prev => ({
               ...prev,
@@ -2302,10 +2325,23 @@
 
             const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
             if (openCicsIndex !== -1) {
-              const firstProviderIndex = enrolledProviders.findIndex(p =>
-                p.status === 'Enrolled - Ready to be Added to Group' ||
-                p.status === 'Verified - Ready to Add to Group'
-              );
+              // Find first provider accounting for the state updates that just happened
+              // - The current enrolling provider (currentEnrollingProviderIndex) will become "Enrolled - Ready to be Added to Group"
+              // - All "Verified - Ready to Add to Group" will become "Enrolled - Ready to be Added to Group"
+              // But enrolledProviders still has the old state, so we need to account for these changes
+              let firstProviderIndex = -1;
+
+              for (let i = 0; i < enrolledProviders.length; i++) {
+                const provider = enrolledProviders[i];
+
+                // Check if this provider will be ready to add after the state update
+                if (i === currentEnrollingProviderIndex ||
+                    provider.status === 'Verified - Ready to Add to Group' ||
+                    provider.status === 'Enrolled - Ready to be Added to Group') {
+                  firstProviderIndex = i;
+                  break;
+                }
+              }
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
@@ -2315,68 +2351,6 @@
               setCurrentPage(openCicsIndex);
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
-          }
-          return;
-        }
-
-        if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'No') {
-          // Check if this is a duplicate provider (already enrolled AND already in group)
-          if (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'Yes') {
-            // Add rejection note
-            const stepInfo = `Step ${currentPage + 1}: ${currentPageData.title}`;
-            const duplicateNote = `[${stepInfo}] Rejected as a duplicate - provider is already in the group`;
-            setOutreachNotes(prev => [...prev, duplicateNote]);
-
-            // Navigate to duplicate rejection completion page
-            const completionIndex = pages.findIndex(page => page.id === 'duplicate-rejection-completion');
-            if (completionIndex !== -1) {
-              setCurrentPage(completionIndex);
-              setVisitedPages(prev => new Set([...prev, completionIndex]));
-            }
-            return;
-          }
-
-          if (currentEnrollingProviderIndex !== null) {
-            setEnrolledProviders(prev => {
-              const updated = [...prev];
-              if (updated[currentEnrollingProviderIndex]) {
-                updated[currentEnrollingProviderIndex] = {
-                  ...updated[currentEnrollingProviderIndex],
-                  status: 'Enrolled - Ready to be Added to Group'
-                };
-                console.log(`Final provider ${currentEnrollingProviderIndex + 1} enrollment completed.`);
-              }
-
-              return updated.map(provider => {
-                if (provider.status === 'Verified - Ready to Add to Group') {
-                  return { ...provider, status: 'Enrolled - Ready to be Added to Group' };
-                }
-                return provider;
-              });
-            });
-
-            setCurrentEnrollingProviderIndex(null);
-          }
-
-          setFormData(prev => ({
-            ...prev,
-            providerEnrollmentType: 'Existing Provider'
-          }));
-
-          const openCicsIndex = pages.findIndex(page => page.id === 'existing-provider-open-cics');
-          if (openCicsIndex !== -1) {
-            const firstProviderIndex = enrolledProviders.findIndex(p =>
-              p.status === 'Enrolled - Ready to be Added to Group' ||
-              p.status === 'Verified - Ready to Add to Group'
-            );
-
-            if (firstProviderIndex !== -1) {
-              setCurrentAddingProviderIndex(firstProviderIndex);
-              console.log(`Starting to add provider ${firstProviderIndex + 1} to group`);
-            }
-
-            setCurrentPage(openCicsIndex);
-            setVisitedPages(prev => new Set([...prev, openCicsIndex]));
           }
           return;
         }
@@ -3180,12 +3154,12 @@
       const canProceed = isPageValid();
 
       const getNextButtonText = () => {
-        if (currentPageData.id === 'existing-provider-completion' && formData.additionalExistingProvidersNeeded === 'Yes') {
-          return 'Add Next Provider';
+        if (currentPageData.id === 'existing-provider-completion') {
+          return 'Next Provider';
         }
 
-        if (currentPageData.id === 'additional-providers-check' && formData.additionalProvidersNeeded === 'Yes') {
-          return 'Start New Provider';
+        if (currentPageData.id === 'additional-providers-check') {
+          return 'Next Provider';
         }
 
         if (currentPageData.id === 'question-20') {

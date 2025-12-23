@@ -553,11 +553,10 @@
           fields: [
             {
               name: 'question21Answered',
-              label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'radio',
+              label: 'Verify questions 21 a-e are completed and further explained if necessary on the Group Practice Application',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
@@ -565,11 +564,10 @@
             },
             {
               name: 'question22Answered',
-              label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'radio',
+              label: 'Verify question 22 is answered on the Group Practice Application',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
@@ -578,11 +576,10 @@
             },
             {
               name: 'question23Answered',
-              label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'radio',
+              label: 'Verify question 23 is answered on the Group Practice Application',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
@@ -590,11 +587,10 @@
             },
             {
               name: 'question25Signed',
-              label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'radio',
+              label: 'Verify question 25 is signed and dated on the Group Practice Application',
+              type: 'checkbox',
               required: true,
-              options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
+              validation: (value) => value === true,
               helperNotes: [
                 'Question 25 must be signed and dated.'
               ]
@@ -2861,7 +2857,7 @@
       // ============================================================
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 p-6 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 flex items-center justify-center">
           {/* Custom Styles */}
           <style>{`
             @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');

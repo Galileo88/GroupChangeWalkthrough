@@ -1631,12 +1631,45 @@
           'enrollOnMainframeComplete'
         ];
 
+        const existingProviderFields = [
+          'existingProviderOpenCicsComplete',
+          'existingProviderAddToGroupComplete',
+          'providerNameFormatting02',
+          'mailToPayToAddresses',
+          'cancelCodes',
+          'effectiveDates',
+          'boardCertificationIndicators',
+          'programCode54PA',
+          'existingProviderCloseEnrollmentComplete',
+          'existingProviderFinishGroupChangeComplete',
+          'existingProviderCreateChecklistComplete',
+          'existingProviderApproveGroupChangeComplete',
+          'existingProviderOpenLetterTaskComplete',
+          'existingProviderSelectLetterComplete',
+          'existingProviderAddToLetterComplete',
+          'existingProviderFinishLetterComplete',
+          'existingProviderCloseLetterTaskComplete'
+        ];
+
         if (currentEnrollingProviderIndex !== null && enrollmentFields.includes(fieldName)) {
           setEnrolledProviders(prev => {
             const updated = [...prev];
             if (updated[currentEnrollingProviderIndex]) {
               updated[currentEnrollingProviderIndex] = {
                 ...updated[currentEnrollingProviderIndex],
+                [fieldName]: value
+              };
+            }
+            return updated;
+          });
+        }
+
+        if (currentAddingProviderIndex !== null && existingProviderFields.includes(fieldName)) {
+          setEnrolledProviders(prev => {
+            const updated = [...prev];
+            if (updated[currentAddingProviderIndex]) {
+              updated[currentAddingProviderIndex] = {
+                ...updated[currentAddingProviderIndex],
                 [fieldName]: value
               };
             }
@@ -2112,8 +2145,26 @@
               const updated = [...prev];
 
               if (currentAddingProviderIndex !== null && updated[currentAddingProviderIndex]) {
+                // Preserve all existing provider completion fields from formData before changing status
                 updated[currentAddingProviderIndex] = {
                   ...updated[currentAddingProviderIndex],
+                  existingProviderOpenCicsComplete: formData.existingProviderOpenCicsComplete || updated[currentAddingProviderIndex].existingProviderOpenCicsComplete,
+                  existingProviderAddToGroupComplete: formData.existingProviderAddToGroupComplete || updated[currentAddingProviderIndex].existingProviderAddToGroupComplete,
+                  providerNameFormatting02: formData.providerNameFormatting02 || updated[currentAddingProviderIndex].providerNameFormatting02,
+                  mailToPayToAddresses: formData.mailToPayToAddresses || updated[currentAddingProviderIndex].mailToPayToAddresses,
+                  cancelCodes: formData.cancelCodes || updated[currentAddingProviderIndex].cancelCodes,
+                  effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
+                  boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
+                  programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
+                  existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
+                  existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
+                  existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
+                  existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
+                  existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderOpenLetterTaskComplete,
+                  existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete || updated[currentAddingProviderIndex].existingProviderSelectLetterComplete,
+                  existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete || updated[currentAddingProviderIndex].existingProviderAddToLetterComplete,
+                  existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete || updated[currentAddingProviderIndex].existingProviderFinishLetterComplete,
+                  existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderCloseLetterTaskComplete,
                   status: 'Complete - Enrolled and Added to Group'
                 };
               }
@@ -2165,8 +2216,26 @@
               setEnrolledProviders(prev => {
                 const updated = [...prev];
                 if (updated[currentAddingProviderIndex]) {
+                  // Preserve all existing provider completion fields from formData before changing status
                   updated[currentAddingProviderIndex] = {
                     ...updated[currentAddingProviderIndex],
+                    existingProviderOpenCicsComplete: formData.existingProviderOpenCicsComplete || updated[currentAddingProviderIndex].existingProviderOpenCicsComplete,
+                    existingProviderAddToGroupComplete: formData.existingProviderAddToGroupComplete || updated[currentAddingProviderIndex].existingProviderAddToGroupComplete,
+                    providerNameFormatting02: formData.providerNameFormatting02 || updated[currentAddingProviderIndex].providerNameFormatting02,
+                    mailToPayToAddresses: formData.mailToPayToAddresses || updated[currentAddingProviderIndex].mailToPayToAddresses,
+                    cancelCodes: formData.cancelCodes || updated[currentAddingProviderIndex].cancelCodes,
+                    effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
+                    boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
+                    programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
+                    existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
+                    existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
+                    existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
+                    existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
+                    existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderOpenLetterTaskComplete,
+                    existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete || updated[currentAddingProviderIndex].existingProviderSelectLetterComplete,
+                    existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete || updated[currentAddingProviderIndex].existingProviderAddToLetterComplete,
+                    existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete || updated[currentAddingProviderIndex].existingProviderFinishLetterComplete,
+                    existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderCloseLetterTaskComplete,
                     status: 'Complete - Enrolled and Added to Group'
                   };
                 }

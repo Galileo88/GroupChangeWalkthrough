@@ -120,6 +120,7 @@
       const [showViewNotesModal, setShowViewNotesModal] = useState(false);
       const [enrolledProviders, setEnrolledProviders] = useState([]);
       const [showEnrolledProvidersModal, setShowEnrolledProvidersModal] = useState(false);
+      const [expandedProvider, setExpandedProvider] = useState(null);
       const [providerManualNotes, setProviderManualNotes] = useState({});
       const [currentEnrollingProviderIndex, setCurrentEnrollingProviderIndex] = useState(null);
       const [currentAddingProviderIndex, setCurrentAddingProviderIndex] = useState(null);
@@ -4686,55 +4687,58 @@
                   <span>Close</span>
                   <X className="w-6 h-6" />
                 </button>
-                <div className="bg-white rounded-xl p-8 shadow-2xl max-h-[80vh] overflow-y-auto">
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="bg-green-100 rounded-full p-3">
-                      <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-3xl font-bold text-slate-900 mb-2">Enrolled Providers</h2>
-                      <p className="text-slate-600">Review the providers you have successfully enrolled ({enrolledProviders.length} total).</p>
+                <div className="bg-slate-800 rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto border border-slate-700">
+                  <div className="bg-slate-800 rounded-t-2xl p-6 border-b border-slate-700">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-white">Enrolled Providers</h2>
+                        <p className="text-slate-300 mt-1">Review the providers you have successfully enrolled ({enrolledProviders.length} total).</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="p-8 space-y-4">
                     {enrolledProviders.map((provider, index) => (
-                      <div key={index} className={`${
+                      <div key={index} className={`rounded-2xl shadow-sm border-2 overflow-hidden transition-all duration-200 ${
                         index === currentEnrollingProviderIndex
-                          ? 'bg-gradient-to-br from-blue-100 to-indigo-100 border-4 border-blue-500 shadow-lg shadow-blue-200'
+                          ? 'border-blue-400 bg-blue-950/40'
                           : index === currentAddingProviderIndex
-                          ? 'bg-gradient-to-br from-purple-100 to-violet-100 border-4 border-purple-500 shadow-lg shadow-purple-200'
-                          : 'bg-white border-4 border-emerald-400 shadow-lg'
-                      } rounded-xl p-8 transition-all hover:shadow-xl`}>
-                        <div className="mb-4">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className={`${
-                              index === currentEnrollingProviderIndex
-                                ? 'bg-blue-500'
-                                : index === currentAddingProviderIndex
-                                ? 'bg-purple-500'
-                                : 'bg-green-500'
-                            } text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold`}>
-                              {index + 1}
+                          ? 'border-purple-400 bg-purple-950/40'
+                          : 'border-emerald-400 bg-emerald-950/40'
+                      }`}>
+                        {/* Provider Header */}
+                        <div className="p-6 border-b border-slate-700/50">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-md ${
+                                index === currentEnrollingProviderIndex
+                                  ? 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                  : index === currentAddingProviderIndex
+                                  ? 'bg-gradient-to-br from-purple-500 to-purple-600'
+                                  : 'bg-gradient-to-br from-emerald-500 to-teal-600'
+                              }`}>
+                                {index + 1}
+                              </div>
+                              <div>
+                                <h2 className="text-xl font-bold text-white">Provider {index + 1}</h2>
+                                {index === currentEnrollingProviderIndex && (
+                                  <span className="text-sm text-blue-400 font-medium">(Currently Enrolling)</span>
+                                )}
+                                {index === currentAddingProviderIndex && (
+                                  <span className="text-sm text-purple-400 font-medium">(Currently Being Added to Group)</span>
+                                )}
+                              </div>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900">
-                              Provider {index + 1}
-                              {index === currentEnrollingProviderIndex && (
-                                <span className="ml-2 text-sm font-normal text-blue-600">(Currently Enrolling)</span>
-                              )}
-                              {index === currentAddingProviderIndex && (
-                                <span className="ml-2 text-sm font-normal text-purple-600">(Currently Being Added to Group)</span>
-                              )}
-                            </h3>
-                          </div>
-                          <div className="ml-11">
-                            <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full ${
+                            <span className={`px-4 py-2 rounded-full text-sm font-semibold shadow-sm ${
                               provider.status === 'Complete - Enrolled and Added to Group'
-                                ? 'bg-emerald-600 text-white'
+                                ? 'bg-emerald-500 text-white'
                                 : provider.status === 'Enrolled - Ready to be Added to Group'
-                                ? 'bg-green-500 text-white'
+                                ? 'bg-emerald-500 text-white'
                                 : provider.status === 'Verified - Ready to Enroll'
                                 ? 'bg-blue-500 text-white'
                                 : provider.status === 'Verified - Ready to Add to Group'
@@ -4763,50 +4767,102 @@
                           </div>
                         ) : (
                           <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
-                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="text-slate-800 font-medium">
-                                  <span className="font-bold text-slate-900">Enrollment Created:</span><br />
-                                  <span className="text-emerald-700">{provider.createEnrollmentComplete ? '✓ Yes' : '✗ No'}</span>
-                                </span>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                                provider.createEnrollmentComplete
+                                  ? 'bg-emerald-500/30 border-emerald-400/60 text-white font-bold'
+                                  : 'bg-rose-500/30 border-rose-400/60 text-white font-bold'
+                              }`}>
+                                <div className={provider.createEnrollmentComplete ? 'text-emerald-400' : 'text-rose-400'}>
+                                  {provider.createEnrollmentComplete ? (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span>{provider.createEnrollmentComplete ? 'Yes' : 'No'}</span>
                               </div>
-                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
-                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="text-slate-800 font-medium">
-                                  <span className="font-bold text-slate-900">Provider Info:</span><br />
-                                  <span className="text-emerald-700">{provider.providerInfoComplete ? '✓ Complete' : '✗ Incomplete'}</span>
-                                </span>
+                              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                                provider.providerInfoComplete
+                                  ? 'bg-emerald-500/30 border-emerald-400/60 text-white font-bold'
+                                  : 'bg-amber-500/30 border-amber-400/60 text-white font-bold'
+                              }`}>
+                                <div className={provider.providerInfoComplete ? 'text-emerald-400' : 'text-amber-400'}>
+                                  {provider.providerInfoComplete ? (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span>{provider.providerInfoComplete ? 'Complete' : 'Incomplete'}</span>
                               </div>
-                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
-                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="text-slate-800 font-medium">
-                                  <span className="font-bold text-slate-900">Group Specialties:</span><br />
-                                  <span className="text-emerald-700">{provider.groupSpecialtiesChecked ? '✓ Verified' : '✗ Not Verified'}</span>
-                                </span>
-                              </div>
-                              <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-lg border-2 border-emerald-200">
-                                <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="text-slate-800 font-medium">
-                                  <span className="font-bold text-slate-900">Mainframe Enrollment:</span><br />
-                                  <span className="text-emerald-700">{provider.enrollOnMainframeComplete ? '✓ Complete' : '✗ Incomplete'}</span>
-                                </span>
-                              </div>
-                            </div>
+                              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                                provider.groupSpecialtiesChecked
 
-                            <div className="mt-6 pt-4 border-t-2 border-emerald-300">
-                              <details className="cursor-pointer group">
-                                <summary className="text-base font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-2 select-none">
-                                  <svg className="w-4 h-4 transition-transform group-open:rotate-90" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            {/* View Details Toggle */}
+                            <button
+                              onClick={() => setExpandedProvider(expandedProvider === index ? null : index)}
+                              className="mt-4 flex items-center gap-2 text-teal-400 hover:text-teal-300 font-semibold transition-colors"
+                            >
+                              {expandedProvider === index ? (
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              ) : (
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                              View All Details
+                            </button>
+
+                            {/* Expanded Details */}
+                            {expandedProvider === index && (
+                              <div className="mt-4 p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+                                <div className="space-y-2 text-sm text-slate-200">
+                                  <div>• Enrollment Tab: <span className={provider.enrollmentTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.enrollmentTabComplete ? '✓' : '✗'}</span></div>
+                                  <div>• Provider Name: <span className={provider.providerNameCorrect ? 'text-emerald-400' : 'text-rose-400'}>{provider.providerNameCorrect ? '✓' : '✗'}</span></div>
+                                  <div>• Provider Type: <span className={provider.providerTypeCorrect ? 'text-emerald-400' : 'text-rose-400'}>{provider.providerTypeCorrect ? '✓' : '✗'}</span></div>
+                                  <div>• Application Date: <span className={provider.applicationDateAdded ? 'text-emerald-400' : 'text-rose-400'}>{provider.applicationDateAdded ? '✓' : '✗'}</span></div>
+                                  <div>• Cancel Reason Code: <span className={provider.cancelReasonCode ? 'text-emerald-400' : 'text-rose-400'}>{provider.cancelReasonCode ? '✓' : '✗'}</span></div>
+                                  <div>• Provider Address: <span className={provider.providerAddressComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.providerAddressComplete ? '✓' : '✗'}</span></div>
+                                  <div>• Payment/Mailing Address: <span className={provider.paymentMailingAddressComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.paymentMailingAddressComplete ? '✓' : '✗'}</span></div>
+                                  <div>• Provider Info Tab: <span className={provider.providerInfoTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.providerInfoTabComplete ? '✓' : '✗'}</span></div>
+                                  <div>• NPI Tab: <span className={provider.npiTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.npiTabComplete ? '✓' : '✗'}</span></div>
+                                  <div>• Specialty Tab: <span className={provider.specialtyTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.specialtyTabComplete ? '✓' : '✗'}</span></div>
+                                  <div>• Claim Type Tab: <span className={provider.claimTypeTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.claimTypeTabComplete ? '✓' : '✗'}</span></div>
+                                  <div>• License/DEA Tab: <span className={provider.licenseDeaTabComplete ? 'text-emerald-400' : 'text-rose-400'}>{provider.licenseDeaTabComplete ? '✓' : '✗'}</span></div>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        </div>
+
+                        {/* Manual Notes */}
+                        <div className="bg-slate-800 p-6 border-t border-slate-700">
+                          <div className="flex items-center gap-2 mb-3">
+                            <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <h3 className="font-bold text-white">Manual Notes</h3>
+                          </div>
+                          <textarea
+                            id={`manual-note-${index}`}
+                            value={providerManualNotes[index] || ''}
+                            onChange={(e) => handleProviderManualNoteChange(index, e.target.value)}
+                            placeholder="Add any additional notes about this provider..."
+                            className="w-full px-4 py-3 bg-slate-900 border border-slate-600 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
+                            rows="3"
+                          />
                                   </svg>
                                   View All Details
                                 </summary>
@@ -4849,10 +4905,10 @@
                     ))}
                   </div>
 
-                  <div className="mt-8 flex justify-between items-center">
+                  <div className="p-6 border-t border-slate-700 flex justify-between items-center">
                     <button
                       onClick={handleDownloadEnrolledProviders}
-                      className="px-6 py-3 rounded-lg font-semibold text-green-700 bg-white border-2 border-green-500 hover:bg-green-50 transition-all hover:shadow-lg flex items-center gap-2"
+                      className="px-6 py-3 rounded-lg font-semibold text-white bg-slate-700 border-2 border-slate-600 hover:bg-slate-600 transition-all hover:shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={enrolledProviders.length === 0}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4862,7 +4918,7 @@
                     </button>
                     <button
                       onClick={() => setShowEnrolledProvidersModal(false)}
-                      className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all hover:shadow-lg"
+                      className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all hover:shadow-lg"
                     >
                       Close
                     </button>

@@ -173,6 +173,43 @@
         };
       }, [formData, enrolledProviders, outreachNotes, providerManualNotes, unableToVerifyFields, currentPage, currentEnrollingProviderIndex, currentAddingProviderIndex]);
 
+      // -------------------- Update Last Provider Status on Final Completion --------------------
+      React.useEffect(() => {
+        const currentPageId = pages[currentPage]?.id;
+
+        if (currentPageId === 'final-completion' && currentAddingProviderIndex !== null) {
+          // Update the last provider's status when landing on final completion page
+          setEnrolledProviders(prev => {
+            const updated = [...prev];
+            if (updated[currentAddingProviderIndex]) {
+              // Preserve all existing provider completion fields from formData before changing status
+              updated[currentAddingProviderIndex] = {
+                ...updated[currentAddingProviderIndex],
+                existingProviderOpenCicsComplete: formData.existingProviderOpenCicsComplete || updated[currentAddingProviderIndex].existingProviderOpenCicsComplete,
+                existingProviderAddToGroupComplete: formData.existingProviderAddToGroupComplete || updated[currentAddingProviderIndex].existingProviderAddToGroupComplete,
+                providerNameFormatting02: formData.providerNameFormatting02 || updated[currentAddingProviderIndex].providerNameFormatting02,
+                mailToPayToAddresses: formData.mailToPayToAddresses || updated[currentAddingProviderIndex].mailToPayToAddresses,
+                cancelCodes: formData.cancelCodes || updated[currentAddingProviderIndex].cancelCodes,
+                effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
+                boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
+                programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
+                existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
+                existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
+                existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
+                existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
+                existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderOpenLetterTaskComplete,
+                existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete || updated[currentAddingProviderIndex].existingProviderSelectLetterComplete,
+                existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete || updated[currentAddingProviderIndex].existingProviderAddToLetterComplete,
+                existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete || updated[currentAddingProviderIndex].existingProviderFinishLetterComplete,
+                existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderCloseLetterTaskComplete,
+                status: 'Complete - Enrolled and Added to Group'
+              };
+            }
+            return updated;
+          });
+        }
+      }, [currentPage]);
+
       // -------------------- Reference Images --------------------
       const groupPracticeAppImage = './images/groupchange_application.jpg';
       const question6Image = './images/question6.jpg';
@@ -2770,13 +2807,21 @@
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
 
-            // Check if this is an existing provider (being added to group)
-            const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
-                                       provider.status === 'Enrolled - Ready to be Added to Group';
+            // Check if provider went through enrollment workflow (new provider, not already enrolled)
+            const hasEnrollmentDetails = provider.providerAlreadyEnrolled === 'No' && (
+              provider.createEnrollmentComplete !== undefined ||
+              provider.npiTabComplete !== undefined ||
+              provider.specialtyTabComplete !== undefined
+            );
 
-            if (isExistingProvider) {
-              textContent += `Enrollment Details: Existing Provider\n`;
-            } else {
+            // Check if provider went through existing provider workflow (adding to group, not already in group)
+            const hasExistingProviderWorkflow = provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup === 'No' && (
+              provider.existingProviderOpenCicsComplete !== undefined ||
+              provider.existingProviderAddToGroupComplete !== undefined
+            );
+
+            // Show enrollment workflow if provider was a new provider
+            if (hasEnrollmentDetails) {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
@@ -2794,6 +2839,33 @@
               textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `\n`;
+            } else if (provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup === 'Yes') {
+              textContent += `Enrollment Details: Provider was already enrolled and in the group\n\n`;
+            } else if (provider.providerAlreadyEnrolled === 'Yes') {
+              textContent += `Enrollment Details: Provider was already enrolled\n\n`;
+            }
+
+            // Show existing provider workflow if provider went through group addition
+            if (hasEnrollmentDetails || hasExistingProviderWorkflow) {
+              textContent += `EXISTING PROVIDER WORKFLOW:\n`;
+              textContent += `  • CICS Opened: ${provider.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Added to Group: ${provider.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Name Formatting Checked (02 page): ${provider.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
+              textContent += `  • Mail To/Pay To Addresses Updated: ${provider.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
+              textContent += `  • Cancel Codes Checked: ${provider.cancelCodes ? 'Yes' : 'No'}\n`;
+              textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
+              textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
+              textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
+              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Task Opened: ${provider.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Selected: ${provider.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Added to Letter: ${provider.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Finished: ${provider.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Task Closed: ${provider.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
             }
 
             if (providerManualNotes[index]) {
@@ -2908,13 +2980,21 @@
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
 
-            // Check if this is an existing provider (being added to group)
-            const isExistingProvider = provider.status === 'Verified - Ready to Add to Group' ||
-                                       provider.status === 'Enrolled - Ready to be Added to Group';
+            // Check if provider went through enrollment workflow (new provider, not already enrolled)
+            const hasEnrollmentDetails = provider.providerAlreadyEnrolled === 'No' && (
+              provider.createEnrollmentComplete !== undefined ||
+              provider.npiTabComplete !== undefined ||
+              provider.specialtyTabComplete !== undefined
+            );
 
-            if (isExistingProvider) {
-              textContent += `Enrollment Details: Existing Provider\n`;
-            } else {
+            // Check if provider went through existing provider workflow (adding to group, not already in group)
+            const hasExistingProviderWorkflow = provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup === 'No' && (
+              provider.existingProviderOpenCicsComplete !== undefined ||
+              provider.existingProviderAddToGroupComplete !== undefined
+            );
+
+            // Show enrollment workflow if provider was a new provider
+            if (hasEnrollmentDetails) {
               textContent += `Enrollment Details:\n`;
               textContent += `  • Enrollment Created: ${provider.createEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Provider Info Complete: ${provider.providerInfoComplete ? 'Yes' : 'No'}\n`;
@@ -2932,6 +3012,33 @@
               textContent += `  • Claim Type Tab Complete: ${provider.claimTypeTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • License/DEA Tab Complete: ${provider.licenseDeaTabComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Mainframe Enrollment Complete: ${provider.enrollOnMainframeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `\n`;
+            } else if (provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup === 'Yes') {
+              textContent += `Enrollment Details: Provider was already enrolled and in the group\n\n`;
+            } else if (provider.providerAlreadyEnrolled === 'Yes') {
+              textContent += `Enrollment Details: Provider was already enrolled\n\n`;
+            }
+
+            // Show existing provider workflow if provider went through group addition
+            if (hasEnrollmentDetails || hasExistingProviderWorkflow) {
+              textContent += `EXISTING PROVIDER WORKFLOW:\n`;
+              textContent += `  • CICS Opened: ${provider.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Added to Group: ${provider.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Name Formatting Checked (02 page): ${provider.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
+              textContent += `  • Mail To/Pay To Addresses Updated: ${provider.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
+              textContent += `  • Cancel Codes Checked: ${provider.cancelCodes ? 'Yes' : 'No'}\n`;
+              textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
+              textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
+              textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
+              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Task Opened: ${provider.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Selected: ${provider.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Provider Added to Letter: ${provider.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Finished: ${provider.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
+              textContent += `  • Letter Task Closed: ${provider.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
             }
 
             if (providerManualNotes[index]) {

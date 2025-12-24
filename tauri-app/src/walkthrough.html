@@ -2210,8 +2210,25 @@
               const updated = [...prev];
 
               if (currentEnrollingProviderIndex !== null && updated[currentEnrollingProviderIndex]) {
+                // Preserve all enrollment completion fields from formData before changing status
                 updated[currentEnrollingProviderIndex] = {
                   ...updated[currentEnrollingProviderIndex],
+                  createEnrollmentComplete: formData.createEnrollmentComplete || updated[currentEnrollingProviderIndex].createEnrollmentComplete,
+                  providerInfoComplete: formData.providerInfoComplete || updated[currentEnrollingProviderIndex].providerInfoComplete,
+                  groupSpecialtiesChecked: formData.groupSpecialtiesChecked || updated[currentEnrollingProviderIndex].groupSpecialtiesChecked,
+                  enrollmentTabComplete: formData.enrollmentTabComplete || updated[currentEnrollingProviderIndex].enrollmentTabComplete,
+                  providerNameCorrect: formData.providerNameCorrect || updated[currentEnrollingProviderIndex].providerNameCorrect,
+                  providerTypeCorrect: formData.providerTypeCorrect || updated[currentEnrollingProviderIndex].providerTypeCorrect,
+                  applicationDateAdded: formData.applicationDateAdded || updated[currentEnrollingProviderIndex].applicationDateAdded,
+                  cancelReasonCode: formData.cancelReasonCode || updated[currentEnrollingProviderIndex].cancelReasonCode,
+                  providerAddressComplete: formData.providerAddressComplete || updated[currentEnrollingProviderIndex].providerAddressComplete,
+                  paymentMailingAddressComplete: formData.paymentMailingAddressComplete || updated[currentEnrollingProviderIndex].paymentMailingAddressComplete,
+                  providerInfoTabComplete: formData.providerInfoTabComplete || updated[currentEnrollingProviderIndex].providerInfoTabComplete,
+                  npiTabComplete: formData.npiTabComplete || updated[currentEnrollingProviderIndex].npiTabComplete,
+                  specialtyTabComplete: formData.specialtyTabComplete || updated[currentEnrollingProviderIndex].specialtyTabComplete,
+                  claimTypeTabComplete: formData.claimTypeTabComplete || updated[currentEnrollingProviderIndex].claimTypeTabComplete,
+                  licenseDeaTabComplete: formData.licenseDeaTabComplete || updated[currentEnrollingProviderIndex].licenseDeaTabComplete,
+                  enrollOnMainframeComplete: formData.enrollOnMainframeComplete || updated[currentEnrollingProviderIndex].enrollOnMainframeComplete,
                   status: 'Enrolled - Ready to be Added to Group'
                 };
               }
@@ -2292,8 +2309,25 @@
               setEnrolledProviders(prev => {
                 const updated = [...prev];
                 if (updated[currentEnrollingProviderIndex]) {
+                  // Preserve all enrollment completion fields from formData before changing status
                   updated[currentEnrollingProviderIndex] = {
                     ...updated[currentEnrollingProviderIndex],
+                    createEnrollmentComplete: formData.createEnrollmentComplete || updated[currentEnrollingProviderIndex].createEnrollmentComplete,
+                    providerInfoComplete: formData.providerInfoComplete || updated[currentEnrollingProviderIndex].providerInfoComplete,
+                    groupSpecialtiesChecked: formData.groupSpecialtiesChecked || updated[currentEnrollingProviderIndex].groupSpecialtiesChecked,
+                    enrollmentTabComplete: formData.enrollmentTabComplete || updated[currentEnrollingProviderIndex].enrollmentTabComplete,
+                    providerNameCorrect: formData.providerNameCorrect || updated[currentEnrollingProviderIndex].providerNameCorrect,
+                    providerTypeCorrect: formData.providerTypeCorrect || updated[currentEnrollingProviderIndex].providerTypeCorrect,
+                    applicationDateAdded: formData.applicationDateAdded || updated[currentEnrollingProviderIndex].applicationDateAdded,
+                    cancelReasonCode: formData.cancelReasonCode || updated[currentEnrollingProviderIndex].cancelReasonCode,
+                    providerAddressComplete: formData.providerAddressComplete || updated[currentEnrollingProviderIndex].providerAddressComplete,
+                    paymentMailingAddressComplete: formData.paymentMailingAddressComplete || updated[currentEnrollingProviderIndex].paymentMailingAddressComplete,
+                    providerInfoTabComplete: formData.providerInfoTabComplete || updated[currentEnrollingProviderIndex].providerInfoTabComplete,
+                    npiTabComplete: formData.npiTabComplete || updated[currentEnrollingProviderIndex].npiTabComplete,
+                    specialtyTabComplete: formData.specialtyTabComplete || updated[currentEnrollingProviderIndex].specialtyTabComplete,
+                    claimTypeTabComplete: formData.claimTypeTabComplete || updated[currentEnrollingProviderIndex].claimTypeTabComplete,
+                    licenseDeaTabComplete: formData.licenseDeaTabComplete || updated[currentEnrollingProviderIndex].licenseDeaTabComplete,
+                    enrollOnMainframeComplete: formData.enrollOnMainframeComplete || updated[currentEnrollingProviderIndex].enrollOnMainframeComplete,
                     status: 'Enrolled - Ready to be Added to Group'
                   };
                 }

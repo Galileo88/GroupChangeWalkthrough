@@ -2705,67 +2705,6 @@
         }
         textContent += `\n`;
 
-        // Existing Provider Workflow (if applicable)
-        const hasExistingProviderData = formData.existingProviderOpenCicsComplete !== undefined ||
-                                         formData.existingProviderAddToGroupComplete !== undefined ||
-                                         formData.providerNameFormatting02 !== undefined;
-
-        if (hasExistingProviderData) {
-          textContent += `EXISTING PROVIDER WORKFLOW:\n`;
-          if (formData.existingProviderOpenCicsComplete !== undefined) {
-            textContent += `  • CICS Opened: ${formData.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderAddToGroupComplete !== undefined) {
-            textContent += `  • Provider Added to Group: ${formData.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.providerNameFormatting02 !== undefined) {
-            textContent += `  • Provider Name Formatting Checked (02 page): ${formData.providerNameFormatting02 ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.mailToPayToAddresses !== undefined) {
-            textContent += `  • Mail To/Pay To Addresses Updated: ${formData.mailToPayToAddresses ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.cancelCodes !== undefined) {
-            textContent += `  • Cancel Codes Checked: ${formData.cancelCodes ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.effectiveDates !== undefined) {
-            textContent += `  • Effective Dates Checked: ${formData.effectiveDates ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.boardCertificationIndicators !== undefined) {
-            textContent += `  • Board Certification Indicators Checked: ${formData.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.programCode54PA !== undefined) {
-            textContent += `  • Program Code 54 for PA (04 page): ${formData.programCode54PA ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCloseEnrollmentComplete !== undefined) {
-            textContent += `  • Enrollment Task Closed: ${formData.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderFinishGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Completed: ${formData.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCreateChecklistComplete !== undefined) {
-            textContent += `  • Checklist Created: ${formData.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderApproveGroupChangeComplete !== undefined) {
-            textContent += `  • Group Change Approved: ${formData.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderOpenLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Opened: ${formData.existingProviderOpenLetterTaskComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderSelectLetterComplete !== undefined) {
-            textContent += `  • Letter Selected: ${formData.existingProviderSelectLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderAddToLetterComplete !== undefined) {
-            textContent += `  • Provider Added to Letter: ${formData.existingProviderAddToLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderFinishLetterComplete !== undefined) {
-            textContent += `  • Letter Finished: ${formData.existingProviderFinishLetterComplete ? 'Yes' : 'No'}\n`;
-          }
-          if (formData.existingProviderCloseLetterTaskComplete !== undefined) {
-            textContent += `  • Letter Task Closed: ${formData.existingProviderCloseLetterTaskComplete ? 'Yes' : 'No'}\n`;
-          }
-          textContent += `\n`;
-        }
-
         // Unable to Verify Fields
         if (unableToVerifyFields && unableToVerifyFields.size > 0) {
           textContent += `UNABLE TO VERIFY FIELDS:\n`;

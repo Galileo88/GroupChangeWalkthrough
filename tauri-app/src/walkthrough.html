@@ -2846,8 +2846,8 @@
               textContent += `Enrollment Details: Provider was already enrolled\n\n`;
             }
 
-            // Show existing provider workflow if provider went through group addition
-            if (hasEnrollmentDetails || hasExistingProviderWorkflow) {
+            // Show existing provider workflow if provider went through group addition (but not if already in group)
+            if ((hasEnrollmentDetails || hasExistingProviderWorkflow) && provider.providerInGroup !== 'Yes') {
               textContent += `EXISTING PROVIDER WORKFLOW:\n`;
               textContent += `  • CICS Opened: ${provider.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Provider Added to Group: ${provider.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;
@@ -3019,8 +3019,8 @@
               textContent += `Enrollment Details: Provider was already enrolled\n\n`;
             }
 
-            // Show existing provider workflow if provider went through group addition
-            if (hasEnrollmentDetails || hasExistingProviderWorkflow) {
+            // Show existing provider workflow if provider went through group addition (but not if already in group)
+            if ((hasEnrollmentDetails || hasExistingProviderWorkflow) && provider.providerInGroup !== 'Yes') {
               textContent += `EXISTING PROVIDER WORKFLOW:\n`;
               textContent += `  • CICS Opened: ${provider.existingProviderOpenCicsComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Provider Added to Group: ${provider.existingProviderAddToGroupComplete ? 'Yes' : 'No'}\n`;

@@ -131,7 +131,7 @@
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
       const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
       const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem('theme') === 'dark';
+        return localStorage.getItem('theme') !== 'light';
       });
 
       // -------------------- Dark Mode Effect --------------------

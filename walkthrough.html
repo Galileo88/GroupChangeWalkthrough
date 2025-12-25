@@ -2935,6 +2935,38 @@
               color: #1f2937 !important;
             }
 
+            /* Preserve specific colors even in selected backgrounds */
+            .bg-indigo-50 .text-red-500,
+            .bg-indigo-50 span.text-red-500,
+            .bg-cyan-50 .text-red-500,
+            .bg-cyan-100 .text-red-500 {
+              color: #ef4444 !important;
+            }
+
+            .bg-indigo-50 .text-amber-600,
+            .bg-indigo-50 span.text-amber-600,
+            .bg-cyan-50 .text-amber-600,
+            .bg-cyan-100 .text-amber-600 {
+              color: #d97706 !important;
+            }
+
+            .bg-indigo-50 button,
+            .bg-indigo-50 a,
+            .bg-cyan-50 button,
+            .bg-cyan-100 button {
+              color: inherit !important;
+            }
+
+            .bg-indigo-50 button.bg-blue-600,
+            .bg-indigo-50 button.bg-amber-600,
+            .bg-indigo-50 a.bg-blue-600,
+            .bg-cyan-50 button.bg-blue-600,
+            .bg-cyan-50 button.bg-amber-600,
+            .bg-cyan-100 button.bg-blue-600,
+            .bg-cyan-100 button.bg-amber-600 {
+              color: white !important;
+            }
+
             /* Override in dark mode for selected states */
             html.dark .bg-cyan-50,
             html.dark .bg-cyan-100 {

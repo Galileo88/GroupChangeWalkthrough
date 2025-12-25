@@ -2929,9 +2929,10 @@
               color: #1f2937 !important;
             }
 
-            .bg-cyan-50 *,
-            .bg-cyan-100 *,
-            .bg-indigo-50 * {
+            /* Exclude buttons, links, SVGs, and color classes from forced dark text */
+            .bg-cyan-50 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *),
+            .bg-cyan-100 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *),
+            .bg-indigo-50 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *) {
               color: #1f2937 !important;
             }
 

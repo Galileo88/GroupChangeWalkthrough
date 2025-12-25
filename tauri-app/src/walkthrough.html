@@ -3460,11 +3460,19 @@
               color: #d97706 !important;
             }
 
-            /* Make label text WHITE for contrast on indigo background */
+            /* Light mode: dark text on light indigo background */
             .bg-indigo-50 label span.text-slate-700,
             .bg-indigo-50 span.text-slate-700,
             .bg-indigo-50 label .text-slate-700,
             .bg-indigo-50 .text-slate-700 {
+              color: #1f2937 !important;
+            }
+
+            /* Dark mode: white text on dark indigo background */
+            html.dark .bg-indigo-50 label span.text-slate-700,
+            html.dark .bg-indigo-50 span.text-slate-700,
+            html.dark .bg-indigo-50 label .text-slate-700,
+            html.dark .bg-indigo-50 .text-slate-700 {
               color: white !important;
             }
 

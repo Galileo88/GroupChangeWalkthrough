@@ -651,6 +651,19 @@
               ]
             },
             {
+              name: 'cancelCodesVerified',
+              label: () => (
+                <div style={{marginBottom: '20px'}}>
+                  <span style={{color: 'red'}}>*</span> <strong><u>CANCEL CODES</u></strong><br/><br/>
+                  • Verify the provider has an active cancel code of 00.
+                </div>
+              ),
+              type: 'checkbox',
+              required: false,
+              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'Yes' || formData.providerInGroup === 'Yes'),
+              validation: (value) => value === true
+            },
+            {
               name: 'ssnVerified',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
@@ -1806,7 +1819,7 @@
 
           const moreProviders = await showConfirm('Are there more providers to verify in this application?');
 
-          const question20VerifyFields = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
+          const question20VerifyFields = ['cancelCodesVerified', 'ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'doctorLicenseVerified'];
           const hasUnableToVerify = question20VerifyFields.some(field => unableToVerifyFields.has(field));
 
           // Debug: Log unable to verify check
@@ -1819,6 +1832,7 @@
                 question20Answered: formData.question20Answered,
                 providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
                 providerInGroup: formData.providerInGroup,
+                cancelCodesVerified: formData.cancelCodesVerified,
                 ssnVerified: formData.ssnVerified,
                 dexSanctionsCheck: formData.dexSanctionsCheck,
                 dobVerified: formData.dobVerified,
@@ -1851,6 +1865,7 @@
                 question20Answered: formData.question20Answered,
                 providerAlreadyEnrolled: formData.providerAlreadyEnrolled,
                 providerInGroup: formData.providerInGroup,
+                cancelCodesVerified: formData.cancelCodesVerified,
                 ssnVerified: formData.ssnVerified,
                 dexSanctionsCheck: formData.dexSanctionsCheck,
                 dobVerified: formData.dobVerified,
@@ -1876,6 +1891,7 @@
             delete clearedData.question20Answered;
             delete clearedData.providerAlreadyEnrolled;
             delete clearedData.providerInGroup;
+            delete clearedData.cancelCodesVerified;
             delete clearedData.ssnVerified;
             delete clearedData.dexSanctionsCheck;
             delete clearedData.dobVerified;
@@ -2766,6 +2782,9 @@
 
             // PROVIDER VERIFICATION
             textContent += `PROVIDER VERIFICATION:\n`;
+            if (provider.providerAlreadyEnrolled === 'Yes' || provider.providerInGroup === 'Yes') {
+              textContent += `  • Cancel Codes Verified: ${provider.cancelCodesVerified ? 'Yes' : 'No'}\n`;
+            }
             textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;
@@ -2939,6 +2958,9 @@
 
             // PROVIDER VERIFICATION
             textContent += `PROVIDER VERIFICATION:\n`;
+            if (provider.providerAlreadyEnrolled === 'Yes' || provider.providerInGroup === 'Yes') {
+              textContent += `  • Cancel Codes Verified: ${provider.cancelCodesVerified ? 'Yes' : 'No'}\n`;
+            }
             textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • DEX and Sanctions Check: ${provider.dexSanctionsCheck ? 'Yes' : 'No'}\n`;
             textContent += `  • DOB Verified: ${provider.dobVerified ? 'Yes' : 'No'}\n`;

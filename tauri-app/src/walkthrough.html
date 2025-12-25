@@ -3446,35 +3446,52 @@
             }
 
             /* Preserve specific colors even in selected backgrounds */
+            /* Force asterisks to stay red */
             .bg-indigo-50 .text-red-500,
             .bg-indigo-50 span.text-red-500,
+            .bg-indigo-50 .text-red-500 *,
             .bg-cyan-50 .text-red-500,
             .bg-cyan-100 .text-red-500 {
               color: #ef4444 !important;
             }
 
+            /* Force unable to verify labels to stay amber */
             .bg-indigo-50 .text-amber-600,
             .bg-indigo-50 span.text-amber-600,
+            .bg-indigo-50 .text-amber-600 *,
             .bg-cyan-50 .text-amber-600,
             .bg-cyan-100 .text-amber-600 {
               color: #d97706 !important;
             }
 
-            .bg-indigo-50 button,
-            .bg-indigo-50 a,
-            .bg-cyan-50 button,
-            .bg-cyan-100 button {
-              color: inherit !important;
+            /* Force button text and ALL button contents to stay white */
+            .bg-indigo-50 button.bg-blue-600,
+            .bg-indigo-50 button.bg-blue-600 *,
+            .bg-indigo-50 button.bg-amber-600,
+            .bg-indigo-50 button.bg-amber-600 *,
+            .bg-indigo-50 a.bg-blue-600,
+            .bg-indigo-50 a.bg-blue-600 *,
+            .bg-cyan-50 button.bg-blue-600,
+            .bg-cyan-50 button.bg-blue-600 *,
+            .bg-cyan-50 button.bg-amber-600,
+            .bg-cyan-50 button.bg-amber-600 *,
+            .bg-cyan-100 button.bg-blue-600,
+            .bg-cyan-100 button.bg-blue-600 *,
+            .bg-cyan-100 button.bg-amber-600,
+            .bg-cyan-100 button.bg-amber-600 * {
+              color: white !important;
             }
 
-            .bg-indigo-50 button.bg-blue-600,
-            .bg-indigo-50 button.bg-amber-600,
-            .bg-indigo-50 a.bg-blue-600,
-            .bg-cyan-50 button.bg-blue-600,
-            .bg-cyan-50 button.bg-amber-600,
-            .bg-cyan-100 button.bg-blue-600,
-            .bg-cyan-100 button.bg-amber-600 {
+            /* Force SVG strokes to be white in buttons */
+            .bg-indigo-50 button.bg-blue-600 svg,
+            .bg-indigo-50 button.bg-amber-600 svg,
+            .bg-indigo-50 a.bg-blue-600 svg,
+            .bg-cyan-50 button.bg-blue-600 svg,
+            .bg-cyan-50 button.bg-amber-600 svg,
+            .bg-cyan-100 button.bg-blue-600 svg,
+            .bg-cyan-100 button.bg-amber-600 svg {
               color: white !important;
+              stroke: currentColor !important;
             }
 
             /* Override in dark mode for selected states */

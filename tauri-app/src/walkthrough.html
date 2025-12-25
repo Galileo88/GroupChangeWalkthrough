@@ -3447,7 +3447,9 @@
             }
 
             /* Preserve specific colors even in selected backgrounds */
-            /* Force asterisks to stay red */
+            /* Force asterisks to stay red - HIGHER SPECIFICITY */
+            .bg-indigo-50 span span.text-red-500,
+            .bg-indigo-50 label span.text-red-500,
             .bg-indigo-50 .text-red-500,
             .bg-indigo-50 span.text-red-500,
             .bg-indigo-50 .text-red-500 *,
@@ -3457,12 +3459,22 @@
             }
 
             /* Force unable to verify labels to stay amber */
+            .bg-indigo-50 span span.text-amber-600,
+            .bg-indigo-50 label span.text-amber-600,
             .bg-indigo-50 .text-amber-600,
             .bg-indigo-50 span.text-amber-600,
             .bg-indigo-50 .text-amber-600 *,
             .bg-cyan-50 .text-amber-600,
             .bg-cyan-100 .text-amber-600 {
               color: #d97706 !important;
+            }
+
+            /* Keep label text at text-slate-700 color, not darker */
+            .bg-indigo-50 label span.text-slate-700,
+            .bg-indigo-50 span.text-slate-700,
+            .bg-indigo-50 label .text-slate-700,
+            .bg-indigo-50 .text-slate-700 {
+              color: #334155 !important;
             }
 
             /* Force button text and ALL button contents to stay white */

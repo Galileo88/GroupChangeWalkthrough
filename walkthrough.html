@@ -2922,19 +2922,10 @@
               border-color: #4b5563 !important;
             }
 
-            /* Ensure text is dark on light selected backgrounds (light mode) */
-            .bg-cyan-50,
-            .bg-cyan-100,
-            .bg-indigo-50 {
-              color: #1f2937 !important;
-            }
-
-            /* Exclude buttons, links, SVGs, and color classes from forced dark text */
-            .bg-cyan-50 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *),
-            .bg-cyan-100 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *),
-            .bg-indigo-50 *:not(button):not(button *):not(a):not(a *):not(svg):not(svg *):not(.text-red-500):not(.text-red-500 *):not(.text-amber-600):not(.text-amber-600 *) {
-              color: #1f2937 !important;
-            }
+            /* REMOVED: The problematic rule that forced all children to be dark
+               This was causing asterisks and text to turn black when checkboxes were selected.
+               Elements now keep their own colors (text-red-500 stays red, text-white stays white, etc.)
+            */
 
             /* Preserve specific colors even in selected backgrounds */
             /* Force asterisks to stay red - HIGHER SPECIFICITY */

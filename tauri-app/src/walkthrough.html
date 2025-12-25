@@ -660,7 +660,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'Yes' || formData.providerInGroup === 'Yes'),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup,
               validation: (value) => value === true
             },
             {

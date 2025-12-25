@@ -673,7 +673,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               sovosUrl: 'https://taxport.sovos.com/login'
             },
@@ -688,7 +688,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
             {
@@ -701,7 +701,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
             {
@@ -714,7 +714,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               npiRegistryUrl: 'https://npiregistry.cms.hhs.gov'
             },
@@ -729,7 +729,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               licenseVerifyUrl: 'https://miamifrp.com/verification/'
             },
@@ -744,7 +744,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
             {
@@ -757,7 +757,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
             {
@@ -770,7 +770,7 @@
               ),
               type: 'checkbox',
               required: false,
-              showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
+              showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             }
           ],

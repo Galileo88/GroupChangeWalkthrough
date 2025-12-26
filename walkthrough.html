@@ -3235,6 +3235,21 @@
                   </div>
                 )}
 
+                {/* Page-specific Important Notes (right after image) */}
+                {currentPageData.pageNotes && (
+                  <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                    <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
+                    <ul className="space-y-2">
+                      {currentPageData.pageNotes.map((note, idx) => (
+                        <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                          <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                          <span>{note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Instruction Text */}
                 {getInstructionText() && !currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
@@ -3308,21 +3323,6 @@
                         </a>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Page-specific Important Notes (before fields) */}
-                {currentPageData.pageNotes && (
-                  <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
-                    <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
-                    <ul className="space-y-2">
-                      {currentPageData.pageNotes.map((note, idx) => (
-                        <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
-                          <span className="mr-2 mt-1 flex-shrink-0">•</span>
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 )}
 

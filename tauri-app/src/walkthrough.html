@@ -503,14 +503,14 @@
             },
             {
               name: 'questionsAnswered',
-              label: 'Are questions 2, 4, 5 and 5C answered on the Group Change Practice Application?',
+              label: 'Are questions 2, 4, 5, 5A, 5B, and 5C answered (including all their sub-parts) on the Group Change Practice Application?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
               showWhen: { field: 'groupPracticeAttached', value: 'Yes' },
               validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
-                'Questions 2, 4, 5, 5C are required to be answered. Compare the list from question 5 and 5C to CICS pg13.',
+                'Questions 2, 4, 5, 5A, 5B, 5C are required to be answered. Compare the list from question 5 and 5C to CICS pg13.',
                 'If the group is a non-profit, they will not have owners. They will have "controlling interests" and will have an ownership type of "C" on the ownership page in CICS. Controlling interests can be treated like managing employees and can be added at any time.',
                 'If they are not a non-profit, and question 5 includes an owner that is not listed on the ownership file on pg13 in CICS, this may be a CHOW. Please let leadership know so they can advise you on next steps.',
                 'Individuals list under question 5C should also be listed on the ownership file on pg13 in CICS. If an individual is not listed in CICS on pg13, we will add them with a status of "S" indicated they are managing staff.'
@@ -4005,28 +4005,44 @@
                             )}
                           </>
                         ) : field.type === 'radio' ? (
-                          <div className="space-y-3">
-                            {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
-                              <label
-                                key={option}
-                                className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                  value === option
-                                    ? 'bg-cyan-50'
-                                    : 'border-slate-200 hover:border-slate-300 bg-white'
-                                }`}
-                                style={value === option ? {borderColor: 'var(--gainwell-cyan)'} : {}}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={value === option}
-                                  onChange={() => handleFieldChange(field.name, option)}
-                                  className="w-5 h-5"
-                                  style={{accentColor: 'var(--gainwell-cyan)'}}
-                                />
-                                <span className="ml-3 font-medium text-slate-700">{option}</span>
-                              </label>
-                            ))}
-                          </div>
+                          <>
+                            <div className="space-y-3">
+                              {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                                <label
+                                  key={option}
+                                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                    value === option
+                                      ? 'bg-cyan-50'
+                                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                                  }`}
+                                  style={value === option ? {borderColor: 'var(--gainwell-cyan)'} : {}}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={value === option}
+                                    onChange={() => handleFieldChange(field.name, option)}
+                                    className="w-5 h-5"
+                                    style={{accentColor: 'var(--gainwell-cyan)'}}
+                                  />
+                                  <span className="ml-3 font-medium text-slate-700">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+
+                            {field.helperNotes && (
+                              <div className="mt-3 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                                <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
+                                <ul className="space-y-2">
+                                  {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, noteIdx) => (
+                                    <li key={noteIdx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                                      <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                                      <span>{note}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </>
                         ) : field.type === 'textarea' ? (
                           <textarea
                             value={value}

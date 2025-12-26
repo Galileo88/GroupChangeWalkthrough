@@ -451,11 +451,7 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Practitioner Name, SSN, NPI and DOB are required.',
-                'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             },
             {
               name: 'providerAlreadyEnrolled',
@@ -549,6 +545,10 @@
               showWhen: (formData) => formData.question20Answered === 'Yes' && (formData.providerAlreadyEnrolled === 'No' || (formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup === 'No')),
               validation: (value) => value === true
             }
+          ],
+          pageNotes: [
+            'Practitioner Name, SSN, NPI and DOB are required.',
+            'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
           ],
           displayImage: practitionersImage
         },
@@ -3235,8 +3235,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (right after image) - ONLY for question-6 page */}
-                {currentPageData.pageNotes && currentPageData.id === 'question-6' && (
+                {/* Page-specific Important Notes (right after image) - for question-6 and question-20 pages */}
+                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
@@ -3326,8 +3326,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6 */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6 and question-20 */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">

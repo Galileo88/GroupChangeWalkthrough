@@ -884,11 +884,11 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Must be signed and dated'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'Must be signed and dated'
           ],
           displayImage: aouImage
         },
@@ -903,14 +903,13 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Provider Name at the top of the form must be the group name',
-                'Must be signed and dated',
-                'For Group applications, only the providers being linked to the group should sign and date',
-                'If there are more providers being added than there are spots on the form, a copy of this page with the additional providers should be attached'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'Provider Name at the top of the form must be the group name',
+            'Must be signed and dated',
+            'For Group applications, only the providers being linked to the group should sign and date'
           ],
           displayImage: provAgreementImage
         },
@@ -925,12 +924,12 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'All fields are required to be filled out',
-                'N/A should be used to answer questions Not Applicable to the group'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'All fields are required to be filled out',
+            'N/A should be used to answer questions Not Applicable to the group'
           ],
           displayImage: dooImage
         },
@@ -945,12 +944,12 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'It is required on the W9 or IRS letter that the Name, SSN/Tax ID Number, and Employer ID Number (IRS#) matches what we have on file in CICS',
-                'If a W9 is provided, it must be signed and dated'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'It is required on the W9 or IRS letter that the Name, SSN/Tax ID Number, and Employer ID Number (IRS#) matches what we have on file in CICS',
+            'If a W9 is provided, it must be signed and dated'
           ],
           displayImage: w9Image
         },
@@ -3836,8 +3835,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (right after image) - for question-6, question-20, and signature-authorization-form pages */}
-                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form') && (
+                {/* Page-specific Important Notes (right after image) - for question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, and w9-or-irs-letter pages */}
+                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form' || currentPageData.id === 'agreement-of-understanding' || currentPageData.id === 'provider-agreement' || currentPageData.id === 'disclosure-of-ownership' || currentPageData.id === 'w9-or-irs-letter') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
@@ -3925,8 +3924,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, and signature-authorization-form */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, and w9-or-irs-letter */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">

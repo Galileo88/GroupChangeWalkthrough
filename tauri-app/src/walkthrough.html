@@ -523,6 +523,11 @@
           id: 'question-6',
           title: 'Practice Address Verification',
           description: 'Verify practice address information',
+          pageNotes: [
+            'Check the groups addresses to ensure this practice address exists. The 09 page in CICS shows a list of 8 practice addresses.',
+            'If you cannot locate the address on the 09 page or in the event the 09 page is full, navigate to the notes page (F6) and look through the notes to see if the address can be found there.',
+            'If not, you will add the new practice address to the notes screen.'
+          ],
           fields: [
             {
               name: 'question6Answered',
@@ -530,12 +535,7 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Check the groups addresses to ensure this practice address exists. The 09 page in CICS shows a list of 8 practice addresses.',
-                'If you cannot locate the address on the 09 page or in the event the 09 page is full, navigate to the notes page (F6) and look through the notes to see if the address can be found there.',
-                'If not, you will add the new practice address to the notes screen.'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
           ],
           displayImage: question6Image
@@ -3830,6 +3830,21 @@
                   </div>
                 )}
 
+                {/* Page-specific Important Notes (right after image) - ONLY for question-6 page */}
+                {currentPageData.pageNotes && currentPageData.id === 'question-6' && (
+                  <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                    <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
+                    <ul className="space-y-2">
+                      {currentPageData.pageNotes.map((note, idx) => (
+                        <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                          <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                          <span>{note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Instruction Text */}
                 {getInstructionText() && !currentPageData.isCompletionPage && (
                   <div className="border-l-4 p-4 rounded-r-lg mb-6" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
@@ -3904,8 +3919,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) */}
-                {currentPageData.pageNotes && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6 */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">

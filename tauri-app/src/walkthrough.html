@@ -3381,10 +3381,16 @@
 
         if (currentPageData.id === 'existing-provider-completion') {
           const providerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
-          const buttonText = getNextButtonText();
+
+          // Check if there are more providers to add to group
+          const hasMoreProviders = enrolledProviders.some((p, idx) =>
+            idx > currentAddingProviderIndex &&
+            (p.status === 'Enrolled - Ready to be Added to Group' ||
+             p.status === 'Verified - Ready to Add to Group')
+          );
 
           // If this is the last provider, show congratulations message
-          if (buttonText === 'Finish') {
+          if (!hasMoreProviders) {
             return `Congratulations! You have successfully added all providers to the group!\n\nPlease download your notes below and attach them to SNOW.\nClick "Start New Application" to begin a new application`;
           }
 

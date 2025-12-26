@@ -2784,7 +2784,8 @@
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
-          return hasMoreProviders ? 'Next Provider' : 'Finish';
+          // When no more providers, completion buttons are shown instead of navigation button
+          return hasMoreProviders ? 'Next Provider' : 'Continue';
         }
 
         if (currentPageData.id === 'additional-providers-check') {

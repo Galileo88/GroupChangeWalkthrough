@@ -618,11 +618,7 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Practitioner Name, SSN, NPI and DOB are required.',
-                'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             },
             {
               name: 'providerAlreadyEnrolled',
@@ -779,6 +775,10 @@
               validation: (value) => value === true
             }
           ],
+          pageNotes: [
+            'Practitioner Name, SSN, NPI and DOB are required.',
+            'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
+          ],
           displayImage: practitionersImage
         },
         // -------------------- Completion & Special Pages --------------------
@@ -864,12 +864,12 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Must have at least 1 authorized signer',
-                'Provider Name, Typed or Printed Full name and Actual Signature is required'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'Must have at least 1 authorized signer',
+            'Provider Name, Typed or Printed Full name and Actual Signature is required'
           ],
           displayImage: sigAuthImage
         },
@@ -1671,6 +1671,12 @@
       // Check if current page requirements are met
       const isPageValid = () => {
         const page = pages[currentPage];
+
+        // Special case: If on question-20 page and question20Answered is 'No', prevent proceeding
+        if (page.id === 'question-20' && formData.question20Answered === 'No') {
+          return false;
+        }
+
         return page.fields.every(field => {
           if (field.showWhen) {
             let conditionMet;
@@ -3830,8 +3836,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (right after image) - ONLY for question-6 page */}
-                {currentPageData.pageNotes && currentPageData.id === 'question-6' && (
+                {/* Page-specific Important Notes (right after image) - for question-6, question-20, and signature-authorization-form pages */}
+                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
@@ -3919,8 +3925,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6 */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, and signature-authorization-form */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
@@ -4241,11 +4247,43 @@
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                           </svg>
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-bold text-amber-900 text-lg mb-2">RETURN TO PROVIDER</h4>
-                          <p className="text-amber-800 font-medium">
-                            Return to provider, notating that Question 20 was not answered completely.
+                          <p className="text-amber-800 font-medium mb-4">
+                            Question 20 is not answered. The group will need to submit a completed application in order to add a provider to the group.
                           </p>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleAddOutreachNote('Question 20 is not answered. The group will need to submit a completed application in order to add a provider to the group.')}
+                              className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-amber-500"
+                              style={{backgroundColor: '#00e5b4'}}
+                              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              Add to Notes
+                            </button>
+                            <button
+                              onClick={handleDownloadNotes}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-semibold rounded-lg transition-colors text-sm"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                              Download Notes
+                            </button>
+                            <button
+                              onClick={handleStartNewApplication}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 !text-white font-semibold rounded-lg transition-colors text-sm"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              Start New Application
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

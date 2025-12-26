@@ -753,7 +753,14 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'If this form is attached and completed, you will enter all N\'s for provider mailings on page 02 CICS:\n\nMAILING INDS: MANUALS - N\nNEWSLETTERS - N\nPAPER RA - N\n\nIf this form is not provided or filled out, you can continue processing as usual.',
+          pageNotes: [
+            <>If this form is attached and completed, you will enter all <strong>N's</strong> for provider mailings on page 02 in CICS:</>,
+            <div style={{marginTop: '8px'}}><strong>MAILING INDS: MANUALS - N</strong></div>,
+            <><strong>NEWSLETTERS - N</strong></>,
+            <><strong>PAPER RA - N</strong></>,
+            <div style={{marginTop: '8px'}}>If this form is not provided or filled out, you can continue processing as usual.</div>
+          ],
+          noBullets: true,
           displayImage: paperUpdatesImage
         },
         // ================== EXISTING PROVIDER WORKFLOW ==================
@@ -3244,14 +3251,24 @@
                 {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form' || currentPageData.id === 'agreement-of-understanding' || currentPageData.id === 'provider-agreement' || currentPageData.id === 'disclosure-of-ownership' || currentPageData.id === 'w9-or-irs-letter') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
-                    <ul className="space-y-2">
-                      {currentPageData.pageNotes.map((note, idx) => (
-                        <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
-                          <span className="mr-2 mt-1 flex-shrink-0">•</span>
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {currentPageData.noBullets ? (
+                      <div className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
+                            {note}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                            <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                            <span>{note}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
 
@@ -3335,14 +3352,24 @@
                 {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
-                    <ul className="space-y-2">
-                      {currentPageData.pageNotes.map((note, idx) => (
-                        <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
-                          <span className="mr-2 mt-1 flex-shrink-0">•</span>
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {currentPageData.noBullets ? (
+                      <div className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
+                            {note}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                            <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                            <span>{note}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
 

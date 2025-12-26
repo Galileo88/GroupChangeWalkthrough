@@ -3382,8 +3382,14 @@
         if (currentPageData.id === 'existing-provider-completion') {
           const providerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
           const buttonText = getNextButtonText();
-          const action = buttonText === 'Finish' ? 'to complete this application.' : 'to continue.';
-          return `You have successfully added Provider ${providerNum} to the group.\n\nPlease click "${buttonText}" ${action}`;
+
+          // If this is the last provider, show congratulations message
+          if (buttonText === 'Finish') {
+            return `Congratulations! You have successfully added all providers to the group!\n\nPlease download your notes below and attach them to SNOW.\nClick "Start New Application" to begin a new application`;
+          }
+
+          // Otherwise, show regular success message
+          return `You have successfully added Provider ${providerNum} to the group.`;
         }
 
         return currentPageData.instructionText;

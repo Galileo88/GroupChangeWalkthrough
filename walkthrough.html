@@ -635,12 +635,12 @@
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'Must have at least 1 authorized signer',
-                'Provider Name, Typed or Printed Full name and Actual Signature is required'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+          pageNotes: [
+            'Must have at least 1 authorized signer',
+            'Provider Name, Typed or Printed Full name and Actual Signature is required'
           ],
           displayImage: sigAuthImage
         },
@@ -3235,8 +3235,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (right after image) - for question-6 and question-20 pages */}
-                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20') && (
+                {/* Page-specific Important Notes (right after image) - for question-6, question-20, and signature-authorization-form pages */}
+                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">
@@ -3326,8 +3326,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6 and question-20 */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, and signature-authorization-form */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     <ul className="space-y-2">

@@ -602,8 +602,9 @@
             }
           ],
           pageNotes: [
-            'If no contact email is provided, you will need to manually send out the letter by placing it in the S-Drive at the end.'
+            <>If a contact email is <strong>NOT</strong> provided, you will need to manually send out the letter by placing it in the S-Drive at the end.</>
           ],
+		  noBullets: true,
           displayImage: emailFieldImage
         },
         {
@@ -626,11 +627,11 @@
               required: true,
               options: ['Yes', 'No'],
               showWhen: { field: 'question20Answered', value: 'Yes' },
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'If Yes, this will be noted for the provider and you will proceed to the next question.',
-                'If No, the checklist will be displayed.'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'//,
+              //helperNotes: [
+                //'If Yes, this will be noted for the provider and you will proceed to the next question.',
+                //'If No, the checklist will be displayed.'
+              //]
             },
             {
               name: 'providerInGroup',
@@ -639,11 +640,11 @@
               required: true,
               options: ['Yes', 'No'],
               showWhen: { field: 'providerAlreadyEnrolled', value: 'Yes' },
-              validation: (value) => value === 'Yes' || value === 'No',
-              helperNotes: [
-                'If Yes, you will be given the option to reject this as a duplicate application.',
-                'If No, this will be noted for the provider and the checklist will be displayed.'
-              ]
+              validation: (value) => value === 'Yes' || value === 'No'//,
+              //helperNotes: [
+                //'If Yes, you will be given the option to reject this as a duplicate application.',
+                //'If No, this will be noted for the provider and the checklist will be displayed.'
+              //]
             },
             {
               name: 'ssnVerified',
@@ -775,9 +776,11 @@
             }
           ],
           pageNotes: [
-            'Practitioner Name, SSN, NPI and DOB are required.',
-            'There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages will be attached.'
+            <>• Practitioner <strong>Name</strong>, <strong>SSN</strong>, <strong>NPI</strong> and <strong>DOB</strong> are required.<br/><br/></>,
+			<>• Dentists require 3 additional questions, and a certificate if answered <strong>"Yes"</strong>.<br/><br/></>,
+            <><em>There may be multiple providers the group is trying to add, and they will all be listed within question 20 in sections A-H. If there are more providers than what the application can fit, additional pages should be attached.</em></>
           ],
+		  noBullets: true,
           displayImage: practitionersImage
         },
         // -------------------- Completion & Special Pages --------------------
@@ -791,9 +794,13 @@
         },
         {
           id: 'duplicate-rejection-completion',
-          title: 'APPLICATION REJECTED',
-          description: 'Duplicate provider application rejected',
-          instructionText: 'Application rejected as duplicate. The rejection has been added to the notes.\n\nYou can now:\n- Download the notes using the button below\n- Start a new application for another provider',
+          title: 'REJECT DUPLICATE',
+          description: 'Provider is already enrolled and in the group.',
+		  pageNotes: [
+            <><br/><strong>Reject the application as a duplicate.</strong></>,
+			<><em>Download and attach the notes to SNOW.</em><br/><br/></>
+          ],
+		  noBullets: true,
           isCompletionPage: true,
           isDuplicateRejection: true,
           fields: []
@@ -1347,7 +1354,11 @@
             }
           ],
           instructionText: 'Begin enrolling a new provider by clicking on the blue "Create Enrollment" button within your work object in SNOW.',
-          noteText: 'NOTE: You will do this for each new provider that needs to be enrolled into CICS, but do it one at a time to avoid making a mistake.',
+		  pageNotes: [
+			<>Begin enrolling a new provider by clicking on the blue "Create Enrollment" button<br/><br/></>				
+          ],
+		  noBullets: true,
+          noteText: 'NOTE: You will do this for each new provider in your application that needs to be enrolled into CICS',
           displayImage: createEnrollmentImage
         },
         {

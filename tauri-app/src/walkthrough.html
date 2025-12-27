@@ -3928,8 +3928,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (right after image) - for question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, and w9-or-irs-letter pages */}
-                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form' || currentPageData.id === 'agreement-of-understanding' || currentPageData.id === 'provider-agreement' || currentPageData.id === 'disclosure-of-ownership' || currentPageData.id === 'w9-or-irs-letter') && (
+                {/* Page-specific Important Notes (right after image) - for question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, w9-or-irs-letter, and fill-provider-info pages */}
+                {currentPageData.pageNotes && (currentPageData.id === 'question-6' || currentPageData.id === 'question-20' || currentPageData.id === 'signature-authorization-form' || currentPageData.id === 'agreement-of-understanding' || currentPageData.id === 'provider-agreement' || currentPageData.id === 'disclosure-of-ownership' || currentPageData.id === 'w9-or-irs-letter' || currentPageData.id === 'fill-provider-info') && (
                   <div className="mb-6 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     {currentPageData.noBullets ? (
@@ -4027,8 +4027,8 @@
                   </div>
                 )}
 
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, and w9-or-irs-letter */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && (
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, w9-or-irs-letter, and fill-provider-info */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && currentPageData.id !== 'fill-provider-info' && (
                   <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                     <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                     {currentPageData.noBullets ? (

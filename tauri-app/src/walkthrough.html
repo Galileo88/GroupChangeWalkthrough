@@ -947,7 +947,7 @@
             }
           ],
           pageNotes: [
-            'It is required on the W9 or IRS letter that the Name, SSN/Tax ID Number, and Employer ID Number (IRS#) matches what we have on file in CICS',
+            'SSN/Tax ID Number, and Employer ID Number (IRS#) must match what we have on file in CICS',
             'If a W9 is provided, it must be signed and dated'
           ],
           displayImage: w9Image
@@ -964,8 +964,11 @@
               required: true,
               validation: (value) => value === true
             }
+          ], 
+		  pageNotes: [
+            'While this is not required for existing groups, it is important to look out for.',
+			'If the information on the form does not match what is in CICS, please reach out to leadership.'
           ],
-          instructionText: 'While this is not required for existing groups, it is important to pay attention to. If an existing group provides this form filled out, they may be looking to update their banking information. Compare the information to what we have in CICS on the 04 page. If the group wants make changes to their banking info, they will also need to provide a copy of a voided check. The account information will be taken from the voided check to update the info on the 04 page in CICS.\n\nFor new groups, this document is required along with a copy of a voided check. The account information will be taken from the voided check and added to the 04 page in CICS when enrolling a new group.\n\nPlease reach out to leadership prior to making any changes to ACH information.',
           displayImage: achImage
         },
         {
@@ -983,10 +986,11 @@
           ],
           pageNotes: [
             <>If this form is attached and completed, you will enter all <strong>N's</strong> for provider mailings on page 02 in CICS:</>,
-            <div style={{marginTop: '8px'}}><strong>MAILING INDS: MANUALS - N</strong></div>,
-            <><strong>NEWSLETTERS - N</strong></>,
-            <><strong>PAPER RA - N</strong></>,
-            <div style={{marginTop: '8px'}}>If this form is not provided or filled out, you can continue processing as usual.</div>
+            <div style={{marginTop: '8px'}}><strong><u>MAILING INDS:</u></strong></div>,
+			<>• <strong>MANUALS - N</strong></>,
+            <>• <strong>NEWSLETTERS - N</strong></>,
+            <>• <strong>PAPER RA - N</strong></>,
+            <div style={{marginTop: '16px'}}>If this form is not provided or filled out, you can continue processing as usual.</div>
           ],
           noBullets: true,
           displayImage: paperUpdatesImage
@@ -1007,7 +1011,10 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'In CICS, set the OPTION # to 12, the TRANS. TYPE to "U" and enter the groups provider number and press enter.',
+		  pageNotes: [
+            <>In CICS, set the <strong>OPTION #</strong> to <strong>12</strong>, the <strong>TRANS. TYPE</strong> to <strong>"U"</strong> and enter the groups provider number in <strong>PROV.NUM</strong> and press enter.</>
+          ],
+		  noBullets: true,
           displayImage: cicsImage
         },
         {
@@ -1024,7 +1031,16 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'You will see list of all of the individual providers in the group.\n\nOne the first line, you will add a letter "A" to let CICS know you intend to Add a provider to this group.\n\nNext, tab over to the provider number and overwrite it with the new provider number that was just generated. (don\'t worry, you are not overwriting an existing provider).\n\nNext, tab over to the BEGIN DATE, and enter the begin date for the new provider.\nYou can get the BEGIN DATE by looking at Eligibility Begin in the Provider Information tab in SNOW.\n\nFinally, tab over to the END DATE and add 12319999 as the end date. If the date is already 12319999, you can leave it.\n\nOnce you hit ENTER, the provider will be added to the group.\n\nYou can check to see if the provider was successfully added by searching for their provider number where it says "NEXT MEMBER" and hitting enter. This will show you the provider you just added.\n\nAdditionally, check the notes page F6 to make sure a note was added stating you added the provider to the group.\n\nYou will do this for each provider you are adding',
+		  pageNotes: [
+            <>Once on page 12 in CICS, you will see list of all of the individual providers in the group.<br/><br/></>,
+            <>• On the first line, you will input the letter <strong>"A"</strong>, indicating you are <strong>A</strong>dding the provider to this group.<br/><br/></>,
+            <>• Tab over to the provider number field and overwrite it with the new provider number that you just generated. (don't worry, you are not overwriting an existing provider)<br/><br/></>,
+            <>• Next, tab over to the BEGIN DATE, and enter the begin date for the new provider.</>,
+            <><em>You can get the BEGIN DATE by looking at Eligibility Begin in the Provider Information tab in SNOW.</em><br/><br/></>,
+            <>• Finally, tab over to the END DATE and add 12319999 as the end date. If the date is already 12319999, you can leave it.<br/><br/></>,
+            <><em>Check the notes page F6 to make sure a note was added stating you added the provider to the group.\n\nYou will do this for each provider you are adding</em></>
+          ],
+		  noBullets: true,
           displayImage: addProvImage
         },
         {
@@ -1033,12 +1049,14 @@
           description: 'Verify all provider information in CICS',
           showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
           pageNotes: [
-            'Board Certification Indicators:',
-            'APN, CRNA, CNM will always remain a 0',
-            'Doctors, and PA\'s will get a 1 if they provided a board eligibility letter',
-            'Doctors, and PA\'s will get a 2 if they provided a board certificate',
-            'Otherwise they will remain a 0'
+		    <>Check the name formatting of the provider. Example: <strong>SMITH JOHN M. MD</strong></>,
+            <>Check the Board Certification indicators:<br/></>,
+            <>• APN, CRNA, CNM will always remain a 0<br/></>,
+            <>• All other provider types will get a 1 if they provided a board eligibility letter</>,
+            <>• All other provider types will get a 2 if they provided a board certificate</>,
+            <>• Otherwise they will remain a 0</>
           ],
+		  noBullets: true,
           fields: [
             {
               name: 'providerNameFormatting02',
@@ -1098,7 +1116,12 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'In the Enrollment work object, once you refresh the screen, you should see an Enrollment Task titled "Verify CICS".\n\nClick the PWT number and close the task. Work notes can state that you are just "closing to task".\n\nThis will close the enrollment.\n\nNavigate back to the Group Change work object.',
+		  pageNotes: [
+		    <>Open the Enrollment Task titled <strong>"Verify CICS"</strong>.<br/><br/></>,
+            <>• Click the PWT number and close the task. Work notes state "<strong>Closing task. CICS verified</strong>"<br/><br/></>,
+            <>Once that is done, navigate back to the parent Group Change PWO.</>
+          ],
+		  noBullets: true,
           displayImage: enrollmentTaskImage
         },
         {
@@ -1115,7 +1138,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Back in the Group Change work object, Open the application, and find question 17 in the Group Practice Application to find the email address for the group.\n\nInput that email address into the email field in SNOW.',
+		  pageNotes: [
+		    <>• If you have not entered the contact email yet, please do so now.</>,
+            <><em>You can find the contact email on question 17 in the Group Practice Application</em><br/></>
+          ],
+		  noBullets: true,
           displayImage: emailFieldImage
         },
         {
@@ -1132,7 +1159,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Add a checklist and check off everything that you verified.\n\nIf you did not use part of the checklist, do not mark it off. Only mark off what was verified.',
+		  pageNotes: [
+		    <>• Add the checklist and check off everything that was verified.</>,
+            <>• If you did not use part of the checklist, do not check it off. <strong>Only mark off what was verified</strong>.</>
+          ],
+		  noBullets: true,
           displayImage: checklistImage
         },
         {
@@ -1149,7 +1180,12 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Click one the approve button and make a comment stating the provider(s) has been added to the group.\n\nClick Approve.',
+		  pageNotes: [
+		    <>• Click on the <strong>Approve</strong> button</>,
+            <>• The comment should state "<strong>Provider(s) have been added to the group</strong>".</>,
+			<>• Click <strong>Approve</strong></>
+          ],
+		  noBullets: true,
           displayImage: addToGroupImage
         },
         {
@@ -1160,13 +1196,17 @@
           fields: [
             {
               name: 'existingProviderOpenLetterTaskComplete',
-              label: 'Complete: Navigate to the letter task in SNOW.',
+              label: 'Complete: Open the letter task in SNOW.',
               type: 'checkbox',
               required: true,
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Once you have clicked approve, a new task will generate in the Group Change Task tab.\n\nClick the PWT number to go to the letter task.',
+		  pageNotes: [
+			<>Once you have clicked <strong>Approve</strong>, a new task will generate in the <strong>Group Change Task</strong> tab.</>,
+            <>• Click the PWT number titled <strong>"Create Group Change Approval Letter"</strong>.</>
+          ],
+		  noBullets: true,
           displayImage: letterTaskImage
         },
         {
@@ -1183,7 +1223,13 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Once in the letter task, click on the blue Select Letter button and select GroupChangeAdd\n\nAlso enter the effective date that was given to the provider.',
+		  pageNotes: [
+			<>• Click on the blue <strong>Select Letter</strong> button.</>,
+            <>• Choose the <strong>GroupChangeAdd</strong> option.</>,
+			<>• Enter the effective date that was given to the provider.</>,
+			<><em>If there a mulitple providers, enter the earliest effective date given.</em></>			
+          ],
+		  noBullets: true,
           displayImage: letterSelectImage
         },
         {
@@ -1200,7 +1246,13 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Near the bottom of the letter task, click on the blue "New" button.\n\nIn the Provider field, enter the provider number of the individual we just added to the group.\n\nIn the Effective Date field, enter the effective date given to the provider.\n\nHit Submit.\n\nYou will do this for each provider you added to the group.',
+		  pageNotes: [
+			<>• Near the bottom left of the letter task page, click on the blue <strong>"New"</strong> button.</>,
+            <>• In the Provider field, enter the provider number of the individual we just added to the group.</>,
+			<>• In the Effective Date field, enter the effective date given to the provider.<br/><br/></>,
+            <><em>If there a mulitple providers, you will add them to the letter one by one this way.</em></>			
+          ],
+		  noBullets: true,
           displayImage: letterProvImage
         },
         {
@@ -1217,7 +1269,16 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'IMPORTANT: Before creating the letter, verify the address matches the groups Mail To address on CICS. From the 02 screen in CICS, hit F5 3 times to view the Mail To address.\n\nOnce the letter has been selected, the effective date entered, and the provider(s) are added to the letter, click on the "Create Letter" button at the top right.\n\nThis will create an approval letter, and it will be attached to the top of the page.\n\nOpen the letter by clicking "view" next to the attached letter and verify that all the information on the letter is correct.\n\nDownload the letter by clicking directly on the letter attachment.\nIn your Downloads folder, locate the letter and rename it to the following format:\n\nGroupChangeAdd_GroupName_ICN#_Date\n\nExample:\nGroupChangeAdd_CMC DEPT OF MEDICINE GRP_24226304109_2024-08-20\n\nOnce renamed place the letter into the SDRIVE folder:\n\\\\192.60.36.175\\shared\\Provider Services\\Enrollment\\2-PE Letters',
+		  pageNotes: [
+			<>• Verify the mailing address address matches the groups Mail-To address on CICS</>,
+            <><em>From the 02 screen in CICS, hit F5 3 times to view the Mail To address.</em><br/><br/></>,
+			<>• Click on the "Create Letter" button.</>,
+            <><em>This will create an approval letter, and it will be attached to the top of the page.</em><br/><br/></>,
+			<>• Rename the letter in this format: <strong>GroupChangeAdd_GroupName_ICN#_YYYY_MM_DD</strong><br/><br/></>,
+            <>• Download the letter by clicking directly on the letter attachment to review and verify the content.<br/><br/></>,
+            <>• Place the letter into the SDRIVE folder: <strong>2-PE Letters</strong></>			
+          ],
+		  noBullets: true,
           displayImage: generateLetterImage
         },
         {
@@ -1234,7 +1295,13 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Add a work note stating you have "Generated the approval letter"\n\nChange the Group Change Task State to Closed\n\nClick on the "Save" button\n\nThis will close the letter task and the Group Change work object all at one.',
+		  pageNotes: [
+			<>• Add a work note stating you have <strong>"Generated the approval letter"</strong><br/><br/></>,
+            <>• Change the <strong>Group Change Task State</strong> to <strong>Closed</strong><br/><br/></>,
+			<>• Click on the <strong>"Save"</strong> button.</>,
+            <><em>This will close the letter task and close the Group Change work object simultaneously.</em><br/><br/></>			
+          ],
+		  noBullets: true,
           displayImage: closeLetterImage
         },
         {
@@ -1253,7 +1320,14 @@
           description: 'ALL PROVIDERS HAVE BEEN ENROLLED AND ADDED TO THE GROUP',
           showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
           fields: [],
-          instructionText: 'Congratulations! You have successfully completed the group change walkthrough.\n\nAll providers have been enrolled and added to the group.\n\nYou can now:\n- Download your notes and answers\n- Start a new application',
+		  pageNotes: [
+			<><strong>Congratulations! You have successfully completed the group change walkthrough.</strong><br/><br/></>,
+            <>All providers have been enrolled and added to the group.<br/><br/></>,
+			<><u>You can now:</u></>,
+            <>• Download your notes and attach them to SNOW</>,
+            <>• Start a new application</>				
+          ],
+		  noBullets: true,
           isCompletionPage: true
         },
         // ================== NEW PROVIDER WORKFLOW ==================

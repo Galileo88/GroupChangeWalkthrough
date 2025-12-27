@@ -1374,8 +1374,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Fill in the information for the individual provider you are enrolling into the window that pops up.',
-          nameFormatNote: 'When entering the providers name, it should be in all CAPS and the format should be LAST FIRST MI and the professional title. ex: SMITH JOHN J. MD',
+		  pageNotes: [
+			<>• Enter the provider details in the enrollment window.<br/></>,
+            <>• Check the name formatting of the provider. Example: <strong>SMITH JOHN J. MD</strong></>			
+          ],
+		  noBullets: true,
           displayImage: newProviderWindowImage,
           resourceText: 'Be sure to check the individual providers license and utilize the links below to help determine the provider type and specialty:',
           resources: [

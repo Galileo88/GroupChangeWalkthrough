@@ -1380,7 +1380,7 @@
           ],
 		  noBullets: true,
           displayImage: newProviderWindowImage,
-          resourceText: 'Be sure to check the individual providers license and utilize the links below to help determine the provider type and specialty:',
+          resourceText: 'Refer to the providers license, board certificates and use the links below to help determine the provider type and specialty:',
           resources: [
             { label: '2025 Legal Quick Guide', url: './2025LegalQuickGuide.pdf', type: 'pdf' },
             { label: 'Provider Types and Specialties', url: './ProviderTypesSpecialties.pdf', type: 'pdf' }
@@ -1400,11 +1400,14 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Back in CICS, under the group, be sure to check what kind of specialties the group can take. From the 02 page in CICS, press F5 and take a look at the specialties that are already added to the group. If you do not see the providers specialty, check to see if the specialty is covered under another specialty, e.g. 420, 110, 750 etc.\n\nIf necessary, add the specialty to the group. The specialty will get the same effective date as the provider you are adding.',
-          displayImage: groupSpecialtyImage,
-          pageNotes: [
-            'If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.'
-          ]
+		  pageNotes: [
+            <><br/>• In CICS, check the group's specialty coverage.<br/></>,
+            <>• From the 02 page, press F5 to view existing specialties.</>,
+            <>• If the provider's specialty isn't listed, verify if it's covered under another specialty (e.g., 420, 110, 750).<br/><br/></>,
+            <div style={{ color: 'rgb(150, 150, 255)'}}><em>If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.</em></div>
+          ],
+		  noBullets: true,
+          displayImage: groupSpecialtyImage
         },
         {
           id: 'enrollment-applications-tab',

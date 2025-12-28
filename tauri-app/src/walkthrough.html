@@ -1404,7 +1404,7 @@
             <><br/>• In CICS, check the group's specialty coverage.<br/></>,
             <>• From the 02 page, press F5 to view existing specialties.</>,
             <>• If the provider's specialty isn't listed, verify if it's covered under another specialty (e.g., 420, 110, 750).<br/><br/></>,
-            <><em style={{ color: 'rgb(150, 150, 255)'}}>If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.</em></>
+            <><em className="text-light-purple">If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.</em></>
           ],
 		  noBullets: true,
           displayImage: groupSpecialtyImage
@@ -3703,6 +3703,15 @@
             html.dark div[style*="backgroundColor: rgb(224, 242, 241)"] *,
             html.dark div[style*="background-color: rgb(224, 242, 241)"] * {
               color: #f3f4f6 !important;
+            }
+
+            /* Custom light purple text color for special notes */
+            .text-light-purple {
+              color: rgb(150, 150, 255) !important;
+            }
+
+            html.dark .text-light-purple {
+              color: rgb(150, 150, 255) !important;
             }
 
             /* Dark mode input and textarea styles */

@@ -3820,6 +3820,11 @@
               color: var(--gainwell-cyan);
             }
 
+            /* Default color for page notes - can be overridden by inline styles */
+            .page-note-content {
+              color: var(--gainwell-teal);
+            }
+
             body {
               background-color: var(--bg-color);
               transition: background-color 0.3s ease;
@@ -3935,7 +3940,7 @@
                     {currentPageData.noBullets ? (
                       <div className="space-y-2">
                         {currentPageData.pageNotes.map((note, idx) => (
-                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
+                          <div key={idx} className="text-sm page-note-content">
                             {note}
                           </div>
                         ))}
@@ -3943,7 +3948,7 @@
                     ) : (
                       <ul className="space-y-2">
                         {currentPageData.pageNotes.map((note, idx) => (
-                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                          <li key={idx} className="text-sm flex items-start page-note-content">
                             <span className="mr-2 mt-1 flex-shrink-0">•</span>
                             <span>{note}</span>
                           </li>
@@ -4034,7 +4039,7 @@
                     {currentPageData.noBullets ? (
                       <div className="space-y-2">
                         {currentPageData.pageNotes.map((note, idx) => (
-                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
+                          <div key={idx} className="text-sm page-note-content">
                             {note}
                           </div>
                         ))}
@@ -4042,7 +4047,7 @@
                     ) : (
                       <ul className="space-y-2">
                         {currentPageData.pageNotes.map((note, idx) => (
-                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                          <li key={idx} className="text-sm flex items-start page-note-content">
                             <span className="mr-2 mt-1 flex-shrink-0">•</span>
                             <span>{note}</span>
                           </li>

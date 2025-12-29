@@ -172,9 +172,13 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
 
 #[tauri::command]
 async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filename: String) -> Result<String, String> {
+    // Set default download directory to network path
+    let default_dir = PathBuf::from(r"\\192.60.36.175\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs");
+
     // Show save file dialog
     let file_path = app.dialog()
         .file()
+        .set_directory(&default_dir)
         .set_file_name(&default_filename)
         .add_filter("Text Files", &["txt"])
         .blocking_save_file();

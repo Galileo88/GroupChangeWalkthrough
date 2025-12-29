@@ -4049,6 +4049,31 @@
                   </div>
                 )}
 
+                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, w9-or-irs-letter, and fill-provider-info */}
+                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && currentPageData.id !== 'fill-provider-info' && (
+                  <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                    <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
+                    {currentPageData.noBullets ? (
+                      <div className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
+                            {note}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {currentPageData.pageNotes.map((note, idx) => (
+                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                            <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                            <span>{note}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
                 {/* Resource Text and Buttons */}
                 {currentPageData.resourceText && currentPageData.resources && (
                   <div className="bg-slate-50 border-2 border-slate-300 rounded-lg p-5 mb-6">
@@ -4072,31 +4097,6 @@
                         </button>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Page-specific Important Notes (before fields) - for all pages EXCEPT question-6, question-20, signature-authorization-form, agreement-of-understanding, provider-agreement, disclosure-of-ownership, w9-or-irs-letter, and fill-provider-info */}
-                {currentPageData.pageNotes && currentPageData.id !== 'question-6' && currentPageData.id !== 'question-20' && currentPageData.id !== 'signature-authorization-form' && currentPageData.id !== 'agreement-of-understanding' && currentPageData.id !== 'provider-agreement' && currentPageData.id !== 'disclosure-of-ownership' && currentPageData.id !== 'w9-or-irs-letter' && currentPageData.id !== 'fill-provider-info' && (
-                  <div className="mt-8 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
-                    <h4 className="font-semibold text-sm mb-2 uppercase tracking-wide" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
-                    {currentPageData.noBullets ? (
-                      <div className="space-y-2">
-                        {currentPageData.pageNotes.map((note, idx) => (
-                          <div key={idx} className="text-sm" style={{color: 'var(--gainwell-teal)'}}>
-                            {note}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <ul className="space-y-2">
-                        {currentPageData.pageNotes.map((note, idx) => (
-                          <li key={idx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
-                            <span className="mr-2 mt-1 flex-shrink-0">•</span>
-                            <span>{note}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
                   </div>
                 )}
 

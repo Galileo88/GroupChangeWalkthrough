@@ -193,7 +193,6 @@
                 effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                 boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
                 programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
                 existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
                 existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
                 existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
@@ -1109,28 +1108,6 @@
           ]
         },
         {
-          id: 'existing-provider-close-enrollment',
-          title: 'CLOSING THE ENROLLMENT TASK',
-          description: 'Close the enrollment task in SNOW',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
-          fields: [
-            {
-              name: 'existingProviderCloseEnrollmentComplete',
-              label: 'Complete: Close the enrollment task in SNOW.',
-              type: 'checkbox',
-              required: true,
-              validation: (value) => value === true
-            }
-          ],
-		  pageNotes: [
-		    <>Open the Enrollment Task titled <strong>"Verify CICS"</strong>.<br/><br/></>,
-            <>• Click the PWT number and close the task. Work notes state "<strong>Closing task. CICS verified</strong>"<br/><br/></>,
-            <>Once that is done, navigate back to the parent Group Change PWO.</>
-          ],
-		  noBullets: true,
-          displayImage: enrollmentTaskImage
-        },
-        {
           id: 'existing-provider-finish-group-change',
           title: 'FINISHING UP THE GROUP CHANGE',
           description: 'Complete the group change process in SNOW',
@@ -1877,7 +1854,6 @@
           'effectiveDates',
           'boardCertificationIndicators',
           'programCode54PA',
-          'existingProviderCloseEnrollmentComplete',
           'existingProviderFinishGroupChangeComplete',
           'existingProviderCreateChecklistComplete',
           'existingProviderApproveGroupChangeComplete',
@@ -2396,7 +2372,6 @@
                   effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                   boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
                   programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                  existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
                   existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
                   existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
                   existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
@@ -2425,7 +2400,6 @@
               delete clearedData.effectiveDates;
               delete clearedData.boardCertificationIndicators;
               delete clearedData.programCode54PA;
-              delete clearedData.existingProviderCloseEnrollmentComplete;
               delete clearedData.existingProviderFinishGroupChangeComplete;
               delete clearedData.existingProviderCreateChecklistComplete;
               delete clearedData.existingProviderApproveGroupChangeComplete;
@@ -2467,7 +2441,6 @@
                     effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                     boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
                     programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                    existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
                     existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
                     existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
                     existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
@@ -3002,7 +2975,6 @@
               textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
               textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
               textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
-              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
@@ -3178,7 +3150,6 @@
               textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
               textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
               textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
-              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;

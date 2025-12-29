@@ -113,7 +113,7 @@ These pages display embedded documentation and provide access to reference mater
 
 ---
 
-### Existing Provider Path (Steps 11-23)
+### Existing Provider Path (Steps 11-22)
 
 **Workflow Purpose**: Add providers who are already enrolled in the system to a group practice
 
@@ -122,18 +122,17 @@ These pages display embedded documentation and provide access to reference mater
 | 11 | existing-provider-open-cics | 9 | Open CICS interface | CICS | Navigate to CICS system and access provider records |
 | 12 | existing-provider-add-to-group | 10 | Add provider to group | CICS | Execute group addition transaction |
 | 13 | existing-provider-verify-info | 11 | Verify provider information | CICS | Confirm provider details match application |
-| 14 | existing-provider-close-enrollment | 12 | Close enrollment task | SNOW | Mark enrollment task as complete in ServiceNow |
-| 15 | existing-provider-finish-group-change | 13 | Finish group change | SNOW | Complete group change transaction |
-| 16 | existing-provider-create-checklist | 14 | Create verification checklist | SNOW | Generate checklist for approval workflow |
-| 17 | existing-provider-approve-group-change | 15 | Approve group change | SNOW | Submit for approval or approve (based on permissions) |
-| 18 | existing-provider-open-letter-task | 16 | Open letter task | SNOW | Access letter generation system |
-| 19 | existing-provider-select-letter | 17 | Select letter template | SNOW | Choose appropriate correspondence template |
-| 20 | existing-provider-add-to-letter | 18 | Add provider to letter | SNOW | Include provider in notification letter |
-| 21 | existing-provider-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation |
-| 22 | existing-provider-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete |
-| 23 | existing-provider-completion | 21 | **DECISION POINT** | Application | Additional existing providers? |
+| 14 | existing-provider-finish-group-change | 12 | Finish group change | SNOW | Complete group change transaction |
+| 15 | existing-provider-create-checklist | 13 | Create verification checklist | SNOW | Generate checklist for approval workflow |
+| 16 | existing-provider-approve-group-change | 14 | Approve group change | SNOW | Submit for approval or approve (based on permissions) |
+| 17 | existing-provider-open-letter-task | 15 | Open letter task | SNOW | Access letter generation system |
+| 18 | existing-provider-select-letter | 16 | Select letter template | SNOW | Choose appropriate correspondence template |
+| 19 | existing-provider-add-to-letter | 17 | Add provider to letter | SNOW | Include provider in notification letter |
+| 20 | existing-provider-finish-letter | 18 | Finish letter generation | SNOW | Complete letter creation |
+| 21 | existing-provider-close-letter-task | 19 | Close letter task | SNOW | Mark letter task as complete |
+| 22 | existing-provider-completion | 20 | **DECISION POINT** | Application | Additional existing providers? |
 
-**Step 23 Decision Logic**:
+**Step 22 Decision Logic**:
 - **"Yes" Selection**:
   - Saves current provider to `enrolledProviders` array
   - Clears existing provider-specific form fields
@@ -357,7 +356,7 @@ These pages display embedded documentation and provide access to reference mater
                            │
                            ▼
               ┌────────────────────────┐
-              │ Step 23:               │
+              │ Step 22:               │
               │ More EXISTING providers│
               │ to add to group?       │
               └───┬────────────┬───────┘
@@ -415,7 +414,7 @@ After completing Questions 21-23, the system examines the `enrolledProviders` ar
 - Triggered if providers have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
 - Routes to Step 11 (existing-provider-open-cics)
 - Processes EACH provider sequentially through group addition steps
-- At Step 23, "More providers?" determines if another provider needs to be added
+- At Step 22, "More providers?" determines if another provider needs to be added
   - **Yes** → Process next "Ready to Add" provider, loop to Step 11
   - **No** → Mark all as "Complete", go to Final Completion
 

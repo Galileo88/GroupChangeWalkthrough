@@ -649,12 +649,13 @@
               name: 'ssnVerified',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>SSN</u></strong><br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>SSN</u></strong><br/><br/>
                   • Verify SSN using SOVOS if a Social Security Card is not attached to the application.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               sovosUrl: 'https://taxport.sovos.com/login'
@@ -663,13 +664,14 @@
               name: 'dexSanctionsCheck',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>DEX & SANCTIONS</u></strong><br/><br/> 
-                  • Check the DEX and Sanctions in the WVT for all providers being added. <br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>DEX & SANCTIONS</u></strong><br/><br/>
+                  • Check the DEX and Sanctions in the WVT for all providers being added. <br/><br/>
 				  • If the provider is shown on the DEX or Sanctions in WVT, please reach out to leadership.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
@@ -677,13 +679,14 @@
               name: 'dobVerified',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>DATE OF BIRTH</u></strong><br/><br/> 
-                  • Verify the date of birth for the provider in PECOS. 
+                  <span style={{color: 'red'}}>*</span> <strong><u>DATE OF BIRTH</u></strong><br/><br/>
+                  • Verify the date of birth for the provider in PECOS.
 				  • New providers may not be in PECOS. You will use their DOB on the application.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
@@ -691,12 +694,13 @@
               name: 'npiVerified',
 			  label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>NPI</u></strong><br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>NPI</u></strong><br/><br/>
                   • Verify using the WVT or use the npiregistry button below to ensure the NPI belongs to the provider.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               npiRegistryUrl: 'https://npiregistry.cms.hhs.gov'
@@ -712,8 +716,9 @@
                   • Attach a screenshot of the license to SNOW if one does not already exist in the application.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true,
               licenseVerifyUrl: 'https://miamifrp.com/verification/'
@@ -722,13 +727,14 @@
               name: 'boardCertificatesVerified',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>BOARD CERTIFICATES</u></strong><br/><br/> 
-                  • APN, CRNA, CNM require board certificate.<br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>BOARD CERTIFICATES</u></strong><br/><br/>
+                  • APN, CRNA, CNM require board certificate.<br/><br/>
                   • All other providers are not required to provide a board certificate, but one can be added or updated if included.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
@@ -736,12 +742,13 @@
               name: 'deaEffectiveDates',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>DEA</u></strong><br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>DEA</u></strong><br/><br/>
                   • Compare expiration dates and update if newer. Add DEA information for new providers if attached.
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
@@ -749,12 +756,13 @@
               name: 'effectiveDatesChecked',
               label: () => (
                 <div style={{marginBottom: '20px'}}>
-                  <span style={{color: 'red'}}>*</span> <strong><u>EFFECTIVE DATES</u></strong><br/><br/> 
+                  <span style={{color: 'red'}}>*</span> <strong><u>EFFECTIVE DATES</u></strong><br/><br/>
                   • If the Requested Effective Date is not provided, effective date goes one year back from stamped date (as long as license covers it)
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled && (formData.providerAlreadyEnrolled === 'No' || formData.providerInGroup),
               validation: (value) => value === true
             },
@@ -765,11 +773,12 @@
                   <span style={{color: 'red'}}>*</span> <strong><u>CANCEL CODES</u></strong><br/><br/>
                   • Verify the provider has an active cancel code of 00.<br/><br/>
 				  • If provider has been verified, you can drop down the cancel code if necessary.<br/><br/>
-				   <span style={{color: 'rgba(100, 100, 255, 1.0)'}}><em>If you are unsure how to do this, please reach out to leadership.</em></span>		  
+				   <span style={{color: 'rgba(100, 100, 255, 1.0)'}}><em>If you are unsure how to do this, please reach out to leadership.</em></span>
                 </div>
               ),
+              hasManualAsterisk: true,
               type: 'checkbox',
-              required: false,
+              required: true,
               showWhen: (formData) => formData.question20Answered === 'Yes' && formData.providerAlreadyEnrolled === 'Yes' && formData.providerInGroup,
               validation: (value) => value === true
             }
@@ -4124,7 +4133,7 @@
                       {field.type !== 'checkbox' && (
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
                           {typeof field.label === 'function' ? field.label(formData) : field.label}
-                          {field.required && <span className="text-red-500 ml-1">*</span>}
+                          {field.required && !field.hasManualAsterisk && <span className="text-red-500 ml-1">*</span>}
                         </label>
                       )}
                       <div className="relative">
@@ -4153,7 +4162,7 @@
                                   />
                                   <span className="ml-3 font-medium text-slate-700">
                                     {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                    {field.required && <span className="text-red-500 ml-1">*</span>}
+                                    {field.required && !field.hasManualAsterisk && <span className="text-red-500 ml-1">*</span>}
                                   </span>
                                 </label>
                               </div>
@@ -4172,7 +4181,7 @@
                                 />
                                 <span className="ml-3 font-medium text-slate-700">
                                   {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                                  {field.required && !field.hasManualAsterisk && <span className="text-red-500 ml-1">*</span>}
                                 </span>
                               </label>
                             )}
@@ -4479,7 +4488,7 @@
                                 />
                                 <span className={`ml-3 font-medium flex-1 ${isUnableToVerify ? 'text-slate-400' : 'text-slate-700'}`}>
                                   {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                  {field.required && <span className="!text-red-500 ml-1">*</span>}
+                                  {field.required && !field.hasManualAsterisk && <span className="!text-red-500 ml-1">*</span>}
                                   {isUnableToVerify && <span className="ml-2 text-xs font-semibold !text-amber-600">(UNABLE TO VERIFY)</span>}
                                 </span>
                               </label>
@@ -4589,7 +4598,7 @@
                                 />
                                 <span className={`ml-3 font-medium flex-1 ${isUnableToVerify ? 'text-slate-400' : 'text-slate-700'}`}>
                                   {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                  {field.required && <span className="!text-red-500 ml-1">*</span>}
+                                  {field.required && !field.hasManualAsterisk && <span className="!text-red-500 ml-1">*</span>}
                                   {isUnableToVerify && <span className="ml-2 text-xs font-semibold !text-amber-600">(UNABLE TO VERIFY)</span>}
                                 </span>
                               </label>
@@ -4663,7 +4672,7 @@
                               <div className="ml-4 flex-1">
                                 <span className="font-semibold text-slate-800">
                                   {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                                  {field.required && !field.hasManualAsterisk && <span className="text-red-500 ml-1">*</span>}
                                 </span>
                               </div>
                             </label>

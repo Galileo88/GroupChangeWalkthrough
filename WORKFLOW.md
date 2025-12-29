@@ -122,29 +122,35 @@ These pages display embedded documentation and provide access to reference mater
 | 11 | existing-provider-open-cics | 9 | Open CICS interface | CICS | Navigate to CICS system and access provider records |
 | 12 | existing-provider-add-to-group | 10 | Add provider to group | CICS | Execute group addition transaction |
 | 13 | existing-provider-verify-info | 11 | Verify provider information | CICS | Confirm provider details match application |
-| 14 | existing-provider-finish-group-change | 12 | Finish group change | SNOW | Complete group change transaction |
-| 15 | existing-provider-create-checklist | 13 | Create verification checklist | SNOW | Generate checklist for approval workflow |
-| 16 | existing-provider-approve-group-change | 14 | Approve group change | SNOW | Submit for approval or approve (based on permissions) |
-| 17 | existing-provider-open-letter-task | 15 | Open letter task | SNOW | Access letter generation system |
-| 18 | existing-provider-select-letter | 16 | Select letter template | SNOW | Choose appropriate correspondence template |
-| 19 | existing-provider-add-to-letter | 17 | Add provider to letter | SNOW | Include provider in notification letter |
-| 20 | existing-provider-finish-letter | 18 | Finish letter generation | SNOW | Complete letter creation |
-| 21 | existing-provider-close-letter-task | 19 | Close letter task | SNOW | Mark letter task as complete |
-| 22 | existing-provider-completion | 20 | **DECISION POINT** | Application | Additional existing providers? |
+| 14 | existing-provider-cics-completion | 12 | **DECISION POINT** | Application | Additional providers for CICS processing? |
+| 15 | existing-provider-finish-group-change | 13 | Finish group change | SNOW | Complete group change transaction (one-time for all providers) |
+| 16 | existing-provider-create-checklist | 14 | Create verification checklist | SNOW | Generate checklist for approval workflow (one-time for all providers) |
+| 17 | existing-provider-approve-group-change | 15 | Approve group change | SNOW | Submit for approval or approve (one-time for all providers) |
+| 18 | existing-provider-open-letter-task | 16 | Open letter task | SNOW | Access letter generation system (one-time for all providers) |
+| 19 | existing-provider-select-letter | 17 | Select letter template | SNOW | Choose appropriate correspondence template (one-time for all providers) |
+| 20 | existing-provider-add-to-letter | 18 | Add provider to letter | SNOW | Include provider in notification letter (one-time for all providers) |
+| 21 | existing-provider-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation (one-time for all providers) |
+| 22 | existing-provider-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete (one-time for all providers) |
 
-**Step 22 Decision Logic**:
-- **"Yes" Selection**:
-  - Saves current provider to `enrolledProviders` array
-  - Clears existing provider-specific form fields
-  - Maintains `providerEnrollmentType = 'Existing Provider'`
+**Step 14 Decision Logic (CICS Completion)**:
+- **"Yes" Selection** (More providers to process in CICS):
+  - Saves current provider's CICS-related fields to `enrolledProviders` array
+  - Clears CICS-specific form fields (open-cics, add-to-group, verify-info fields)
   - **LOOPS BACK** to Step 11 (existing-provider-open-cics)
-  - Allows adding multiple existing providers sequentially
+  - Allows processing multiple existing providers through CICS sequentially
+  - Shows confirmation: "Now adding Provider X in CICS"
 
-- **"No" Selection**:
-  - Saves final provider to `enrolledProviders` array
-  - Proceeds to **final-completion** page
-  - Completes entire workflow
-  - Enables export of complete application data
+- **"No" Selection** (All providers processed in CICS):
+  - Saves final provider's CICS-related fields to `enrolledProviders` array
+  - Proceeds to Step 15 (existing-provider-finish-group-change)
+  - Remaining steps (15-22) execute ONCE for all providers
+  - Shows confirmation: "Now continuing to finish the group change process"
+
+**After Step 22 (Close Letter Task)**:
+- Marks all providers as "Complete - Enrolled and Added to Group"
+- Saves all completion fields to all providers
+- Proceeds to **final-completion** page
+- Enables export of complete application data
 
 ---
 
@@ -328,49 +334,57 @@ These pages display embedded documentation and provide access to reference mater
        to Step 24]         │
                            ▼
               ┌────────────────────────┐
-              │ Steps 11-23:           │
-              │ EXISTING PROVIDER      │
-              │ ADD TO GROUP           │
+              │ Steps 11-14:           │
+              │ CICS PROCESSING        │
+              │ (LOOPED)               │
               │                        │
-              │ Process ONE provider   │
-              │ at a time from         │
-              │ enrolledProviders with │
-              │ status: "Ready to Add" │
-              │ or "Enrolled - Ready   │
-              │ to be Added to Group"  │
+              │ Process providers      │
+              │ ONE AT A TIME through  │
+              │ CICS steps:            │
               │                        │
               │ • Open CICS            │
               │ • Add to Group         │
               │ • Verify Info          │
-              │ • Close Enrollment     │
-              │ • Finish Group Change  │
-              │ • Create Checklist     │
-              │ • Approve Change       │
-              │ • Letter Generation:   │
-              │   - Open Letter Task   │
-              │   - Select Letter      │
-              │   - Add to Letter      │
-              │   - Finish Letter      │
-              │   - Close Letter Task  │
-              └────────────┬───────────┘
-                           │
-                           ▼
-              ┌────────────────────────┐
-              │ Step 22:               │
-              │ More EXISTING providers│
-              │ to add to group?       │
+              │ • DECISION: More?      │
               └───┬────────────┬───────┘
                   │            │
              [Yes]│        [No]│
                   │            │
-           [Mark current as    │
-            "Complete",        │
-            process next       │
-            "Ready to Add"]    │
-                  │            │
-                  │            │
            [Loop back          │
             to Step 11]        │
+                  │            │
+                  │            ▼
+                  │   ┌────────────────────┐
+                  │   │ Steps 15-22:       │
+                  │   │ GROUP CHANGE       │
+                  │   │ (ONE-TIME)         │
+                  │   │                    │
+                  │   │ Execute ONCE for   │
+                  │   │ all providers:     │
+                  │   │                    │
+                  │   │ • Finish Change    │
+                  │   │ • Create Checklist │
+                  │   │ • Approve Change   │
+                  │   │ • Letter Tasks:    │
+                  │   │   - Open Task      │
+                  │   │   - Select Letter  │
+                  │   │   - Add to Letter  │
+                  │   │   - Finish Letter  │
+                  │   │   - Close Task     │
+                  │   └────────┬───────────┘
+                  │            │
+                  │            ▼
+                  │   ┌────────────────────┐
+                  │   │ Mark all providers │
+                  │   │ as "Complete"      │
+                  │   └────────┬───────────┘
+                  │            │
+                  │            ▼
+                  │   ┌────────────────────┐
+                  │   │ Final Completion   │
+                  │   └────────────────────┘
+                  │
+                  └────[Loop continues for next provider]
                                │
                                ▼
                     ┌──────────────────┐
@@ -413,15 +427,19 @@ After completing Questions 21-23, the system examines the `enrolledProviders` ar
 **Priority 2 - Existing Provider Workflow** (if applicable):
 - Triggered if providers have status "Verified - Ready to Add to Group" OR "Enrolled - Ready to be Added to Group"
 - Routes to Step 11 (existing-provider-open-cics)
-- Processes EACH provider sequentially through group addition steps
-- At Step 22, "More providers?" determines if another provider needs to be added
-  - **Yes** → Process next "Ready to Add" provider, loop to Step 11
-  - **No** → Mark all as "Complete", go to Final Completion
+- **Phase 1**: Processes EACH provider sequentially through CICS steps (11-13)
+- At Step 14 (CICS Completion), "More providers for CICS?" determines if another provider needs CICS processing
+  - **Yes** → Process next "Ready to Add" provider through CICS, loop to Step 11
+  - **No** → Continue to Step 15 (Finish Group Change)
+- **Phase 2**: Steps 15-22 execute ONCE for all providers (group change, checklist, approval, letter tasks)
+- After Step 22 → Mark all providers as "Complete", go to Final Completion
 
 #### Phase 3: Sequential Batch Processing
-The workflows process providers from the `enrolledProviders` array ONE AT A TIME:
-- **New Provider Workflow**: Finds next provider with status "Verified - Ready to Enroll", processes through Steps 24-36
-- **Existing Provider Workflow**: Finds next provider with status "Ready to Add" or "Enrolled - Ready to be Added to Group", processes through Steps 11-23
+The workflows process providers from the `enrolledProviders` array:
+- **New Provider Workflow**: Finds next provider with status "Verified - Ready to Enroll", processes through Steps 24-36 ONE AT A TIME
+- **Existing Provider Workflow**:
+  - **CICS Processing (Steps 11-14)**: Finds next provider with status "Ready to Add" or "Enrolled - Ready to be Added to Group", processes through CICS steps ONE AT A TIME
+  - **Group Change Processing (Steps 15-22)**: Executes ONCE for all providers after CICS processing is complete
 
 ### Workflow Priority Rules
 

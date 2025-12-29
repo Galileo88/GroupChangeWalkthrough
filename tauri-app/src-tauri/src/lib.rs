@@ -35,7 +35,7 @@ struct PwoState {
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Use network path for PWO state storage
-    Ok(PathBuf::from(r"\\192.60.36.175\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs"))
+    Ok(PathBuf::from(r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs"))
 }
 
 fn get_pwo_folder_path(app: &tauri::AppHandle, pwo_number: &str) -> Result<PathBuf, String> {
@@ -172,7 +172,7 @@ async fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
 #[tauri::command]
 async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filename: String) -> Result<String, String> {
     // Set default download directory to network path
-    let default_dir = PathBuf::from(r"\\192.60.36.175\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs");
+    let default_dir = PathBuf::from(r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs");
 
     // Show save file dialog
     let file_path = app.dialog()

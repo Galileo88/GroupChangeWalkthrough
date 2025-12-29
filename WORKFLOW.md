@@ -132,19 +132,23 @@ These pages display embedded documentation and provide access to reference mater
 | 21 | existing-provider-finish-letter | 19 | Finish letter generation | SNOW | Complete letter creation (one-time for all providers) |
 | 22 | existing-provider-close-letter-task | 20 | Close letter task | SNOW | Mark letter task as complete (one-time for all providers) |
 
+**Step 11 (Open CICS) Entry**:
+- When arriving at this step, shows confirmation: "Now adding Provider X to the group"
+- User confirms to begin CICS processing for the provider
+
 **Step 14 Decision Logic (CICS Completion)**:
 - **"Yes" Selection** (More providers to process in CICS):
   - Saves current provider's CICS-related fields to `enrolledProviders` array
   - Clears CICS-specific form fields (open-cics, add-to-group, verify-info fields)
+  - Shows confirmation: "Now adding Provider X to the group"
   - **LOOPS BACK** to Step 11 (existing-provider-open-cics)
   - Allows processing multiple existing providers through CICS sequentially
-  - Shows confirmation: "Now adding Provider X in CICS"
 
 - **"No" Selection** (All providers processed in CICS):
   - Saves final provider's CICS-related fields to `enrolledProviders` array
+  - Shows confirmation: "All providers have been added in CICS. Now continuing to finish the group change process"
   - Proceeds to Step 15 (existing-provider-finish-group-change)
   - Remaining steps (15-22) execute ONCE for all providers
-  - Shows confirmation: "Now continuing to finish the group change process"
 
 **After Step 22 (Close Letter Task)**:
 - Marks all providers as "Complete - Enrolled and Added to Group"
@@ -382,16 +386,11 @@ These pages display embedded documentation and provide access to reference mater
                   │            ▼
                   │   ┌────────────────────┐
                   │   │ Final Completion   │
+                  │   │ • Export Data      │
+                  │   │ • Review Summary   │
                   │   └────────────────────┘
                   │
-                  └────[Loop continues for next provider]
-                               │
-                               ▼
-                    ┌──────────────────┐
-                    │ Final Completion │
-                    │ • Export Data    │
-                    │ • Review Summary │
-                    └──────────────────┘
+                  └────[Loops back to Step 11 for next provider]
 ```
 
 ### How The Workflow Actually Works

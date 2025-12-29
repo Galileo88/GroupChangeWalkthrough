@@ -2322,6 +2322,16 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
+
+                // Show confirmation before starting first provider
+                const providerNum = firstProviderIndex + 1;
+                const confirmed = await showConfirm(
+                  `Now adding Provider ${providerNum} to the group.`
+                );
+
+                if (!confirmed) {
+                  return; // User cancelled
+                }
               }
 
               setCurrentPage(openCicsIndex);
@@ -2350,7 +2360,7 @@
             // There are more providers to add in CICS
             const nextProviderNum = nextReadyIndex + 1;
             const confirmed = await showConfirm(
-              `You have successfully added Provider ${currentProviderNum} in CICS.\n\nNow adding Provider ${nextProviderNum} in CICS.`
+              `Now adding Provider ${nextProviderNum} to the group.`
             );
 
             if (!confirmed) {
@@ -2402,7 +2412,7 @@
           } else {
             // No more providers - continue to finish group change
             const confirmed = await showConfirm(
-              `You have successfully added all providers in CICS.\n\nNow continuing to finish the group change process.`
+              `All providers have been added in CICS.\n\nNow continuing to finish the group change process.`
             );
 
             if (!confirmed) {
@@ -3520,11 +3530,11 @@
 
           // If this is the last provider in CICS, show message about continuing
           if (!hasMoreProviders) {
-            return `You have successfully added all providers in CICS.\n\nClick "Continue" to finish the group change process.`;
+            return `Provider ${providerNum} has been added in CICS.\n\nClick "Continue" to finish the group change process.`;
           }
 
           // Otherwise, show regular success message
-          return `You have successfully added Provider ${providerNum} in CICS.`;
+          return `Provider ${providerNum} has been added in CICS.`;
         }
 
         return currentPageData.instructionText;

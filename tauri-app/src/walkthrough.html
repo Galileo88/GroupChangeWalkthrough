@@ -4506,12 +4506,12 @@
                           return (
                             <div key={field.name} className={`p-4 border-2 rounded-xl transition-all page-enter ${
                               isUnableToVerify
-                                ? 'border-slate-300 bg-slate-100 opacity-60'
+                                ? 'border-slate-300 bg-slate-100'
                                 : value
                                 ? 'border-indigo-500 bg-indigo-50'
                                 : 'border-slate-200 hover:border-slate-300 bg-white'
                             }`}>
-                              <label className={`flex items-start ${isUnableToVerify ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                              <label className={`flex items-start ${isUnableToVerify ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
                                 <input
                                   type="checkbox"
                                   checked={value || false}

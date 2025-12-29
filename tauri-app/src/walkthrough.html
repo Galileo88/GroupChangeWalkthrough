@@ -131,7 +131,7 @@
       const [alertDialog, setAlertDialog] = useState({ show: false, message: '', onClose: null });
       const [saveStatus, setSaveStatus] = useState({ saving: false, lastSaved: null, error: null });
       const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem('theme') === 'dark';
+        return localStorage.getItem('theme') !== 'light';
       });
 
       // -------------------- Dark Mode Effect --------------------
@@ -510,7 +510,7 @@
               showWhen: { field: 'groupPracticeAttached', value: 'Yes' },
               validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
-                'Questions 2, 4, 5, 5A, 5B, 5C and all sub-parts are required to be answered. Compare the list from question 5 and 5C to CICS pg13.',
+                'Questions 2, 4, 5, 5A, 5B, 5C and all sub-parts are required to be answered. "N/A" is not an acceptable answer. Compare the list from question 5 and 5C to CICS pg13.',
                 'If the group is a non-profit, they will not have owners. They will have "controlling interests" and will have an ownership type of "C" on the ownership page in CICS. Controlling interests can be treated like managing employees and can be added at any time.',
                 'If they are not a non-profit, and question 5 includes an owner that is not listed on the ownership file on pg13 in CICS, this may be a CHOW. Please let leadership know so they can advise you on next steps.',
                 'Individuals list under question 5C should also be listed on the ownership file on pg13 in CICS. If an individual is not listed in CICS on pg13, we will add them with a status of "S" indicated they are managing staff.'
@@ -1254,7 +1254,7 @@
           ],
 		  noteText: [
 			<><u><b>NOTE:</b></u><br/> 
-			You will do this for every provider being added to the group. After you click <b>"Submit"</b>, repeat these steps for each provider.</>			
+			You will repeate these steps for every provider you added to the group.</>			
           ],
 		  pageNotes: [
 			<>• Near the bottom left of the letter task page, click on the blue <strong>"New"</strong> button.</>,

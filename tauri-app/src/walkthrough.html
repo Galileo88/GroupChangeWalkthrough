@@ -1404,7 +1404,7 @@
             <><br/>• In CICS, check the group's specialty coverage.<br/></>,
             <>• From the 02 page, press F5 to view existing specialties.</>,
             <>• If the provider's specialty isn't listed, verify if it's covered under another specialty (e.g., 420, 110, 750).<br/><br/></>,
-            <div style={{ color: 'rgb(150, 150, 255)'}}><em>If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.</em></div>
+            <><em>If you are still unsure, please reach out in the chat, or to leadership so that you can get the answer you need.</em></>
           ],
 		  noBullets: true,
           displayImage: groupSpecialtyImage
@@ -1423,7 +1423,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Back in SNOW, navigate to the bottom of the PWO and locate the "Enrollment Applications" tab.\n\nYou will see a new Enrollment Application associated with the provider information you just entered.\n\nClick on the PWO to take you to the enrollment application.',
+		  pageNotes: [
+            <>• In SNOW, navigate to the "Enrollment Applications" tab.</>,
+            <>• Click on the enrollment PWO to take you to the enrollment application.</>
+          ],
+		  noBullets: true,
           displayImage: enrollmentTabImage
         },
         {
@@ -1455,13 +1459,20 @@
             },
             {
               name: 'cancelReasonCode',
-              label: 'Complete: Cancel Reason Code should remain 00',
+              label: 'Complete: Cancel Reason Code should be 00',
               type: 'checkbox',
               required: true,
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Once you are in the Enrollment Application, check the name, provider type, application date and cancel reason code to ensure you entered the providers data correctly.'
+		  pageNotes: [
+            <><strong>In the Enrollment Application, ensure you entered the providers data correctly.</strong><br/></>,
+            <>• Check the <strong>Name</strong>.</>,
+			<>• Check the <strong>Provider Type</strong>. (If incorrect, reach out to leadership)</>,
+			<>• Check the <strong>Application Date</strong>.</>,
+			<>• Check the <strong>Cancel Reason Code</strong>.</>
+          ],
+		  noBullets: true,
         },
         {
           id: 'provider-address-tab',
@@ -1477,7 +1488,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'The street address will be the practice address found on question 6 of the Group Practice Application.\n\nThe phone number, and fax number can be found on questions 11 and 14 in the Group Practice Application',
+		  pageNotes: [
+            <>• The <strong>street address</strong> is the <strong>practice address</strong> on question 6 of the Group Practice Application.</>,
+            <>• The <strong>phone number</strong>, and <strong>fax number</strong> are on questions 11 and 14 of the Group Practice Application</>
+          ],
+		  noBullets: true,
           displayImage: providerAddressImage
         },
         {
@@ -1494,7 +1509,11 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'By default these inherit the street address from the Provider Address tab. These do not need to be changed in SNOW, but will need to be updated in CICS once the provider is added to the group.',
+		  pageNotes: [
+            <>These inherit the street address from the Provider Address tab by default.</>,
+            <>No changes needed in SNOW, but update in CICS after adding the provider to the group.</>
+          ],
+		  noBullets: true,
           displayImage: mailingAddressImage
         },
         {
@@ -1511,7 +1530,16 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'The Eligibility Begin date will be the Requested Effective Date on question 20 of the Group Practice Application.\n\nA Requested Effective Date might not be provided. If that is the case, The effective date will go one year back from the stamped date as long as the license can cover it.\n\nIf the Requested Effective Date is further than a year back, we will go back 1 year from the stamped date on the application, as long as the individual providers license covers that far back. If the license does not cover that far back, you can only go as far back as the issue date of the license.\n\nThe Eligibility End date will remain blank.\n\nIf the provider has a Medicare Number, you can enter it in the Medicare Number field.',
+          pageNotes: [
+            <><br/><u><strong>Eligibility Begin Date:</strong></u></>,
+            <>• Use the Requested Effective Date from question 20 of the Group Practice Application.</>,
+            <>• If not provided or exceeds one year back, use one year prior to the stamped date, limited by the provider's license issue date.<br/><br/></>,
+			<><u><strong>Eligibility End Date:</strong></u></>,
+            <>• Leave blank.<br/><br/></>,
+            <><u><strong>Medicare Number:</strong></u></>,
+            <>• Enter if available.</>
+          ],
+		  noBullets: true,
           displayImage: providerInfoTabImage
         },
         {
@@ -1528,7 +1556,10 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'The NPI number for the individual provider should already be populated into this tab. If it is not, you will enter it here.',
+		  pageNotes: [
+            <>• Enter the provider's NPI if not already populated.</>
+          ],
+		  noBullets: true,
           displayImage: npiTabImage
         },
         {
@@ -1545,7 +1576,14 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'This is a good time to triple check the specialty.\n\nSpecialty 1 Begin Date will be the same as the Eligibility Begin date as on the Provider Information tab.\n\nFor NURSES, Specialty 1 End Date will be the date their Board Certificate expires\n\nFor DOCTORS & PAs, Specialty 1 End Date will remain blank',
+		  pageNotes: [
+            <><br/><u><strong>Specialty 1 Begin Date:</strong></u></>,
+            <>• Same as Eligibility Begin date.<br/><br/></>,
+			<><u><strong>Specialty 1 End Date:</strong></u></>,
+            <>• Board Certificate expiration date for APN, CNM, and CRNA.<br/><br/></>,
+            <>• Leave blank for all other provider types.</>
+          ],
+		  noBullets: true,
           displayImage: specTabImage
         },
         {
@@ -1562,18 +1600,25 @@
               validation: (value) => value === true
             }
           ],
-          instructionText: 'Claim Types can be determined by using the resource below.',
+		  pageNotes: [
+            <>Claim Types can be determined by using the resource below.</>
+          ],
+		  noBullets: true,
           resourceText: 'Use this resource to determine claim types:',
           resources: [
             { label: 'Provider Types and Specialties', url: './ProviderTypesSpecialties.pdf', type: 'pdf' }
           ],
           displayImage: claimTabImage,
           pageNotes: [
-            'Example: A Provider Type 70 with a Specialty of 190 will get Claim Types 13, 15, 22',
-            'Claim Type 1 Begin Date will be the same as the Eligibility Begin date as on the Provider Information tab.',
-            'Claim Type 1 End Date will remain blank.',
-            'NOTE: Not all specialties have 3 claim types like this example. Some will have 1 and some will have 2. The begin dates for each claim type will be the same date.'
-          ]
+            <><br/><u><strong>Claim Type Example:</strong></u></>,
+            <>• Provider Type 70 with Specialty 190 gets Claim Types 13, 15, 22.<br/><br/></>,
+			<><u><strong>Claim Type 1 Begin Date:</strong></u></>,
+            <>• Same as Eligibility Begin date.<br/><br/></>,
+            <><u><strong>End Date: </strong></u></>,
+			<>• Leave blank. </>
+          ],
+		  noBullets: true,
+		  noteText: 'Note: Specialties vary (1-3 claim types). All begin dates match.'
         },
         {
           id: 'license-dea-tab',

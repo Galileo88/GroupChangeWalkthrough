@@ -2939,7 +2939,7 @@
 
             // PROVIDER VERIFICATION
             textContent += `PROVIDER VERIFICATION:\n`;
-            if (provider.providerAlreadyEnrolled === 'Yes' || provider.providerInGroup === 'Yes') {
+            if (provider.question20Answered === 'Yes' && provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup) {
               textContent += `  • Cancel Codes Verified: ${provider.cancelCodesVerified ? 'Yes' : 'No'}\n`;
             }
             textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
@@ -2948,7 +2948,7 @@
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDates ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
 
@@ -3115,7 +3115,7 @@
 
             // PROVIDER VERIFICATION
             textContent += `PROVIDER VERIFICATION:\n`;
-            if (provider.providerAlreadyEnrolled === 'Yes' || provider.providerInGroup === 'Yes') {
+            if (provider.question20Answered === 'Yes' && provider.providerAlreadyEnrolled === 'Yes' && provider.providerInGroup) {
               textContent += `  • Cancel Codes Verified: ${provider.cancelCodesVerified ? 'Yes' : 'No'}\n`;
             }
             textContent += `  • SSN Verified: ${provider.ssnVerified ? 'Yes' : 'No'}\n`;
@@ -3124,7 +3124,7 @@
             textContent += `  • NPI Verified: ${provider.npiVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Licenses Verified: ${provider.licensesVerified ? 'Yes' : 'No'}\n`;
             textContent += `  • Board Certificates Verified: ${provider.boardCertificatesVerified ? 'Yes' : 'No'}\n`;
-            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDatesChecked ? 'Yes' : 'No'}\n`;
+            textContent += `  • DEA Effective Dates Checked: ${provider.deaEffectiveDates ? 'Yes' : 'No'}\n`;
             textContent += `  • Effective Dates Checked: ${provider.effectiveDatesChecked ? 'Yes' : 'No'}\n`;
             textContent += `\n`;
 

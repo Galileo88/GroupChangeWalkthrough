@@ -193,7 +193,6 @@
                 effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                 boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
                 programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
                 existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
                 existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
                 existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
@@ -1109,26 +1108,14 @@
           ]
         },
         {
-          id: 'existing-provider-close-enrollment',
-          title: 'CLOSING THE ENROLLMENT TASK',
-          description: 'Close the enrollment task in SNOW',
+          id: 'existing-provider-cics-completion',
+          title: 'Provider Added in CICS',
+          description: 'Automatic provider workflow routing for CICS processing',
           showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
-          fields: [
-            {
-              name: 'existingProviderCloseEnrollmentComplete',
-              label: 'Complete: Close the enrollment task in SNOW.',
-              type: 'checkbox',
-              required: true,
-              validation: (value) => value === true
-            }
-          ],
-		  pageNotes: [
-		    <>Open the Enrollment Task titled <strong>"Verify CICS"</strong>.<br/><br/></>,
-            <>• Click the PWT number and close the task. Work notes state "<strong>Closing task. CICS verified</strong>"<br/><br/></>,
-            <>Once that is done, navigate back to the parent Group Change PWO.</>
-          ],
-		  noBullets: true,
-          displayImage: enrollmentTaskImage
+          fields: [],
+          instructionText: '',
+          isCompletionPage: true,
+          isInformational: true
         },
         {
           id: 'existing-provider-finish-group-change',
@@ -1313,16 +1300,6 @@
           ],
 		  noBullets: true,
           displayImage: closeLetterImage
-        },
-        {
-          id: 'existing-provider-completion',
-          title: 'Provider Added to Group',
-          description: 'Automatic provider workflow routing',
-          showWhen: { field: 'providerEnrollmentType', value: 'Existing Provider' },
-          fields: [],
-          instructionText: '',
-          isCompletionPage: true,
-          isInformational: true
         },
         {
           id: 'final-completion',
@@ -1877,7 +1854,6 @@
           'effectiveDates',
           'boardCertificationIndicators',
           'programCode54PA',
-          'existingProviderCloseEnrollmentComplete',
           'existingProviderFinishGroupChangeComplete',
           'existingProviderCreateChecklistComplete',
           'existingProviderApproveGroupChangeComplete',
@@ -2346,6 +2322,16 @@
 
               if (firstProviderIndex !== -1) {
                 setCurrentAddingProviderIndex(firstProviderIndex);
+
+                // Show confirmation before starting first provider
+                const providerNum = firstProviderIndex + 1;
+                const confirmed = await showConfirm(
+                  `Now adding Provider ${providerNum} to the group.`
+                );
+
+                if (!confirmed) {
+                  return; // User cancelled
+                }
               }
 
               setCurrentPage(openCicsIndex);
@@ -2360,8 +2346,8 @@
           // Fallback: If no routing condition matched, log error
         }
 
-        if (currentPageData.id === 'existing-provider-completion') {
-          // Automatically check if there are more providers to add to group
+        if (currentPageData.id === 'existing-provider-cics-completion') {
+          // Automatically check if there are more providers to add in CICS
           const nextReadyIndex = enrolledProviders.findIndex((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
@@ -2371,10 +2357,10 @@
           const currentProviderNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
 
           if (nextReadyIndex !== -1) {
-            // There are more providers to add to group
+            // There are more providers to add in CICS
             const nextProviderNum = nextReadyIndex + 1;
             const confirmed = await showConfirm(
-              `You have successfully added Provider ${currentProviderNum} to the group.\n\nNow adding Provider ${nextProviderNum} to the group.`
+              `Now adding Provider ${nextProviderNum} to the group.`
             );
 
             if (!confirmed) {
@@ -2385,7 +2371,7 @@
               const updated = [...prev];
 
               if (currentAddingProviderIndex !== null && updated[currentAddingProviderIndex]) {
-                // Preserve all existing provider completion fields from formData before changing status
+                // Save only CICS-related fields for this provider
                 updated[currentAddingProviderIndex] = {
                   ...updated[currentAddingProviderIndex],
                   existingProviderOpenCicsComplete: formData.existingProviderOpenCicsComplete || updated[currentAddingProviderIndex].existingProviderOpenCicsComplete,
@@ -2395,17 +2381,7 @@
                   cancelCodes: formData.cancelCodes || updated[currentAddingProviderIndex].cancelCodes,
                   effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                   boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
-                  programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                  existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
-                  existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
-                  existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
-                  existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
-                  existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderOpenLetterTaskComplete,
-                  existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete || updated[currentAddingProviderIndex].existingProviderSelectLetterComplete,
-                  existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete || updated[currentAddingProviderIndex].existingProviderAddToLetterComplete,
-                  existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete || updated[currentAddingProviderIndex].existingProviderFinishLetterComplete,
-                  existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderCloseLetterTaskComplete,
-                  status: 'Complete - Enrolled and Added to Group'
+                  programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA
                 };
               }
 
@@ -2416,7 +2392,7 @@
 
             setFormData(prev => {
               const clearedData = { ...prev };
-              delete clearedData.additionalExistingProvidersNeeded;
+              // Clear only CICS-related fields for next provider
               delete clearedData.existingProviderOpenCicsComplete;
               delete clearedData.existingProviderAddToGroupComplete;
               delete clearedData.providerNameFormatting02;
@@ -2425,15 +2401,6 @@
               delete clearedData.effectiveDates;
               delete clearedData.boardCertificationIndicators;
               delete clearedData.programCode54PA;
-              delete clearedData.existingProviderCloseEnrollmentComplete;
-              delete clearedData.existingProviderFinishGroupChangeComplete;
-              delete clearedData.existingProviderCreateChecklistComplete;
-              delete clearedData.existingProviderApproveGroupChangeComplete;
-              delete clearedData.existingProviderOpenLetterTaskComplete;
-              delete clearedData.existingProviderSelectLetterComplete;
-              delete clearedData.existingProviderAddToLetterComplete;
-              delete clearedData.existingProviderFinishLetterComplete;
-              delete clearedData.existingProviderCloseLetterTaskComplete;
               return clearedData;
             });
 
@@ -2443,20 +2410,20 @@
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
           } else {
-            // No more providers - all done!
+            // No more providers - continue to finish group change
             const confirmed = await showConfirm(
-              `You have successfully added all providers to the group.`
+              `All providers have been added in CICS.\n\nNow continuing to finish the group change process.`
             );
 
             if (!confirmed) {
               return; // User cancelled
             }
 
+            // Save CICS fields for the current provider
             if (currentAddingProviderIndex !== null) {
               setEnrolledProviders(prev => {
                 const updated = [...prev];
                 if (updated[currentAddingProviderIndex]) {
-                  // Preserve all existing provider completion fields from formData before changing status
                   updated[currentAddingProviderIndex] = {
                     ...updated[currentAddingProviderIndex],
                     existingProviderOpenCicsComplete: formData.existingProviderOpenCicsComplete || updated[currentAddingProviderIndex].existingProviderOpenCicsComplete,
@@ -2466,33 +2433,23 @@
                     cancelCodes: formData.cancelCodes || updated[currentAddingProviderIndex].cancelCodes,
                     effectiveDates: formData.effectiveDates || updated[currentAddingProviderIndex].effectiveDates,
                     boardCertificationIndicators: formData.boardCertificationIndicators || updated[currentAddingProviderIndex].boardCertificationIndicators,
-                    programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA,
-                    existingProviderCloseEnrollmentComplete: formData.existingProviderCloseEnrollmentComplete || updated[currentAddingProviderIndex].existingProviderCloseEnrollmentComplete,
-                    existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderFinishGroupChangeComplete,
-                    existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete || updated[currentAddingProviderIndex].existingProviderCreateChecklistComplete,
-                    existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete || updated[currentAddingProviderIndex].existingProviderApproveGroupChangeComplete,
-                    existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderOpenLetterTaskComplete,
-                    existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete || updated[currentAddingProviderIndex].existingProviderSelectLetterComplete,
-                    existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete || updated[currentAddingProviderIndex].existingProviderAddToLetterComplete,
-                    existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete || updated[currentAddingProviderIndex].existingProviderFinishLetterComplete,
-                    existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete || updated[currentAddingProviderIndex].existingProviderCloseLetterTaskComplete,
-                    status: 'Complete - Enrolled and Added to Group'
+                    programCode54PA: formData.programCode54PA || updated[currentAddingProviderIndex].programCode54PA
                   };
                 }
                 return updated;
               });
-
-              setCurrentAddingProviderIndex(null);
             }
 
-            const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
-            if (finalCompletionIndex !== -1) {
-              setCurrentPage(finalCompletionIndex);
-              setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
+            // Continue to finish-group-change
+            const finishGroupChangeIndex = pages.findIndex(page => page.id === 'existing-provider-finish-group-change');
+            if (finishGroupChangeIndex !== -1) {
+              setCurrentPage(finishGroupChangeIndex);
+              setVisitedPages(prev => new Set([...prev, finishGroupChangeIndex]));
             }
           }
           return;
         }
+
 
         if (currentPageData.id === 'additional-providers-check') {
           // Automatically check if there are more providers to enroll
@@ -2684,6 +2641,38 @@
               setCurrentPage(openCicsIndex);
               setVisitedPages(prev => new Set([...prev, openCicsIndex]));
             }
+          }
+          return;
+        }
+
+        if (currentPageData.id === 'existing-provider-close-letter-task') {
+          // Mark all providers as complete and go to final-completion
+          setEnrolledProviders(prev => {
+            return prev.map(provider => {
+              if (provider.status === 'Enrolled - Ready to be Added to Group' ||
+                  provider.status === 'Verified - Ready to Add to Group') {
+                return {
+                  ...provider,
+                  existingProviderFinishGroupChangeComplete: formData.existingProviderFinishGroupChangeComplete,
+                  existingProviderCreateChecklistComplete: formData.existingProviderCreateChecklistComplete,
+                  existingProviderApproveGroupChangeComplete: formData.existingProviderApproveGroupChangeComplete,
+                  existingProviderOpenLetterTaskComplete: formData.existingProviderOpenLetterTaskComplete,
+                  existingProviderSelectLetterComplete: formData.existingProviderSelectLetterComplete,
+                  existingProviderAddToLetterComplete: formData.existingProviderAddToLetterComplete,
+                  existingProviderFinishLetterComplete: formData.existingProviderFinishLetterComplete,
+                  existingProviderCloseLetterTaskComplete: formData.existingProviderCloseLetterTaskComplete,
+                  status: 'Complete - Enrolled and Added to Group'
+                };
+              }
+              return provider;
+            });
+          });
+
+          // Go to final-completion
+          const finalCompletionIndex = pages.findIndex(page => page.id === 'final-completion');
+          if (finalCompletionIndex !== -1) {
+            setCurrentPage(finalCompletionIndex);
+            setVisitedPages(prev => new Set([...prev, finalCompletionIndex]));
           }
           return;
         }
@@ -3002,7 +2991,6 @@
               textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
               textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
               textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
-              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
@@ -3178,7 +3166,6 @@
               textContent += `  • Effective Dates Checked: ${provider.effectiveDates ? 'Yes' : 'No'}\n`;
               textContent += `  • Board Certification Indicators Checked: ${provider.boardCertificationIndicators ? 'Yes' : 'No'}\n`;
               textContent += `  • Program Code 54 for PA (04 page): ${provider.programCode54PA ? 'Yes' : 'No'}\n`;
-              textContent += `  • Enrollment Task Closed: ${provider.existingProviderCloseEnrollmentComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Completed: ${provider.existingProviderFinishGroupChangeComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Checklist Created: ${provider.existingProviderCreateChecklistComplete ? 'Yes' : 'No'}\n`;
               textContent += `  • Group Change Approved: ${provider.existingProviderApproveGroupChangeComplete ? 'Yes' : 'No'}\n`;
@@ -3496,14 +3483,13 @@
       const canProceed = isPageValid();
 
       const getNextButtonText = () => {
-        if (currentPageData.id === 'existing-provider-completion') {
-          // Check if there are more providers to add to group
+        if (currentPageData.id === 'existing-provider-cics-completion') {
+          // Check if there are more providers to add in CICS
           const hasMoreProviders = enrolledProviders.some((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
-          // When no more providers, completion buttons are shown instead of navigation button
           return hasMoreProviders ? 'Next Provider' : 'Continue';
         }
 
@@ -3532,23 +3518,23 @@
           return `You have successfully enrolled Provider ${providerNum}.\n\nPlease click "${buttonText}" to continue.`;
         }
 
-        if (currentPageData.id === 'existing-provider-completion') {
+        if (currentPageData.id === 'existing-provider-cics-completion') {
           const providerNum = currentAddingProviderIndex !== null ? currentAddingProviderIndex + 1 : '';
 
-          // Check if there are more providers to add to group
+          // Check if there are more providers to add in CICS
           const hasMoreProviders = enrolledProviders.some((p, idx) =>
             idx > currentAddingProviderIndex &&
             (p.status === 'Enrolled - Ready to be Added to Group' ||
              p.status === 'Verified - Ready to Add to Group')
           );
 
-          // If this is the last provider, show congratulations message
+          // If this is the last provider in CICS, show message about continuing
           if (!hasMoreProviders) {
-            return `Congratulations! You have successfully added all providers to the group!\n\nPlease download your notes below and attach them to SNOW.\nClick "Start New Application" to begin a new application`;
+            return `Provider ${providerNum} has been added in CICS.\n\nClick "Continue" to finish the group change process.`;
           }
 
           // Otherwise, show regular success message
-          return `You have successfully added Provider ${providerNum} to the group.`;
+          return `Provider ${providerNum} has been added in CICS.`;
         }
 
         return currentPageData.instructionText;
@@ -4894,17 +4880,9 @@
                     if (currentPageData.id === 'additional-providers-check') {
                       return false; // Always show regular navigation (either "Next Provider" or "Add Providers to Group")
                     }
-                    // For existing-provider-completion, only show completion buttons if there are no more providers to add
-                    if (currentPageData.id === 'existing-provider-completion') {
-                      const hasMoreProviders = enrolledProviders.some((p, idx) =>
-                        idx > currentAddingProviderIndex &&
-                        (p.status === 'Enrolled - Ready to be Added to Group' ||
-                         p.status === 'Verified - Ready to Add to Group')
-                      );
-                      // If there are more providers, show regular navigation instead
-                      if (hasMoreProviders) {
-                        return false; // Don't show completion buttons
-                      }
+                    // For existing-provider-cics-completion, always show regular navigation
+                    if (currentPageData.id === 'existing-provider-cics-completion') {
+                      return false; // Always show regular navigation
                     }
                     return true; // Show completion buttons
                   }

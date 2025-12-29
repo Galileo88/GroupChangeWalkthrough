@@ -177,9 +177,11 @@
         // Set a new timeout for auto-save
         saveTimeoutRef.current = setTimeout(() => {
           const pwoNumber = formData.pwoNumber;
+          const userName = formData.userName;
           const currentPageId = pages[currentPage]?.id;
 
-          if (pwoNumber && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
+          // Only save if both PWO number and user name are filled in
+          if (pwoNumber && userName && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
             saveApplicationState(pwoNumber);
           }
         }, 1000); // 1 second debounce
@@ -2801,11 +2803,29 @@
         if (tauriInvoke) {
           // Tauri desktop app - use custom command
           try {
+            // First, let user choose where to save the file
             const result = await tauriInvoke('save_file_dialog', {
               content: content,
               defaultFilename: defaultFilename
             });
-            await showAlert('File saved successfully!');
+
+            // Also save a copy to the PWO folder automatically
+            const pwoNumber = formData.pwoNumber;
+            if (pwoNumber) {
+              try {
+                await tauriInvoke('save_file_to_pwo_folder', {
+                  pwoNumber: pwoNumber,
+                  content: content,
+                  filename: defaultFilename
+                });
+                await showAlert('File saved successfully!\n\nA copy has also been saved to the PWO folder.');
+              } catch (pwoError) {
+                // User chose a location, but PWO folder save failed
+                await showAlert('File saved to your chosen location.\n\nWarning: Failed to save copy to PWO folder.');
+              }
+            } else {
+              await showAlert('File saved successfully!');
+            }
           } catch (error) {
             const errorMsg = typeof error === 'string' ? error : (error.message || error.toString() || 'Unknown error');
             if (errorMsg.includes('cancelled')) {

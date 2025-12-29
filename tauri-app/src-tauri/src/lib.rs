@@ -198,6 +198,22 @@ async fn save_file_dialog(app: tauri::AppHandle, content: String, default_filena
     }
 }
 
+#[tauri::command]
+async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, content: String, filename: String) -> Result<String, String> {
+    let pwo_folder = get_pwo_folder_path(&app, &pwo_number)?;
+
+    // Create the PWO folder if it doesn't exist
+    fs::create_dir_all(&pwo_folder)
+        .map_err(|e| format!("Failed to create PWO folder: {}", e))?;
+
+    // Save file to PWO folder
+    let file_path = pwo_folder.join(&filename);
+    fs::write(&file_path, content)
+        .map_err(|e| format!("Failed to write file to PWO folder: {}", e))?;
+
+    Ok(format!("Copy saved to PWO folder: {}", file_path.display()))
+}
+
 // ============================================================
 // APPLICATION INITIALIZATION
 // ============================================================
@@ -214,7 +230,8 @@ pub fn run() {
             delete_pwo_state,
             get_save_location,
             open_url,
-            save_file_dialog
+            save_file_dialog,
+            save_file_to_pwo_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

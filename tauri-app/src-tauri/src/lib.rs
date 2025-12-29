@@ -33,10 +33,9 @@ struct PwoState {
 // HELPER FUNCTIONS
 // ============================================================
 
-fn get_app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    app.path()
-        .app_data_dir()
-        .map_err(|e| format!("Failed to get app data directory: {}", e))
+fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    // Use network path for PWO state storage
+    Ok(PathBuf::from(r"\\192.60.36.175\shared\Provider Services\Enrollment\WALKTHROUGH_PWOs"))
 }
 
 fn get_pwo_folder_path(app: &tauri::AppHandle, pwo_number: &str) -> Result<PathBuf, String> {

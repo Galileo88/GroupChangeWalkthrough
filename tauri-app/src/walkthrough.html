@@ -3140,10 +3140,8 @@
         textContent += `${'-'.repeat(80)}\n\n`;
         textContent += `Instructions: QA representative should verify each item below and initial when complete.\n\n`;
 
-        textContent += `APPLICATION SETUP VERIFICATION:\n`;
-        textContent += `  [ ] User Name verified and matches documentation ______\n`;
-        textContent += `  [ ] PWO Number verified and matches case ______\n`;
-        textContent += `  [ ] Application Choice is correct (Group Practice vs Individual) ______\n\n`;
+        textContent += `User Name: ${formData.userName || 'N/A'}\n`;
+        textContent += `PWO Number: ${formData.pwoNumber || 'N/A'}\n\n`;
 
         textContent += `GROUP PRACTICE APPLICATION VERIFICATION:\n`;
         textContent += `  [ ] Group Practice Application is attached ______\n`;

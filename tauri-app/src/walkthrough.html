@@ -105,6 +105,38 @@
     );
 
     // ============================================================
+    // STAFF NAMES - Easy to modify array
+    // ============================================================
+    const STAFF_NAMES = [
+      'Adriana Menephee',
+      'Beenish Pervez',
+      'Bianca Hernandez',
+      'Britni Hutchinson',
+      'Cherie Wilson',
+      'Dawn Battle',
+      'Dominique  Wheeler',
+      'Essence White',
+      'Jammey Ho',
+      'Jayashree Mody',
+      'Jennifer Ehart',
+      'Joeann Figueroa',
+      'Kara Robinson',
+      'Lasherrica McBride',
+      'La\'Tia Short-Tillery',
+      'Leslie Kanfer',
+      'Marquita Johnson',
+      'Sarah Crooms',
+      'Serina Herrera',
+      'Shaquantia Howard',
+      'Shelley Carter',
+      'Sherissee Anderson',
+      'Sherond Batson',
+      'Sonja Van Camp',
+      'Tawana Berry',
+      'Ty Haight'
+    ];
+
+    // ============================================================
     // MAIN FORM COMPONENT
     // ============================================================
 
@@ -488,9 +520,10 @@
             {
               name: 'userName',
               label: 'Your Name',
-              type: 'text',
+              type: 'select',
               required: true,
-              placeholder: 'Enter your full name',
+              placeholder: 'Select your name',
+              options: STAFF_NAMES,
               validation: (value) => value && value.length >= 2
             },
             {
@@ -4291,6 +4324,25 @@
                               </div>
                             )}
                           </>
+                        ) : field.type === 'select' ? (
+                          <select
+                            value={value}
+                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                            className={`field-input w-full px-4 py-3 border-2 rounded-xl focus:outline-none ${
+                              showValidation
+                                ? isValid
+                                  ? 'border-green-300 focus:border-green-500'
+                                  : 'border-red-300 focus:border-red-500'
+                                : 'border-slate-200 focus:border-cyan-500'
+                            }`}
+                          >
+                            <option value="">{field.placeholder || 'Select an option...'}</option>
+                            {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
                         ) : field.type === 'textarea' ? (
                           <textarea
                             value={value}
@@ -4320,7 +4372,7 @@
                             }`}
                           />
                         )}
-                        {showValidation && field.type !== 'radio' && field.type !== 'checkbox' && (
+                        {showValidation && field.type !== 'radio' && field.type !== 'checkbox' && field.type !== 'select' && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
                             {isValid ? (
                               <CheckCircle2 className="w-5 h-5 text-green-500" />

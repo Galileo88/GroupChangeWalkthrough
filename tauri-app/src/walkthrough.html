@@ -165,6 +165,7 @@
       const [isDarkMode, setIsDarkMode] = useState(() => {
         return localStorage.getItem('theme') !== 'light';
       });
+      const [openDropdown, setOpenDropdown] = useState(null);
 
       // -------------------- Field Name Mapping --------------------
       // Maps field names to human-readable labels for outreach notes
@@ -4325,24 +4326,51 @@
                             )}
                           </>
                         ) : field.type === 'select' ? (
-                          <select
-                            value={value}
-                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                            className={`field-input w-full px-4 py-3 border-2 rounded-xl focus:outline-none ${
-                              showValidation
-                                ? isValid
-                                  ? 'border-green-300 focus:border-green-500'
-                                  : 'border-red-300 focus:border-red-500'
-                                : 'border-slate-200 focus:border-cyan-500'
-                            }`}
-                          >
-                            <option value="">{field.placeholder || 'Select an option...'}</option>
-                            {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="relative">
+                            <button
+                              type="button"
+                              onClick={() => setOpenDropdown(openDropdown === field.name ? null : field.name)}
+                              className={`field-input w-full px-4 py-3 border-2 rounded-xl focus:outline-none text-left flex justify-between items-center ${
+                                showValidation
+                                  ? isValid
+                                    ? 'border-green-300 focus:border-green-500'
+                                    : 'border-red-300 focus:border-red-500'
+                                  : 'border-slate-200 focus:border-cyan-500'
+                              }`}
+                            >
+                              <span className={value ? 'text-slate-900' : 'text-slate-400'}>
+                                {value || field.placeholder || 'Select an option...'}
+                              </span>
+                              <svg className={`w-5 h-5 transition-transform ${openDropdown === field.name ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            {openDropdown === field.name && (
+                              <>
+                                <div
+                                  className="fixed inset-0 z-10"
+                                  onClick={() => setOpenDropdown(null)}
+                                />
+                                <div className="absolute z-20 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                                  {(typeof field.options === 'function' ? field.options(formData) : field.options).map((option) => (
+                                    <div
+                                      key={option}
+                                      onClick={() => {
+                                        handleFieldChange(field.name, option);
+                                        setOpenDropdown(null);
+                                      }}
+                                      className={`px-4 py-3 cursor-pointer hover:bg-cyan-50 transition-colors ${
+                                        value === option ? 'bg-cyan-50 font-medium' : ''
+                                      }`}
+                                      style={value === option ? {color: 'var(--gainwell-cyan)'} : {}}
+                                    >
+                                      {option}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
                         ) : field.type === 'textarea' ? (
                           <textarea
                             value={value}

@@ -2716,6 +2716,11 @@
         }
 
         if (isPageValid() && currentPage < pages.length - 1) {
+          // Trigger initial save when leaving the welcome page (where user enters name and PWO)
+          if (currentPageData.id === 'welcome' && formData.pwoNumber && formData.userName) {
+            await saveApplicationState(formData.pwoNumber);
+          }
+
           let nextPage = currentPage + 1;
           while (nextPage < pages.length && !shouldShowPage(nextPage)) {
             nextPage++;

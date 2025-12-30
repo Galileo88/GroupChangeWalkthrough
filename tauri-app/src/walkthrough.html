@@ -3134,7 +3134,99 @@
           textContent += `\n`;
         }
 
-        textContent += `\n${'='.repeat(80)}\n`;
+        // QA CHECKLIST SECTION
+        textContent += `\n${'='.repeat(80)}\n\n`;
+        textContent += `QA VERIFICATION CHECKLIST\n`;
+        textContent += `${'-'.repeat(80)}\n\n`;
+        textContent += `Instructions: QA representative should verify each item below and initial when complete.\n\n`;
+
+        textContent += `APPLICATION SETUP VERIFICATION:\n`;
+        textContent += `  [ ] User Name verified and matches documentation ______\n`;
+        textContent += `  [ ] PWO Number verified and matches case ______\n`;
+        textContent += `  [ ] Application Choice is correct (Group Practice vs Individual) ______\n\n`;
+
+        textContent += `GROUP PRACTICE APPLICATION VERIFICATION:\n`;
+        textContent += `  [ ] Group Practice Application is attached ______\n`;
+        textContent += `  [ ] Questions 2, 4, 5, 5A, 5B, and 5C are answered ______\n`;
+        textContent += `  [ ] Question 6 (Practice Address) is answered ______\n\n`;
+
+        textContent += `PAY TO / MAIL TO ADDRESS VERIFICATION:\n`;
+        textContent += `  [ ] Pay-to/Mail-to addresses match CICS ______\n`;
+        textContent += `  [ ] Pay-to/Mail-to addresses updated in CICS (if needed) ______\n\n`;
+
+        textContent += `ADDITIONAL QUESTIONS VERIFICATION:\n`;
+        textContent += `  [ ] Questions 9, 11, 12, 16, 17 are answered ______\n`;
+        textContent += `  [ ] Contact Email added to SNOW ______\n`;
+        textContent += `  [ ] Question 21 (a-e) is answered ______\n`;
+        textContent += `  [ ] Question 22 is answered ______\n`;
+        textContent += `  [ ] Question 23 is answered ______\n`;
+        textContent += `  [ ] Question 25 is signed ______\n\n`;
+
+        textContent += `REQUIRED FORMS VERIFICATION:\n`;
+        textContent += `  [ ] Signature Authorization Form is attached ______\n`;
+        textContent += `  [ ] Agreement of Understanding is attached ______\n`;
+        textContent += `  [ ] Provider Agreement is attached ______\n`;
+        textContent += `  [ ] Disclosure of Ownership is attached ______\n`;
+        textContent += `  [ ] W9 or IRS Letter is attached ______\n`;
+        textContent += `  [ ] Authorization Agreement has been reviewed ______\n`;
+        textContent += `  [ ] Request for Paper Updates has been reviewed ______\n\n`;
+
+        textContent += `PROVIDER VERIFICATION (For Each Provider):\n`;
+        textContent += `  [ ] Question 20 answered correctly ______\n`;
+        textContent += `  [ ] Provider enrollment status verified ______\n`;
+        textContent += `  [ ] SSN verified ______\n`;
+        textContent += `  [ ] DEX and Sanctions Check completed ______\n`;
+        textContent += `  [ ] DOB verified ______\n`;
+        textContent += `  [ ] NPI verified ______\n`;
+        textContent += `  [ ] Licenses verified ______\n`;
+        textContent += `  [ ] Board Certificates verified ______\n`;
+        textContent += `  [ ] DEA Effective Dates checked ______\n`;
+        textContent += `  [ ] Effective Dates checked ______\n\n`;
+
+        textContent += `NEW PROVIDER ENROLLMENT (If Applicable):\n`;
+        textContent += `  [ ] Enrollment created correctly ______\n`;
+        textContent += `  [ ] Provider Info complete ______\n`;
+        textContent += `  [ ] Group Specialties checked ______\n`;
+        textContent += `  [ ] Enrollment Tab complete ______\n`;
+        textContent += `  [ ] Provider Name correct ______\n`;
+        textContent += `  [ ] Provider Type correct ______\n`;
+        textContent += `  [ ] Application Date added ______\n`;
+        textContent += `  [ ] Cancel Reason Code correct ______\n`;
+        textContent += `  [ ] Provider Address complete ______\n`;
+        textContent += `  [ ] Payment/Mailing Address complete ______\n`;
+        textContent += `  [ ] NPI Tab complete ______\n`;
+        textContent += `  [ ] Specialty Tab complete ______\n`;
+        textContent += `  [ ] Claim Type Tab complete ______\n`;
+        textContent += `  [ ] License/DEA Tab complete ______\n`;
+        textContent += `  [ ] Mainframe Enrollment complete ______\n\n`;
+
+        textContent += `EXISTING PROVIDER WORKFLOW (If Applicable):\n`;
+        textContent += `  [ ] CICS opened correctly ______\n`;
+        textContent += `  [ ] Provider added to group ______\n`;
+        textContent += `  [ ] Provider Name formatting checked (02 page) ______\n`;
+        textContent += `  [ ] Mail To/Pay To addresses updated ______\n`;
+        textContent += `  [ ] Cancel Codes checked ______\n`;
+        textContent += `  [ ] Effective Dates checked ______\n`;
+        textContent += `  [ ] Board Certification Indicators checked ______\n`;
+        textContent += `  [ ] Program Code 54 for PA (04 page) ______\n`;
+        textContent += `  [ ] Group Change completed ______\n`;
+        textContent += `  [ ] Checklist created ______\n`;
+        textContent += `  [ ] Group Change approved ______\n`;
+        textContent += `  [ ] Letter Task opened ______\n`;
+        textContent += `  [ ] Letter selected ______\n`;
+        textContent += `  [ ] Provider added to letter ______\n`;
+        textContent += `  [ ] Letter finished ______\n`;
+        textContent += `  [ ] Letter Task closed ______\n\n`;
+
+        textContent += `FINAL VERIFICATION:\n`;
+        textContent += `  [ ] All manual notes reviewed ______\n`;
+        textContent += `  [ ] All outreach notes reviewed ______\n`;
+        textContent += `  [ ] All "Unable to Verify" fields addressed ______\n`;
+        textContent += `  [ ] Case documentation is complete ______\n\n`;
+
+        textContent += `QA Representative: ____________________  Date: __________\n\n`;
+
+        textContent += `${'='.repeat(80)}\n`;
         textContent += `End of Report\n`;
 
         const pwoNumber = formData.pwoNumber || 'UNKNOWN';

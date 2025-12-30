@@ -170,6 +170,7 @@
         return localStorage.getItem('theme') !== 'light';
       });
       const [openDropdown, setOpenDropdown] = useState(null);
+      const [currentQuestions2123Index, setCurrentQuestions2123Index] = useState(0);
 
       // -------------------- Field Name Mapping --------------------
       // Maps field names to human-readable labels for outreach notes
@@ -360,6 +361,14 @@
           // Tauri detection check
         }
       }, []);
+
+      // Reset question index when navigating away from questions-21-23 page
+      React.useEffect(() => {
+        const currentPageData = pages[currentPage];
+        if (currentPageData && currentPageData.id !== 'questions-21-23') {
+          setCurrentQuestions2123Index(0);
+        }
+      }, [currentPage]);
 
       const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
@@ -893,46 +902,54 @@
             {
               name: 'question21Answered',
               label: 'Are questions 21 a-e completed and further explained if necessary on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Questions 21 a-e must be completed and further explained, if necessary.',
                 'If a question is answered "yes" and includes further explanation, it could be an Adverse Action situation and will need to be forwarded to the state. Please reach out to leadership to determine next steps.'
-              ]
+              ],
+              outreachMessage: 'Outreach group and request a revised application with the missing responses to question 21.'
             },
             {
               name: 'question22Answered',
               label: 'Is question 22 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 22 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.',
                 'If they are currently employed, a list of hours and days of employment is needed.'
-              ]
+              ],
+              outreachMessage: 'Outreach group and request a revised application with the missing responses to question 22.'
             },
             {
               name: 'question23Answered',
               label: 'Is question 23 answered on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 23 needs to be answered.',
                 'If "Yes" is selected, an explanation is required.'
-              ]
+              ],
+              outreachMessage: 'Outreach group and request a revised application with the missing responses to question 23.'
             },
             {
               name: 'question25Signed',
               label: 'Is question 25 signed and dated on the Group Practice Application?',
-              type: 'checkbox',
+              type: 'radio',
               required: true,
-              validation: (value) => value === true,
+              options: ['Yes', 'No'],
+              validation: (value) => value === 'Yes' || value === 'No',
               helperNotes: [
                 'Question 25 must be signed and dated.'
-              ]
+              ],
+              outreachMessage: 'Outreach group and request a revised application with the missing signature/date for question 25.'
             }
           ],
           displayImage: questions21to24Image
@@ -4854,78 +4871,157 @@
                     </div>
                   ) : currentPageData.id === 'questions-21-23' ? (
                     <div className="space-y-6">
-                      {currentPageData.fields.map((field, idx) => {
-                        const value = formData[field.name] || false;
-                        const isValid = field.validation ? field.validation(value) : !!value;
+                      {(() => {
+                        const currentField = currentPageData.fields[currentQuestions2123Index];
+                        const value = formData[currentField.name];
+                        const allQuestionsAnswered = currentPageData.fields.every(field =>
+                          formData[field.name] === 'Yes' || formData[field.name] === 'No'
+                        );
 
                         return (
-                          <div key={field.name} className="space-y-3">
-                            {field.helperNotes && (
-                              <div className="rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
-                                <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
-                                <ul className="space-y-2">
-                                  {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, noteIdx) => (
-                                    <li key={noteIdx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
-                                      <span className="mr-2 mt-1 flex-shrink-0">•</span>
-                                      <span>{note}</span>
-                                    </li>
+                          <>
+                            {/* Progress indicator */}
+                            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-slate-200">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-slate-600">Question {currentQuestions2123Index + 1} of {currentPageData.fields.length}</span>
+                              </div>
+                              <div className="flex gap-2">
+                                {currentPageData.fields.map((_, idx) => (
+                                  <div
+                                    key={idx}
+                                    className={`w-2 h-2 rounded-full transition-all ${
+                                      idx === currentQuestions2123Index
+                                        ? 'bg-cyan-600 w-8'
+                                        : formData[currentPageData.fields[idx].name]
+                                        ? 'bg-green-500'
+                                        : 'bg-slate-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Current question */}
+                            <div className="space-y-4">
+                              {currentField.helperNotes && (
+                                <div className="rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
+                                  <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
+                                  <ul className="space-y-2">
+                                    {(typeof currentField.helperNotes === 'function' ? currentField.helperNotes(formData) : currentField.helperNotes).map((note, noteIdx) => (
+                                      <li key={noteIdx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
+                                        <span className="mr-2 mt-1 flex-shrink-0">•</span>
+                                        <span>{note}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              <div className="bg-white border-2 border-slate-200 rounded-xl p-5">
+                                <label className="block text-base font-semibold text-slate-800 mb-4">
+                                  {typeof currentField.label === 'function' ? currentField.label(formData) : currentField.label}
+                                  {currentField.required && <span className="text-red-500 ml-1">*</span>}
+                                </label>
+
+                                <div className="space-y-3">
+                                  {currentField.options.map((option) => (
+                                    <label
+                                      key={option}
+                                      className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                        value === option
+                                          ? 'border-cyan-600 bg-cyan-50'
+                                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                                      }`}
+                                    >
+                                      <input
+                                        type="radio"
+                                        name={currentField.name}
+                                        value={option}
+                                        checked={value === option}
+                                        onChange={(e) => handleFieldChange(currentField.name, option)}
+                                        className="w-5 h-5"
+                                        style={{accentColor: 'var(--gainwell-cyan)'}}
+                                      />
+                                      <span className="ml-3 font-medium text-slate-700">{option}</span>
+                                    </label>
                                   ))}
-                                </ul>
+                                </div>
                               </div>
-                            )}
 
-                            <label
-                              className={`flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all ${
-                                value
-                                  ? 'bg-cyan-50'
-                                  : 'border-slate-200 hover:border-slate-300 bg-white'
-                              }`}
-                              style={value ? {borderColor: 'var(--gainwell-cyan)'} : {}}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={value}
-                                onChange={(e) => handleFieldChange(field.name, e.target.checked)}
-                                className="w-6 h-6 rounded"
-                                style={{accentColor: 'var(--gainwell-cyan)'}}
-                              />
-                              <div className="ml-4 flex-1">
-                                <span className="font-semibold text-slate-800">
-                                  {typeof field.label === 'function' ? field.label(formData) : field.label}
-                                  {field.required && !field.hasManualAsterisk && <span className="text-red-500 ml-1">*</span>}
-                                </span>
-                              </div>
-                            </label>
-                          </div>
+                              {/* Outreach section for "No" answer */}
+                              {value === 'No' && (
+                                <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-4">
+                                  <div className="flex items-start gap-3">
+                                    <div className="bg-blue-400 rounded-full p-1 mt-0.5">
+                                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                      <h4 className="font-bold text-blue-900 text-lg mb-2">OUTREACH</h4>
+                                      <p className="text-blue-800 font-medium mb-3">
+                                        {currentField.outreachMessage}
+                                      </p>
+                                      <button
+                                        onClick={() => handleAddOutreachNote(currentField.outreachMessage)}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Add to Notes
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Navigation buttons */}
+                              {value && (
+                                <div className="flex justify-between items-center pt-4 mt-6 border-t-2 border-slate-200">
+                                  <button
+                                    onClick={() => setCurrentQuestions2123Index(Math.max(0, currentQuestions2123Index - 1))}
+                                    disabled={currentQuestions2123Index === 0}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                                      currentQuestions2123Index === 0
+                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                        : 'bg-slate-600 text-white hover:bg-slate-700'
+                                    }`}
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                    Previous Question
+                                  </button>
+
+                                  {currentQuestions2123Index < currentPageData.fields.length - 1 ? (
+                                    <button
+                                      onClick={() => setCurrentQuestions2123Index(currentQuestions2123Index + 1)}
+                                      className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-cyan-600 text-white hover:bg-cyan-700 transition-all"
+                                    >
+                                      Next Question
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                      </svg>
+                                    </button>
+                                  ) : allQuestionsAnswered ? (
+                                    <div className="flex items-center gap-2 text-green-600 font-semibold">
+                                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                      All questions answered - Click Continue below
+                                    </div>
+                                  ) : (
+                                    <div className="text-slate-600 text-sm font-medium">
+                                      Answer remaining questions to continue
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </>
                         );
-                      })}
-
-                      {(formData.question21Answered !== true || formData.question22Answered !== true || formData.question23Answered !== true || formData.question25Signed !== true) && (
-                        <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
-                          <div className="flex items-start gap-3">
-                            <div className="bg-blue-400 rounded-full p-1 mt-0.5">
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-blue-900 text-lg mb-2">OUTREACH</h4>
-                              <p className="text-blue-800 font-medium mb-3">
-                                Outreach group and request a revised application with the missing responses to required questions.
-                              </p>
-                              <button
-                                onClick={() => handleAddOutreachNote('Outreach group and request a revised application with the missing responses to required questions (Questions 21-23 & 25).')}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                                Add to Notes
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      })()}
                     </div>
                   ) : currentPageData.id === 'signature-authorization-form' && formData.signatureAuthFormAttached === 'No' ? (
                     <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>

@@ -86,6 +86,34 @@
       letter-spacing: 0.05em;
     }
 
+    .update-button {
+      background: var(--gainwell-cyan);
+      color: var(--gainwell-dark);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .update-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
+    }
+
+    .update-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .update-status {
+      color: white;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+    }
+
     .logo-container {
       display: flex;
       align-items: center;
@@ -134,6 +162,58 @@
   <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
+    }
+
+    async function checkForUpdates() {
+      const button = document.getElementById('update-button');
+      const status = document.getElementById('update-status');
+
+      button.disabled = true;
+      button.textContent = 'Checking...';
+      status.textContent = '';
+
+      try {
+        // Import the updater module
+        const { check } = await window.__TAURI__.updater;
+
+        // Check for updates
+        const update = await check();
+
+        if (update?.available) {
+          status.textContent = `Update available: v${update.version}. Downloading...`;
+
+          // Download and install the update
+          await update.downloadAndInstall((event) => {
+            switch (event.event) {
+              case 'Started':
+                status.textContent = `Downloading update v${update.version}...`;
+                break;
+              case 'Progress':
+                status.textContent = `Downloading: ${event.data.chunkLength} bytes received`;
+                break;
+              case 'Finished':
+                status.textContent = 'Download complete! Installing...';
+                break;
+            }
+          });
+
+          // Relaunch the app after installation
+          status.textContent = 'Update installed! Restarting application...';
+          setTimeout(async () => {
+            const { relaunch } = await window.__TAURI__.process;
+            await relaunch();
+          }, 2000);
+        } else {
+          status.textContent = 'You are running the latest version!';
+          button.disabled = false;
+          button.textContent = 'Check for Updates';
+        }
+      } catch (error) {
+        console.error('Update check failed:', error);
+        status.textContent = `Error: ${error.message || error}`;
+        button.disabled = false;
+        button.textContent = 'Check for Updates';
+      }
     }
   </script>
 </head>
@@ -216,8 +296,16 @@
       </div>
     </div>
 
+    <!-- Update Section -->
+    <div class="text-center mt-12">
+      <button id="update-button" class="update-button" onclick="checkForUpdates()">
+        Check for Updates
+      </button>
+      <div id="update-status" class="update-status"></div>
+    </div>
+
     <!-- Footer -->
-    <div class="text-center mt-12 text-white opacity-75 text-sm">
+    <div class="text-center mt-8 text-white opacity-75 text-sm">
       <p>&copy; 2024 Gainwell Technologies. All rights reserved.</p>
     </div>
   </div>

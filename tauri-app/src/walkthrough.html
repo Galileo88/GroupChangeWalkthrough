@@ -170,7 +170,6 @@
         return localStorage.getItem('theme') !== 'light';
       });
       const [openDropdown, setOpenDropdown] = useState(null);
-      const [currentQuestions2123Index, setCurrentQuestions2123Index] = useState(0);
 
       // -------------------- Field Name Mapping --------------------
       // Maps field names to human-readable labels for outreach notes
@@ -361,14 +360,6 @@
           // Tauri detection check
         }
       }, []);
-
-      // Reset question index when navigating away from questions-21-23 page
-      React.useEffect(() => {
-        const currentPageData = pages[currentPage];
-        if (currentPageData && currentPageData.id !== 'questions-21-23') {
-          setCurrentQuestions2123Index(0);
-        }
-      }, [currentPage]);
 
       const saveApplicationState = async (pwoNumber) => {
         if (!pwoNumber) return;
@@ -4871,17 +4862,26 @@
                     </div>
                   ) : currentPageData.id === 'questions-21-23' ? (
                     <div className="space-y-6">
-                      {(() => {
-                        const currentField = currentPageData.fields[currentQuestions2123Index];
-                        const value = formData[currentField.name];
+                      {currentPageData.fields.map((field, fieldIndex) => {
+                        const value = formData[field.name];
+
+                        // Find the first unanswered question
+                        const firstUnansweredIndex = currentPageData.fields.findIndex(f => !formData[f.name]);
+
+                        // Show this field if:
+                        // 1. It has been answered, OR
+                        // 2. It's the first unanswered question
+                        const shouldShow = value || fieldIndex === firstUnansweredIndex;
+
+                        if (!shouldShow) return null;
 
                         return (
-                          <div className="space-y-4">
-                            {currentField.helperNotes && (
+                          <div key={field.name} className="space-y-4">
+                            {field.helperNotes && (
                               <div className="rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
                                 <h4 className="font-semibold text-sm mb-2" style={{color: 'var(--gainwell-dark)'}}>Important Notes:</h4>
                                 <ul className="space-y-2">
-                                  {(typeof currentField.helperNotes === 'function' ? currentField.helperNotes(formData) : currentField.helperNotes).map((note, noteIdx) => (
+                                  {(typeof field.helperNotes === 'function' ? field.helperNotes(formData) : field.helperNotes).map((note, noteIdx) => (
                                     <li key={noteIdx} className="text-sm flex items-start" style={{color: 'var(--gainwell-teal)'}}>
                                       <span className="mr-2 mt-1 flex-shrink-0">•</span>
                                       <span>{note}</span>
@@ -4892,12 +4892,12 @@
                             )}
 
                             <label className="block text-sm font-semibold text-slate-700 mb-2">
-                              {typeof currentField.label === 'function' ? currentField.label(formData) : currentField.label}
-                              {currentField.required && <span className="text-red-500 ml-1">*</span>}
+                              {typeof field.label === 'function' ? field.label(formData) : field.label}
+                              {field.required && <span className="text-red-500 ml-1">*</span>}
                             </label>
 
                             <div className="space-y-3">
-                              {currentField.options.map((option) => (
+                              {field.options.map((option) => (
                                 <label
                                   key={option}
                                   className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
@@ -4910,13 +4910,7 @@
                                   <input
                                     type="checkbox"
                                     checked={value === option}
-                                    onChange={() => {
-                                      handleFieldChange(currentField.name, option);
-                                      // Auto-advance to next question if Yes is selected and not on last question
-                                      if (option === 'Yes' && currentQuestions2123Index < currentPageData.fields.length - 1) {
-                                        setTimeout(() => setCurrentQuestions2123Index(currentQuestions2123Index + 1), 300);
-                                      }
-                                    }}
+                                    onChange={() => handleFieldChange(field.name, option)}
                                     className="w-5 h-5"
                                     style={{accentColor: 'var(--gainwell-cyan)'}}
                                   />
@@ -4937,10 +4931,10 @@
                                   <div className="flex-1">
                                     <h4 className="font-bold text-blue-900 text-lg mb-2">OUTREACH</h4>
                                     <p className="text-blue-800 font-medium mb-3">
-                                      {currentField.outreachMessage}
+                                      {field.outreachMessage}
                                     </p>
                                     <button
-                                      onClick={() => handleAddOutreachNote(currentField.outreachMessage)}
+                                      onClick={() => handleAddOutreachNote(field.outreachMessage)}
                                       className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4954,7 +4948,7 @@
                             )}
                           </div>
                         );
-                      })()}
+                      })}
                     </div>
                   ) : currentPageData.id === 'signature-authorization-form' && formData.signatureAuthFormAttached === 'No' ? (
                     <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>

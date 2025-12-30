@@ -112,10 +112,13 @@
       'Beenish Pervez',
       'Bianca Hernandez',
       'Britni Hutchinson',
+	  'Caren Cox',
       'Cherie Wilson',
       'Dawn Battle',
       'Dominique  Wheeler',
       'Essence White',
+	  'GiGi Sherwood',
+	  'Helen Ross',
       'Jammey Ho',
       'Jayashree Mody',
       'Jennifer Ehart',
@@ -131,7 +134,8 @@
       'Shelley Carter',
       'Sherissee Anderson',
       'Sherond Batson',
-      'Sonja Van Camp',
+	  'Sonja Van Camp',
+	  'Tavish Berlin',
       'Tawana Berry',
       'Ty Haight'
     ];
@@ -558,7 +562,7 @@
             },
             {
               name: 'questionsAnswered',
-              label: 'Are questions 2, 4, 5, 5A, 5B, and 5C answered (including all their sub-parts) on the Group Change Practice Application?',
+              label: 'Are questions 2, 4, 5 and 5C answered (including all their sub-parts) on the Group Change Practice Application?',
               type: 'radio',
               required: true,
               options: ['Yes', 'No'],
@@ -637,6 +641,10 @@
               options: ['Yes', 'No'],
               validation: (value) => value === 'Yes' || value === 'No'
             }
+          ],
+		  noteText: [
+			<><u><b>60 DAY RULE:</b></u><br/> 
+			Do not update office, billing, or fax numbers if updated within the last 60 days.</>			
           ],
           pageNotes: [
             'If questions 9-14, 16, 17 are answered and are different than what we have in CICS, we can add or update the information.',
@@ -5623,7 +5631,7 @@
             >
               <div className="relative max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
                 <div className="bg-slate-800 text-white rounded-xl p-6 shadow-2xl border border-slate-700">
-                  <h3 className="text-lg font-semibold mb-4">This page says</h3>
+                  <h3 className="text-lg font-semibold mb-4">Moving along...</h3>
                   <p className="text-slate-200 mb-6 whitespace-pre-line leading-relaxed">{confirmDialog.message}</p>
                   <div className="flex gap-3 justify-end">
                     <button

@@ -2158,10 +2158,12 @@
                   expectedProviderCount: allProviders.length
                 }));
 
-                const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
-                if (completionIndex !== -1) {
-                  setCurrentPage(completionIndex);
-                  setVisitedPages(prev => new Set([...prev, completionIndex]));
+                // Navigate to questions-21-23 instead of outreach completion
+                // Outreach completion will be checked after Request for Paper Updates
+                const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
+                if (questions2123Index !== -1) {
+                  setCurrentPage(questions2123Index);
+                  setVisitedPages(prev => new Set([...prev, questions2123Index]));
                   // Scroll to top after navigation
                   setTimeout(() => {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2245,31 +2247,18 @@
             } else {
               // Provider already saved, just navigate to appropriate next page
 
-              // Determine the appropriate next page based on existing providers
-              if (hasUnableToVerify) {
-                const completionIndex = pages.findIndex(page => page.id === 'question-20-unable-to-verify-completion');
-                if (completionIndex !== -1) {
-                  setCurrentPage(completionIndex);
-                  setVisitedPages(prev => new Set([...prev, completionIndex]));
-                  // Scroll to top after navigation
-                  setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }, 100);
-                }
-                return;
-              } else {
-                // Navigate to questions-21-23 (navigating back case)
-                const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
-                if (questions2123Index !== -1) {
-                  setCurrentPage(questions2123Index);
-                  setVisitedPages(prev => new Set([...prev, questions2123Index]));
-                  // Scroll to top after navigation
-                  setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }, 100);
-                }
-                return;  // CRITICAL: Prevent general navigation logic from overriding this routing
+              // Always navigate to questions-21-23 (navigating back case)
+              // Outreach completion will be checked after Request for Paper Updates
+              const questions2123Index = pages.findIndex(page => page.id === 'questions-21-23');
+              if (questions2123Index !== -1) {
+                setCurrentPage(questions2123Index);
+                setVisitedPages(prev => new Set([...prev, questions2123Index]));
+                // Scroll to top after navigation
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
               }
+              return;  // CRITICAL: Prevent general navigation logic from overriding this routing
             }
           }
         }

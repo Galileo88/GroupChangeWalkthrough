@@ -213,7 +213,8 @@
           const currentPageId = pages[currentPage]?.id;
 
           // Only save if both PWO number and user name are filled in
-          if (pwoNumber && userName && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup') {
+          // Exclude welcome page - it saves explicitly when user clicks Continue
+          if (pwoNumber && userName && currentPageId !== 'start-choice' && currentPageId !== 'resume-lookup' && currentPageId !== 'welcome') {
             saveApplicationState(pwoNumber);
           }
         }, 1000); // 1 second debounce

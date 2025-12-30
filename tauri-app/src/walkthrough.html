@@ -2034,7 +2034,9 @@
           // Debug: Log unable to verify check
 
           // Only save the provider if it hasn't been saved already
-          if (!providerAlreadySaved) {
+          // Only save here if there are more providers to process (moreProviders = true)
+          // If moreProviders = false, the provider will be saved in the else block below
+          if (!providerAlreadySaved && moreProviders) {
             if (hasUnableToVerify) {
               const providerData = {
                 status: 'Unable to Verify - Requires Outreach',
@@ -2058,7 +2060,7 @@
                 const updatedProviders = [...prev, providerData];
                 return updatedProviders;
               });
-            } else if (moreProviders) {
+            } else {
               let providerStatus = 'Verified - Ready to Enroll';
               if (formData.providerAlreadyEnrolled === 'Yes') {
                 if (formData.providerInGroup === 'Yes') {

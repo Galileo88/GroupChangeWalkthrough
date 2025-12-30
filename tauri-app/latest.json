@@ -1,10 +1,11 @@
 {
   "version": "1.0.0",
-  "notes": "Bug fixes and improvements",
-  "pub_date": "2024-12-30T12:00:00Z",
+  "notes": "Initial release - Provider Enrollment Walkthrough desktop application",
+  "pub_date": "2024-12-30T22:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest"
+      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTK3dOcEtsbDNzNUkxYU15UG1LNklDMnFlOEtndzh4MFB5Vk9mbVlKazZncmxCbmdwMVQvMDh5cGFIaW1Ca3hpSkUzUjVMZE9sU01ubmhBRnIyNUhLNEg3VnVUR1ZWUVFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3MTM2MzQ3CWZpbGU6UHJvdmlkZXIgRW5yb2xsbWVudCBXYWxrdGhyb3VnaF8xLjAuMF94NjQtc2V0dXAuZXhlCnZSMDdUS1BSd3piSnRidnBOWnMzN1VnM0FLWUN1dm03L3l5ZVRENjc4c1NNRzlrOG1XTW1LTmRkekFsVUtmdDEyc1BoYm1DKzJkNnVXSitBQ0NLVUNBPT0K"
     }
   }
 }

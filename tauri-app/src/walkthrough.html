@@ -4427,40 +4427,10 @@
                                     className="w-5 h-5"
                                     style={{accentColor: 'var(--gainwell-cyan)'}}
                                   />
-                                  <span className="ml-3 font-medium text-slate-700">
-                                    {option}
-                                    {isUnableToVerify && value === option && <span className="ml-2 text-xs font-semibold !text-amber-600">(UNABLE TO VERIFY)</span>}
-                                  </span>
+                                  <span className="ml-3 font-medium text-slate-700">{option}</span>
                                 </label>
                               ))}
                             </div>
-
-                            {hasUnableToVerifyButton && value === 'Yes' && (
-                              <div className="mt-3 flex justify-end gap-2">
-                                {!isUnableToVerify && (
-                                  <button
-                                    onClick={() => handleAddOutreachNote(`Unable to verify: ${fieldNameLabels[field.name] || field.name}`, field.name)}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 !text-white font-semibold rounded-lg transition-colors text-sm border-2 border-amber-500"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                    Unable to Verify
-                                  </button>
-                                )}
-                                {isUnableToVerify && (
-                                  <button
-                                    onClick={() => handleUndoUnableToVerify(field.name)}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-semibold rounded-lg transition-colors text-sm border-2 border-blue-500 opacity-100"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                    </svg>
-                                    Undo
-                                  </button>
-                                )}
-                              </div>
-                            )}
 
                             {field.helperNotes && (
                               <div className="mt-3 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', border: '1px solid #b2dfdb'}}>
@@ -4763,7 +4733,7 @@
                           const value = formData[field.name] || false;
                           const isValid = field.validation ? field.validation(value) : !!value;
 
-                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified', 'question21aAnswered', 'question21bAnswered', 'question21cAnswered', 'question21dAnswered', 'question21eAnswered', 'question22Answered', 'question23Answered'].includes(field.name);
+                          const hasUnableToVerifyButton = ['ssnVerified', 'dexSanctionsCheck', 'dobVerified', 'npiVerified', 'licensesVerified', 'boardCertificatesVerified', 'nextProviderFinalSsnVerified', 'nextProviderFinalDexSanctionsCheck', 'nextProviderFinalDobVerified', 'nextProviderFinalNpiVerified', 'nextProviderFinalLicensesVerified', 'nextProviderFinalBoardCertificatesVerified'].includes(field.name);
 
                           const isUnableToVerify = unableToVerifyFields.has(field.name);
 
@@ -4988,32 +4958,230 @@
                         );
                       })}
 
-                      {formData.question25Signed !== true && (
-                        <div className="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mt-6">
-                          <div className="flex items-start gap-3">
-                            <div className="bg-blue-400 rounded-full p-1 mt-0.5">
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-blue-900 text-lg mb-2">OUTREACH</h4>
-                              <p className="text-blue-800 font-medium mb-3">
-                                Outreach group and request a revised application with Question 25 signed and dated.
-                              </p>
-                              <button
-                                onClick={() => handleAddOutreachNote('Outreach group and request a revised application with Question 25 signed and dated.')}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                                Add to Notes
-                              </button>
-                            </div>
-                          </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question21aAnswered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
                         </div>
-                      )}
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding Medicaid provider status. This may be an Adverse Action situation.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 21a (Medicaid provider status). This may be an Adverse Action situation.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question21bAnswered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding license suspension/revocation. This may be an Adverse Action situation.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 21b (license suspension/revocation). This may be an Adverse Action situation.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question21cAnswered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding criminal history. This may be an Adverse Action situation.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 21c (criminal history). This may be an Adverse Action situation.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question21dAnswered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding healthcare program suspensions/debarments. This may be an Adverse Action situation.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 21d (healthcare program suspensions/debarments). This may be an Adverse Action situation.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question21eAnswered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding ownership/interest disclosure.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 21e (ownership/interest disclosure).')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question22Answered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group and request hours and days of employment for state employee.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group and request hours and days of employment for Question 22 (state employee).')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question23Answered === 'Yes' ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group for further explanation regarding shared health care facility participation.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group for further explanation regarding Question 23 (shared health care facility participation).')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentPageData.id === 'questions-21-23' && formData.question25Signed !== true ? (
+                    <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full p-1 mt-0.5" style={{backgroundColor: 'var(--gainwell-cyan)'}}>
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg mb-2" style={{color: 'var(--gainwell-dark)'}}>OUTREACH</h4>
+                          <p className="font-medium mb-3" style={{color: 'var(--gainwell-teal)'}}>
+                            Outreach group and request a revised application with Question 25 signed and dated.
+                          </p>
+                          <button
+                            onClick={() => handleAddOutreachNote('Outreach group and request a revised application with Question 25 signed and dated.')}
+                            className="text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm border-2 border-red-500"
+                            style={{backgroundColor: '#00e5b4'}}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00d0a0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#00e5b4'}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add to Notes
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ) : currentPageData.id === 'signature-authorization-form' && formData.signatureAuthFormAttached === 'No' ? (
                     <div className="border-2 rounded-lg p-4" style={{backgroundColor: '#e0f2f1', borderColor: 'var(--gainwell-cyan)'}}>

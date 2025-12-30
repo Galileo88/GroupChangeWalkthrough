@@ -1,0 +1,252 @@
+PROVIDER ENROLLMENT NOTES
+Generated: December 30, 2025, 10:30 AM
+================================================================================
+
+USER ANSWERS & SELECTIONS
+--------------------------------------------------------------------------------
+
+APPLICATION SETUP:
+  • User Name: John Smith
+  • PWO Number: PWO123456
+  • Application Choice: Group Practice
+
+GROUP PRACTICE APPLICATION:
+  • Group Practice Application Attached: Yes
+  • Questions 2, 4, 5, 5A, 5B and 5C Answered: Yes
+  • Question 6 (Practice Address) Answered: Yes
+
+PAY TO / MAIL TO ADDRESS:
+  • Pay-to/Mail-to Match CICS: Yes
+  • Pay-to/Mail-to Updated in CICS: Yes
+
+ADDITIONAL QUESTIONS (9-17):
+  • Questions 9, 11, 12, 16, 17 Answered: Yes
+  • Contact Email Added to SNOW: Yes
+
+ADDITIONAL QUESTIONS (21-23 & 25):
+  • Question 21 (a-e) Answered: Yes
+  • Question 22 Answered: Yes
+  • Question 23 Answered: Yes
+  • Question 25 Signed: Yes
+
+REQUIRED FORMS:
+  • Signature Authorization Form Attached: Yes
+  • Agreement of Understanding Attached: Yes
+  • Provider Agreement Attached: Yes
+  • Disclosure of Ownership Attached: Yes
+  • W9 or IRS Letter Attached: Yes
+  • Authorization Agreement Reviewed: Yes
+  • Request for Paper Updates Reviewed: Yes
+
+================================================================================
+
+ENROLLED PROVIDERS (2 total)
+--------------------------------------------------------------------------------
+
+PROVIDER 1
+Status: Successfully Enrolled
+
+PROVIDER INFORMATION (QUESTION 20):
+  • Question 20 Answered: Yes
+  • Provider Already Enrolled: No
+  • Provider In Group: N/A
+
+PROVIDER VERIFICATION:
+  • SSN Verified: Yes
+  • DEX and Sanctions Check: Yes
+  • DOB Verified: Yes
+  • NPI Verified: Yes
+  • Licenses Verified: Yes
+  • Board Certificates Verified: Yes
+  • DEA Effective Dates Checked: Yes
+  • Effective Dates Checked: Yes
+
+Enrollment Details:
+  • Enrollment Created: Yes
+  • Provider Info Complete: Yes
+  • Group Specialties Checked: Yes
+  • Enrollment Tab Complete: Yes
+  • Provider Name Correct: Yes
+  • Provider Type Correct: Yes
+  • Application Date Added: Yes
+  • Cancel Reason Code: Yes
+  • Provider Address Complete: Yes
+  • Payment/Mailing Address Complete: Yes
+  • Provider Info Tab Complete: Yes
+  • NPI Tab Complete: Yes
+  • Specialty Tab Complete: Yes
+  • Claim Type Tab Complete: Yes
+  • License/DEA Tab Complete: Yes
+  • Mainframe Enrollment Complete: Yes
+
+EXISTING PROVIDER WORKFLOW:
+  • CICS Opened: Yes
+  • Provider Added to Group: Yes
+  • Provider Name Formatting Checked (02 page): Yes
+  • Mail To/Pay To Addresses Updated: Yes
+  • Cancel Codes Checked: Yes
+  • Effective Dates Checked: Yes
+  • Board Certification Indicators Checked: Yes
+  • Program Code 54 for PA (04 page): Yes
+  • Group Change Completed: Yes
+  • Checklist Created: Yes
+  • Group Change Approved: Yes
+  • Letter Task Opened: Yes
+  • Letter Selected: Yes
+  • Provider Added to Letter: Yes
+  • Letter Finished: Yes
+  • Letter Task Closed: Yes
+
+Manual Notes:
+  New provider enrollment completed successfully. All documentation verified.
+
+notes:
+  1. Provider contacted on 12/29/2025 - confirmed all information
+  2. Letter sent to provider address on file
+
+--------------------------------------------------------------------------------
+
+PROVIDER 2
+Status: Successfully Enrolled
+
+PROVIDER INFORMATION (QUESTION 20):
+  • Question 20 Answered: Yes
+  • Provider Already Enrolled: Yes
+  • Provider In Group: No
+
+PROVIDER VERIFICATION:
+  • Cancel Codes Verified: Yes
+  • SSN Verified: Yes
+  • DEX and Sanctions Check: Yes
+  • DOB Verified: Yes
+  • NPI Verified: Yes
+  • Licenses Verified: Yes
+  • Board Certificates Verified: Yes
+  • DEA Effective Dates Checked: Yes
+  • Effective Dates Checked: Yes
+
+Enrollment Details: Provider was already enrolled
+
+EXISTING PROVIDER WORKFLOW:
+  • CICS Opened: Yes
+  • Provider Added to Group: Yes
+  • Provider Name Formatting Checked (02 page): Yes
+  • Mail To/Pay To Addresses Updated: Yes
+  • Cancel Codes Checked: Yes
+  • Effective Dates Checked: Yes
+  • Board Certification Indicators Checked: Yes
+  • Program Code 54 for PA (04 page): Yes
+  • Group Change Completed: Yes
+  • Checklist Created: Yes
+  • Group Change Approved: Yes
+  • Letter Task Opened: Yes
+  • Letter Selected: Yes
+  • Provider Added to Letter: Yes
+  • Letter Finished: Yes
+  • Letter Task Closed: Yes
+
+Manual Notes:
+  Existing provider added to new group. All verifications completed.
+
+--------------------------------------------------------------------------------
+
+CURRENT OUTREACH NOTES (3)
+--------------------------------------------------------------------------------
+1. Called practice manager to verify mailing address - confirmed correct
+2. Waiting for updated W9 form - expected by 12/31/2025
+3. Provider requested paper updates for all correspondence
+
+
+================================================================================
+
+QA VERIFICATION CHECKLIST
+--------------------------------------------------------------------------------
+
+Instructions: QA representative should verify each item below and initial when complete.
+
+User Name: John Smith
+PWO Number: PWO123456
+
+GROUP PRACTICE APPLICATION VERIFICATION:
+  [ ] Group Practice Application is attached ______
+  [ ] Questions 2, 4, 5, 5A, 5B, and 5C are answered ______
+  [ ] Question 6 (Practice Address) is answered ______
+
+PAY TO / MAIL TO ADDRESS VERIFICATION:
+  [ ] Pay-to/Mail-to addresses match CICS ______
+  [ ] Pay-to/Mail-to addresses updated in CICS (if needed) ______
+
+ADDITIONAL QUESTIONS VERIFICATION:
+  [ ] Questions 9, 11, 12, 16, 17 are answered ______
+  [ ] Contact Email added to SNOW ______
+  [ ] Question 21 (a-e) is answered ______
+  [ ] Question 22 is answered ______
+  [ ] Question 23 is answered ______
+  [ ] Question 25 is signed ______
+
+REQUIRED FORMS VERIFICATION:
+  [ ] Signature Authorization Form is attached ______
+  [ ] Agreement of Understanding is attached ______
+  [ ] Provider Agreement is attached ______
+  [ ] Disclosure of Ownership is attached ______
+  [ ] W9 or IRS Letter is attached ______
+  [ ] Authorization Agreement has been reviewed ______
+  [ ] Request for Paper Updates has been reviewed ______
+
+PROVIDER VERIFICATION (For Each Provider):
+  [ ] Question 20 answered correctly ______
+  [ ] Provider enrollment status verified ______
+  [ ] SSN verified ______
+  [ ] DEX and Sanctions Check completed ______
+  [ ] DOB verified ______
+  [ ] NPI verified ______
+  [ ] Licenses verified ______
+  [ ] Board Certificates verified ______
+  [ ] DEA Effective Dates checked ______
+  [ ] Effective Dates checked ______
+
+NEW PROVIDER ENROLLMENT (If Applicable):
+  [ ] Enrollment created correctly ______
+  [ ] Provider Info complete ______
+  [ ] Group Specialties checked ______
+  [ ] Enrollment Tab complete ______
+  [ ] Provider Name correct ______
+  [ ] Provider Type correct ______
+  [ ] Application Date added ______
+  [ ] Cancel Reason Code correct ______
+  [ ] Provider Address complete ______
+  [ ] Payment/Mailing Address complete ______
+  [ ] NPI Tab complete ______
+  [ ] Specialty Tab complete ______
+  [ ] Claim Type Tab complete ______
+  [ ] License/DEA Tab complete ______
+  [ ] Mainframe Enrollment complete ______
+
+EXISTING PROVIDER WORKFLOW (If Applicable):
+  [ ] CICS opened correctly ______
+  [ ] Provider added to group ______
+  [ ] Provider Name formatting checked (02 page) ______
+  [ ] Mail To/Pay To addresses updated ______
+  [ ] Cancel Codes checked ______
+  [ ] Effective Dates checked ______
+  [ ] Board Certification Indicators checked ______
+  [ ] Program Code 54 for PA (04 page) ______
+  [ ] Group Change completed ______
+  [ ] Checklist created ______
+  [ ] Group Change approved ______
+  [ ] Letter Task opened ______
+  [ ] Letter selected ______
+  [ ] Provider added to letter ______
+  [ ] Letter finished ______
+  [ ] Letter Task closed ______
+
+FINAL VERIFICATION:
+  [ ] All manual notes reviewed ______
+  [ ] All outreach notes reviewed ______
+  [ ] All "Unable to Verify" fields addressed ______
+  [ ] Case documentation is complete ______
+
+QA Representative: ____________________  Date: __________
+
+================================================================================
+End of Report

@@ -46,7 +46,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest/download/latest.json"
+        "https://galileo88.github.io/GroupChangeWalkthrough/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU0RUM1RDk2NEFEQUMwQkUKUldTK3dOcEtsbDNzNUlGek9KcXFKcjl4K21HNTQvWVNQdkwzNXFQdWU4Nm1uYzFKWGNISFdZYjMK"
     }

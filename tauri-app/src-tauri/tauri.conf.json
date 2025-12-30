@@ -36,7 +36,12 @@
     ],
     "resources": [
       "resources/*.pdf"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
   },
   "plugins": {
     "updater": {

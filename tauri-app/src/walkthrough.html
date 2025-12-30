@@ -3974,13 +3974,25 @@
               transition: background-color 0.3s ease;
             }
 
-            /* Custom dropdown hover styling */
+            /* Custom dropdown hover styling - matches selected checkbox styling */
+            .dropdown-option {
+              border: 2px solid transparent;
+            }
+
+            /* Light mode hover - matches bg-cyan-50 with cyan border */
             .dropdown-option:hover {
-              background-color: #21c19b !important;
+              background-color: #ecfdf5 !important; /* bg-cyan-50 equivalent */
+              border-color: var(--gainwell-cyan) !important;
+            }
+
+            /* Dark mode hover - matches dark mode selected state */
+            html.dark .dropdown-option:hover {
+              background-color: #0d9488 !important;
+              border-color: var(--gainwell-cyan) !important;
               color: white !important;
             }
 
-            .dropdown-option:hover * {
+            html.dark .dropdown-option:hover * {
               color: white !important;
             }
           `}</style>

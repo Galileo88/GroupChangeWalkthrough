@@ -10,9 +10,17 @@ Follow these steps to create a new release and enable automatic updates.
    npm run build
    ```
 
-2. Locate the installer at:
+2. Sign the installer (REQUIRED):
+   ```bash
+   npm run tauri signer sign "src-tauri\target\release\bundle\nsis\Provider Enrollment Walkthrough_1.0.0_x64-setup.exe" -- --private-key "your-private-key-here"
+   ```
+
+   This creates `Provider Enrollment Walkthrough_1.0.0_x64-setup.exe.sig` file.
+
+3. Locate the files at:
    ```
    src-tauri\target\release\bundle\nsis\Provider Enrollment Walkthrough_1.0.0_x64-setup.exe
+   src-tauri\target\release\bundle\nsis\Provider Enrollment Walkthrough_1.0.0_x64-setup.exe.sig
    ```
 
 ## Step-by-Step Release Process
@@ -45,11 +53,11 @@ Click **"Attach binaries by dropping them here or selecting them"** and upload:
 2. **The update manifest:**
    - File: `latest.json`
    - From: `tauri-app\latest.json`
-   - **IMPORTANT:** Before uploading, update the `url` field to match the actual filename
+   - **IMPORTANT:** Before uploading, update the `url` and `signature` fields (see step 5)
 
 ### 5. Update latest.json Before Upload
 
-Edit `latest.json` to ensure the URL is correct:
+Edit `latest.json` to include both the URL and signature:
 
 ```json
 {
@@ -58,14 +66,21 @@ Edit `latest.json` to ensure the URL is correct:
   "pub_date": "2024-12-30T22:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.0/Provider-Enrollment-Walkthrough_1.0.0_x64-setup.exe"
+      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.0/Provider-Enrollment-Walkthrough_1.0.0_x64-setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUL3dOcEts..."
     }
   }
 }
 ```
 
+**How to get the signature:**
+1. After signing (step 2 in Prerequisites), open the `.sig` file
+2. Copy the entire contents (it's a long base64 string)
+3. Paste it into the `signature` field in `latest.json`
+
 **Important Notes:**
 - The filename in the URL must EXACTLY match the uploaded installer filename
+- The signature must be from the `.sig` file created when you signed the installer
 - Use the actual upload date in `pub_date` (ISO 8601 format)
 - Version must match the tag (without the 'v' prefix)
 

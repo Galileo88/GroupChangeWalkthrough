@@ -4076,24 +4076,17 @@
             }
 
             .version-display {
-              position: fixed;
-              top: 5.5rem;
-              right: 1.5rem;
-              padding: 0.5rem 1rem;
-              border-radius: 0.5rem;
-              background: var(--card-bg);
-              border: 2px solid var(--gainwell-cyan);
-              color: var(--text-color);
-              font-size: 0.875rem;
+              position: absolute;
+              top: 1rem;
+              right: 1rem;
+              padding: 0.25rem 0.75rem;
+              border-radius: 0.375rem;
+              background: rgba(255, 255, 255, 0.2);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+              color: white;
+              font-size: 0.75rem;
               font-weight: 600;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-              z-index: 1000;
-              transition: all 0.3s ease;
-            }
-
-            .version-display:hover {
-              box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
-              transform: translateY(-2px);
+              backdrop-filter: blur(4px);
             }
 
             body {
@@ -4171,16 +4164,15 @@
             {isDarkMode ? <Sun /> : <Moon />}
           </button>
 
-          {/* Version Display */}
-          <div className="version-display">
-            v{VERSION}
-          </div>
-
           <div className="max-w-2xl w-full">
             {/* Form Card */}
             <div className="rounded-2xl shadow-2xl overflow-hidden page-enter" style={{backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderWidth: '1px', transition: 'all 0.3s ease'}}>
               {/* Header */}
               <div className="p-8 text-white relative" style={{background: 'linear-gradient(to right, var(--gainwell-teal), var(--gainwell-dark))'}}>
+                {/* Version Display */}
+                <div className="version-display">
+                  v{VERSION}
+                </div>
                 <h1 className="title-font text-4xl font-bold mb-2">
                   {currentPageData.title}
                 </h1>

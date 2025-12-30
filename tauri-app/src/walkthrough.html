@@ -27,6 +27,11 @@
     const { useState } = React;
 
     // ============================================================
+    // VERSION - Update this for each release
+    // ============================================================
+    const VERSION = '1.0.0';
+
+    // ============================================================
     // PDF MODAL FUNCTIONS
     // ============================================================
 
@@ -4070,6 +4075,27 @@
               color: var(--gainwell-cyan);
             }
 
+            .version-display {
+              position: fixed;
+              top: 5.5rem;
+              right: 1.5rem;
+              padding: 0.5rem 1rem;
+              border-radius: 0.5rem;
+              background: var(--card-bg);
+              border: 2px solid var(--gainwell-cyan);
+              color: var(--text-color);
+              font-size: 0.875rem;
+              font-weight: 600;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              z-index: 1000;
+              transition: all 0.3s ease;
+            }
+
+            .version-display:hover {
+              box-shadow: 0 6px 12px rgba(0, 229, 180, 0.3);
+              transform: translateY(-2px);
+            }
+
             body {
               background-color: var(--bg-color);
               transition: background-color 0.3s ease;
@@ -4144,6 +4170,11 @@
           >
             {isDarkMode ? <Sun /> : <Moon />}
           </button>
+
+          {/* Version Display */}
+          <div className="version-display">
+            v{VERSION}
+          </div>
 
           <div className="max-w-2xl w-full">
             {/* Form Card */}

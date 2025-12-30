@@ -3977,6 +3977,28 @@
               background-color: var(--bg-color);
               transition: background-color 0.3s ease;
             }
+
+            /* Custom dropdown hover styling - matches selected checkbox styling */
+            .dropdown-option {
+              border: 2px solid transparent;
+            }
+
+            /* Light mode hover - matches bg-cyan-50 with cyan border */
+            .dropdown-option:hover {
+              background-color: #ecfdf5 !important; /* bg-cyan-50 equivalent */
+              border-color: var(--gainwell-cyan) !important;
+            }
+
+            /* Dark mode hover - matches dark mode selected state */
+            html.dark .dropdown-option:hover {
+              background-color: #0d9488 !important;
+              border-color: var(--gainwell-cyan) !important;
+              color: white !important;
+            }
+
+            html.dark .dropdown-option:hover * {
+              color: white !important;
+            }
           `}</style>
 
           {/* Dark Mode Toggle */}
@@ -4355,7 +4377,7 @@
                                   className="fixed inset-0 z-10"
                                   onClick={() => setOpenDropdown(null)}
                                 />
-                                <div className="absolute z-20 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                                <div className="absolute z-20 w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto dropdown-menu">
                                   {(typeof field.options === 'function' ? field.options(formData) : field.options || []).map((option) => (
                                     <div
                                       key={option}
@@ -4363,7 +4385,7 @@
                                         handleFieldChange(field.name, option);
                                         setOpenDropdown(null);
                                       }}
-                                      className={`px-4 py-3 cursor-pointer hover:bg-cyan-50 transition-colors text-slate-700 ${
+                                      className={`dropdown-option px-4 py-3 cursor-pointer transition-colors text-slate-700 ${
                                         value === option ? 'bg-cyan-50 font-medium' : ''
                                       }`}
                                       style={value === option ? {color: 'var(--gainwell-cyan)'} : {}}

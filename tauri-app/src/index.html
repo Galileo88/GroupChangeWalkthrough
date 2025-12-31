@@ -130,129 +130,11 @@
         font-size: 1.5rem;
       }
     }
-
-    /* Update Button Styles */
-    .update-button {
-      background: linear-gradient(135deg, var(--gainwell-cyan) 0%, #00c9a0 100%);
-      color: var(--gainwell-dark);
-      padding: 0.875rem 1.75rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1rem;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 229, 180, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .update-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 229, 180, 0.4);
-    }
-
-    .update-button:active {
-      transform: translateY(0);
-    }
-
-    .update-button.loading {
-      opacity: 0.7;
-      cursor: wait;
-    }
-
-    .update-badge {
-      background-color: #ef4444;
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-    }
-
-    .hidden {
-      display: none !important;
-    }
   </style>
   <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
-
-    // Check for updates on page load
-    async function checkForUpdates() {
-      try {
-        const updateAvailable = await window.__TAURI__.core.invoke('check_for_updates');
-
-        if (updateAvailable) {
-          // Show the update button
-          const buttonContainer = document.getElementById('updateButtonContainer');
-          buttonContainer.classList.remove('hidden');
-        }
-      } catch (error) {
-        console.error('Error checking for updates:', error);
-      }
-    }
-
-    // Handle update button click
-    async function handleUpdateClick() {
-      const button = document.getElementById('updateButton');
-      const buttonText = button.querySelector('span:first-child');
-      const originalText = buttonText.textContent;
-
-      try {
-        // Update button state to loading
-        button.classList.add('loading');
-        button.disabled = true;
-        buttonText.textContent = 'Downloading Update...';
-
-        // Download and install the update
-        const result = await window.__TAURI__.core.invoke('download_and_install_update');
-
-        // Update button text
-        buttonText.textContent = 'Update Installed!';
-
-        // Show restart prompt
-        setTimeout(() => {
-          if (confirm(result + '\n\nWould you like to restart now?')) {
-            // User confirmed restart
-            window.__TAURI__.process.exit(0);
-          } else {
-            // User cancelled, reset button
-            button.classList.remove('loading');
-            button.disabled = false;
-            buttonText.textContent = originalText;
-          }
-        }, 500);
-
-      } catch (error) {
-        console.error('Error updating application:', error);
-        alert('Failed to update: ' + error);
-
-        // Reset button state
-        button.classList.remove('loading');
-        button.disabled = false;
-        buttonText.textContent = originalText;
-      }
-    }
-
-    // Check for updates when the page loads
-    window.addEventListener('DOMContentLoaded', () => {
-      checkForUpdates();
-    });
   </script>
 </head>
 <body>
@@ -264,14 +146,6 @@
 
     <!-- Main Title -->
     <h1 class="header-title">Pick Your Application Type</h1>
-
-    <!-- Update Available Button -->
-    <div id="updateButtonContainer" class="hidden mb-6">
-      <button id="updateButton" class="update-button" onclick="handleUpdateClick()">
-        <span>Update Available</span>
-        <span class="update-badge">NEW</span>
-      </button>
-    </div>
 
     <!-- 4x4 Grid of Tiles -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

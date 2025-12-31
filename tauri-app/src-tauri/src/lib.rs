@@ -7,7 +7,6 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
-use tauri_plugin_updater::UpdaterExt;
 
 // ============================================================
 // DATA STRUCTURES
@@ -215,49 +214,6 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
     Ok(format!("Copy saved to PWO folder: {}", file_path.display()))
 }
 
-// -------------------- Update Commands --------------------
-
-#[tauri::command]
-async fn check_for_updates(app: tauri::AppHandle) -> Result<bool, String> {
-    let updater = app.updater()
-        .map_err(|e| format!("Failed to get updater: {}", e))?;
-
-    let update = updater
-        .check()
-        .await
-        .map_err(|e| format!("Failed to check for updates: {}", e))?;
-
-    Ok(update.is_some())
-}
-
-#[tauri::command]
-async fn download_and_install_update(app: tauri::AppHandle) -> Result<String, String> {
-    let updater = app.updater()
-        .map_err(|e| format!("Failed to get updater: {}", e))?;
-
-    let update = updater
-        .check()
-        .await
-        .map_err(|e| format!("Failed to check for updates: {}", e))?;
-
-    match update {
-        Some(update) => {
-            // Download and install the update
-            update.download_and_install(|_, _| {}, || {})
-                .await
-                .map_err(|e| format!("Failed to download and install update: {}", e))?;
-
-            Ok("Update downloaded and installed successfully. Please restart the application.".to_string())
-        }
-        None => Err("No updates available".to_string())
-    }
-}
-
-#[tauri::command]
-fn get_app_version() -> String {
-    env!("CARGO_PKG_VERSION").to_string()
-}
-
 // ============================================================
 // APPLICATION INITIALIZATION
 // ============================================================
@@ -268,7 +224,6 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             save_pwo_state,
             load_pwo_state,
@@ -276,10 +231,7 @@ pub fn run() {
             get_save_location,
             open_url,
             save_file_dialog,
-            save_file_to_pwo_folder,
-            check_for_updates,
-            download_and_install_update,
-            get_app_version
+            save_file_to_pwo_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

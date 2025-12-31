@@ -1,6 +1,6 @@
 {
   "name": "provider-enrollment-walkthrough",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "Provider Enrollment Walkthrough Desktop Application",
   "scripts": {
     "tauri": "tauri",

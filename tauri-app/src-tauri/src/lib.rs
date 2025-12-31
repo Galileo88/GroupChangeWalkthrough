@@ -5,6 +5,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
@@ -27,6 +28,20 @@ struct PwoState {
     current_adding_provider_index: i32,
     last_saved: String,
     has_outreach: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct VersionInfo {
+    version: String,
+    installer_filename: String,
+}
+
+#[derive(Debug, Serialize)]
+struct UpdateCheckResult {
+    update_available: bool,
+    current_version: String,
+    latest_version: String,
+    installer_path: Option<String>,
 }
 
 // ============================================================
@@ -214,6 +229,90 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
     Ok(format!("Copy saved to PWO folder: {}", file_path.display()))
 }
 
+// -------------------- Auto-Update Commands --------------------
+
+const CURRENT_VERSION: &str = "1.0.0";
+const UPDATE_SHARE_PATH: &str = r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES";
+
+#[tauri::command]
+fn get_current_version() -> String {
+    CURRENT_VERSION.to_string()
+}
+
+#[tauri::command]
+async fn check_for_updates() -> Result<UpdateCheckResult, String> {
+    let update_path = PathBuf::from(UPDATE_SHARE_PATH);
+    let version_file = update_path.join("version.json");
+
+    // Check if version file exists
+    if !version_file.exists() {
+        return Ok(UpdateCheckResult {
+            update_available: false,
+            current_version: CURRENT_VERSION.to_string(),
+            latest_version: CURRENT_VERSION.to_string(),
+            installer_path: None,
+        });
+    }
+
+    // Read and parse version file
+    let version_json = fs::read_to_string(&version_file)
+        .map_err(|e| format!("Failed to read version file: {}", e))?;
+
+    let version_info: VersionInfo = serde_json::from_str(&version_json)
+        .map_err(|e| format!("Failed to parse version file: {}", e))?;
+
+    // Compare versions (simple string comparison for now)
+    let update_available = version_info.version != CURRENT_VERSION;
+
+    let installer_path = if update_available {
+        Some(update_path.join(&version_info.installer_filename).to_string_lossy().to_string())
+    } else {
+        None
+    };
+
+    Ok(UpdateCheckResult {
+        update_available,
+        current_version: CURRENT_VERSION.to_string(),
+        latest_version: version_info.version,
+        installer_path,
+    })
+}
+
+#[tauri::command]
+async fn download_and_install_update(installer_path: String) -> Result<String, String> {
+    let installer = PathBuf::from(&installer_path);
+
+    // Verify installer exists
+    if !installer.exists() {
+        return Err(format!("Installer not found at: {}", installer_path));
+    }
+
+    // Copy installer to temp directory
+    let temp_dir = std::env::temp_dir();
+    let temp_installer = temp_dir.join(
+        installer.file_name()
+            .ok_or_else(|| "Invalid installer filename".to_string())?
+    );
+
+    fs::copy(&installer, &temp_installer)
+        .map_err(|e| format!("Failed to copy installer: {}", e))?;
+
+    // Run installer silently using msiexec with /passive flag
+    // /passive shows progress bar but no user interaction required
+    // /norestart prevents automatic restart
+    let output = Command::new("msiexec")
+        .args(&[
+            "/i",
+            &temp_installer.to_string_lossy(),
+            "/passive",
+            "/norestart"
+        ])
+        .spawn()
+        .map_err(|e| format!("Failed to launch installer: {}", e))?;
+
+    Ok(format!("Update installation started. The app will update and you may need to restart."))
+}
+
 // ============================================================
 // APPLICATION INITIALIZATION
 // ============================================================
@@ -231,7 +330,10 @@ pub fn run() {
             get_save_location,
             open_url,
             save_file_dialog,
-            save_file_to_pwo_folder
+            save_file_to_pwo_folder,
+            get_current_version,
+            check_for_updates,
+            download_and_install_update
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

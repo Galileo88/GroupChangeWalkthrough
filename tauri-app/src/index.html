@@ -203,25 +203,48 @@
           statusDiv.textContent = result;
           statusDiv.className = 'update-status update-available';
 
-          if (confirm('An update is available! Would you like to download and install it now?')) {
-            statusDiv.textContent = 'Downloading update...';
-            const installResult = await window.__TAURI__.core.invoke('download_and_install_update');
-            statusDiv.textContent = installResult;
-
-            if (installResult.includes('Please restart')) {
-              statusDiv.className = 'update-status update-success';
-            }
-          }
+          // Show install button instead of modal
+          button.textContent = 'Install Update';
+          button.disabled = false;
+          button.onclick = installUpdate;
         } else {
           statusDiv.textContent = result;
           statusDiv.className = 'update-status update-current';
+          button.disabled = false;
+          button.textContent = 'Check for Updates';
         }
       } catch (error) {
         statusDiv.textContent = 'Error checking for updates: ' + error;
         statusDiv.className = 'update-status update-error';
-      } finally {
         button.disabled = false;
         button.textContent = 'Check for Updates';
+      }
+    }
+
+    async function installUpdate() {
+      const button = document.getElementById('update-button');
+      const statusDiv = document.getElementById('update-status');
+
+      try {
+        button.disabled = true;
+        button.textContent = 'Installing...';
+        statusDiv.textContent = 'Downloading and installing update...';
+        statusDiv.className = 'update-status update-available';
+
+        const installResult = await window.__TAURI__.core.invoke('download_and_install_update');
+        statusDiv.textContent = installResult;
+
+        if (installResult.includes('Please restart')) {
+          statusDiv.className = 'update-status update-success';
+          button.textContent = 'Restart to Complete';
+          button.disabled = false;
+        }
+      } catch (error) {
+        statusDiv.textContent = 'Error installing update: ' + error;
+        statusDiv.className = 'update-status update-error';
+        button.textContent = 'Check for Updates';
+        button.disabled = false;
+        button.onclick = checkForUpdates;
       }
     }
   </script>

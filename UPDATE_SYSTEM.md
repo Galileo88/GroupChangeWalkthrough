@@ -34,16 +34,18 @@ When you have a new version to release:
 **Step 3: Copy files to network share**
 Copy these files to `\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES`:
 
-1. The new `.msi` installer file
+1. The new `.msi` installer file (renamed with version)
 2. A `version.json` file with this content:
 ```json
 {
   "version": "1.0.1",
-  "installer_filename": "Provider Enrollment Walkthrough_1.0.1_x64_en-US.msi"
+  "installer_filename": "provider-enrollment-walkthrough-v1.0.1.msi"
 }
 ```
 
-**Note**: Make sure the `installer_filename` in `version.json` exactly matches your `.msi` filename.
+**Recommended naming convention**: Use `provider-enrollment-walkthrough-v{version}.msi` (e.g., `provider-enrollment-walkthrough-v1.0.1.msi`) to easily track versions on the network share.
+
+**Note**: Make sure the `installer_filename` in `version.json` exactly matches your installer filename.
 
 ### 3. How Users Update
 
@@ -70,7 +72,7 @@ Copy these files to `\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollme
 **Button shows "No Updates Available" even though I uploaded an update:**
 - Verify the `version.json` file is in the correct location
 - Check that the version in `version.json` differs from `CURRENT_VERSION` in the app
-- Verify the installer filename in `version.json` matches the actual file
+- Verify the installer filename in `version.json` matches the actual file exactly (including the `.msi` extension)
 
 **Update installation fails:**
 - Check that the installer file exists on the network share
@@ -81,3 +83,20 @@ Copy these files to `\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollme
 - Users must be connected to the corporate network
 - Check VPN connection if working remotely
 - Verify network permissions
+
+## Example Network Share Structure
+
+After publishing version 1.0.1, your network share should look like:
+```
+\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES\
+├── version.json
+└── provider-enrollment-walkthrough-v1.0.1.msi
+```
+
+When you publish 1.0.2, you can keep old versions:
+```
+\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES\
+├── version.json  (updated to point to v1.0.2)
+├── provider-enrollment-walkthrough-v1.0.1.msi
+└── provider-enrollment-walkthrough-v1.0.2.msi
+```

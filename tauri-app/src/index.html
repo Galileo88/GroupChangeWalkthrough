@@ -181,15 +181,45 @@
       background-color: #dbeafe;
       color: #1e40af;
     }
+    .update-badge {
+      display: inline-block;
+      background-color: #ef4444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .5;
+      }
+    }
   </style>
   <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
 
-    async function checkForUpdates() {
+    async function loadVersion() {
+      try {
+        const version = await window.__TAURI__.core.invoke('get_app_version');
+        document.getElementById('app-version').textContent = `v${version}`;
+      } catch (error) {
+        console.error('Error loading version:', error);
+      }
+    }
+
+    async function checkForUpdates(showCurrentMessage = true) {
       const button = document.getElementById('update-button');
       const statusDiv = document.getElementById('update-status');
+      const badge = document.getElementById('update-badge');
 
       try {
         button.disabled = true;
@@ -202,21 +232,33 @@
         if (result.includes('Update available')) {
           statusDiv.innerHTML = result + ' <a href="https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest" target="_blank" style="color: #00e5b4; text-decoration: underline; font-weight: 600;">Download Update</a>';
           statusDiv.className = 'update-status update-available';
+          badge.style.display = 'inline-block';
           button.disabled = false;
           button.textContent = 'Check for Updates';
         } else {
-          statusDiv.textContent = result;
-          statusDiv.className = 'update-status update-current';
+          if (showCurrentMessage) {
+            statusDiv.textContent = result;
+            statusDiv.className = 'update-status update-current';
+          }
+          badge.style.display = 'none';
           button.disabled = false;
           button.textContent = 'Check for Updates';
         }
       } catch (error) {
-        statusDiv.textContent = 'Error checking for updates: ' + error;
-        statusDiv.className = 'update-status update-error';
+        if (showCurrentMessage) {
+          statusDiv.textContent = 'Error checking for updates: ' + error;
+          statusDiv.className = 'update-status update-error';
+        }
         button.disabled = false;
         button.textContent = 'Check for Updates';
       }
     }
+
+    // Check for updates on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadVersion();
+      await checkForUpdates(false); // Check silently on load
+    });
   </script>
 </head>
 <body>
@@ -300,12 +342,13 @@
 
     <!-- Footer -->
     <div class="text-center mt-12">
-      <button id="update-button" class="update-button" onclick="checkForUpdates()">
+      <button id="update-button" class="update-button" onclick="checkForUpdates(true)">
         Check for Updates
+        <span id="update-badge" class="update-badge" style="display: none;">NEW</span>
       </button>
       <div id="update-status" class="update-status" style="display: inline-block; margin-left: 1rem;"></div>
       <div class="text-white opacity-75 text-sm mt-4">
-        <p>&copy; 2024 Gainwell Technologies. All rights reserved.</p>
+        <p>&copy; 2024 Gainwell Technologies. All rights reserved. <span id="app-version" style="opacity: 0.5;"></span></p>
       </div>
     </div>
   </div>

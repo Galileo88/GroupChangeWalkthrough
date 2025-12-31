@@ -218,6 +218,11 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
 // -------------------- Update Checker --------------------
 
 #[tauri::command]
+fn get_app_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
+
+#[tauri::command]
 async fn check_for_updates(app: tauri::AppHandle) -> Result<String, String> {
     let update = app.updater()
         .map_err(|e| {
@@ -298,6 +303,7 @@ pub fn run() {
             open_url,
             save_file_dialog,
             save_file_to_pwo_folder,
+            get_app_version,
             check_for_updates,
             download_and_install_update
         ])

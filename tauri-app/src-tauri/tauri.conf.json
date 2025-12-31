@@ -39,9 +39,7 @@
     ],
     "windows": {
       "nsis": {
-        "perMachine": false,
-        "allowDowngrade": true,
-        "displayLanguageSelector": false
+        "installMode": "currentUser"
       }
     }
   },

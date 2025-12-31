@@ -232,7 +232,7 @@
         if (result.includes('Update available')) {
           statusDiv.innerHTML = result + ' <a href="https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest" target="_blank" style="color: #00e5b4; text-decoration: underline; font-weight: 600;">Download Update</a>';
           statusDiv.className = 'update-status update-available';
-          badge.style.display = 'inline-block';
+          if (badge) badge.style.display = 'inline-block';
           button.disabled = false;
           button.textContent = 'Check for Updates';
         } else {
@@ -240,7 +240,7 @@
             statusDiv.textContent = result;
             statusDiv.className = 'update-status update-current';
           }
-          badge.style.display = 'none';
+          if (badge) badge.style.display = 'none';
           button.disabled = false;
           button.textContent = 'Check for Updates';
         }

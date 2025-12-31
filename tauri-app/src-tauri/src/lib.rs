@@ -7,6 +7,7 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_updater::UpdaterExt;
 
 // ============================================================
 // DATA STRUCTURES
@@ -214,6 +215,49 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
     Ok(format!("Copy saved to PWO folder: {}", file_path.display()))
 }
 
+// -------------------- Update Checker --------------------
+
+#[tauri::command]
+async fn check_for_updates(app: tauri::AppHandle) -> Result<String, String> {
+    let update = app.updater()
+        .map_err(|e| format!("Failed to get updater: {}", e))?
+        .check()
+        .await
+        .map_err(|e| format!("Failed to check for updates: {}", e))?;
+
+    if let Some(update) = update {
+        let version = update.version;
+        let current_version = update.current_version;
+
+        Ok(format!("Update available: {} (current: {})", version, current_version))
+    } else {
+        Ok("You are running the latest version!".to_string())
+    }
+}
+
+#[tauri::command]
+async fn download_and_install_update(app: tauri::AppHandle) -> Result<String, String> {
+    let update = app.updater()
+        .map_err(|e| format!("Failed to get updater: {}", e))?
+        .check()
+        .await
+        .map_err(|e| format!("Failed to check for updates: {}", e))?;
+
+    if let Some(update) = update {
+        update.download_and_install(|_chunk_length, _content_length| {
+            // Progress callback - we could emit events here to show progress
+        }, || {
+            // Download complete callback
+        })
+        .await
+        .map_err(|e| format!("Failed to download and install update: {}", e))?;
+
+        Ok("Update downloaded and installed! Please restart the application.".to_string())
+    } else {
+        Ok("No updates available.".to_string())
+    }
+}
+
 // ============================================================
 // APPLICATION INITIALIZATION
 // ============================================================
@@ -224,6 +268,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             save_pwo_state,
             load_pwo_state,
@@ -231,7 +276,9 @@ pub fn run() {
             get_save_location,
             open_url,
             save_file_dialog,
-            save_file_to_pwo_folder
+            save_file_to_pwo_folder,
+            check_for_updates,
+            download_and_install_update
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

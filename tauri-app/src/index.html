@@ -130,10 +130,99 @@
         font-size: 1.5rem;
       }
     }
+
+    .update-button {
+      background-color: var(--gainwell-cyan);
+      color: var(--gainwell-dark);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .update-button:hover:not(:disabled) {
+      background-color: #00c99c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 229, 180, 0.3);
+    }
+
+    .update-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .update-status {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .update-available {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .update-current {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .update-error {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .update-success {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
   </style>
   <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
+    }
+
+    async function checkForUpdates() {
+      const button = document.getElementById('update-button');
+      const statusDiv = document.getElementById('update-status');
+
+      try {
+        button.disabled = true;
+        button.textContent = 'Checking...';
+        statusDiv.textContent = '';
+        statusDiv.className = 'update-status';
+
+        const result = await window.__TAURI__.core.invoke('check_for_updates');
+
+        if (result.includes('Update available')) {
+          statusDiv.textContent = result;
+          statusDiv.className = 'update-status update-available';
+
+          if (confirm('An update is available! Would you like to download and install it now?')) {
+            statusDiv.textContent = 'Downloading update...';
+            const installResult = await window.__TAURI__.core.invoke('download_and_install_update');
+            statusDiv.textContent = installResult;
+
+            if (installResult.includes('Please restart')) {
+              statusDiv.className = 'update-status update-success';
+            }
+          }
+        } else {
+          statusDiv.textContent = result;
+          statusDiv.className = 'update-status update-current';
+        }
+      } catch (error) {
+        statusDiv.textContent = 'Error checking for updates: ' + error;
+        statusDiv.className = 'update-status update-error';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Check for Updates';
+      }
     }
   </script>
 </head>
@@ -217,8 +306,14 @@
     </div>
 
     <!-- Footer -->
-    <div class="text-center mt-12 text-white opacity-75 text-sm">
-      <p>&copy; 2024 Gainwell Technologies. All rights reserved.</p>
+    <div class="text-center mt-12">
+      <button id="update-button" class="update-button" onclick="checkForUpdates()">
+        Check for Updates
+      </button>
+      <div id="update-status" class="update-status" style="display: inline-block; margin-left: 1rem;"></div>
+      <div class="text-white opacity-75 text-sm mt-4">
+        <p>&copy; 2024 Gainwell Technologies. All rights reserved.</p>
+      </div>
     </div>
   </div>
 </body>

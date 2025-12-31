@@ -4,8 +4,8 @@
   "pub_date": "2024-12-31T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "",
-      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.1/ProviderEnrollmentWalkthrough_1.0.1_x64-setup.exe"
+      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.1/ProviderEnrollmentWalkthrough_1.0.1_x64-setup.exe",
+      "signature": ""
     }
   }
 }

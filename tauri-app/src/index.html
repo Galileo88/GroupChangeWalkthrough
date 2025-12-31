@@ -211,6 +211,7 @@
           // Update available
           updateButton.className = 'update-button available';
           updateButtonText.textContent = 'New Update Available';
+          updateBadge.textContent = result.latest_version;
           updateBadge.style.display = 'inline-block';
           updateButton.onclick = handleUpdateClick;
         } else {
@@ -294,7 +295,7 @@
     <div id="updateButtonContainer" style="display: none;">
       <button id="updateButton" class="update-button unavailable">
         <span id="updateButtonText">No Updates Available</span>
-        <span id="updateBadge" class="update-badge" style="display: none;">NEW</span>
+        <span id="updateBadge" class="update-badge" style="display: none;"></span>
       </button>
     </div>
 

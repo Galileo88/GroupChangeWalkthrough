@@ -300,7 +300,7 @@ async fn download_and_install_update(installer_path: String) -> Result<String, S
     // Run installer silently using msiexec with /passive flag
     // /passive shows progress bar but no user interaction required
     // /norestart prevents automatic restart
-    let output = Command::new("msiexec")
+    let _installer_process = Command::new("msiexec")
         .args(&[
             "/i",
             &temp_installer.to_string_lossy(),

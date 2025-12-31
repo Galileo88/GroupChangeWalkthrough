@@ -298,30 +298,27 @@ async fn download_and_install_update(app: tauri::AppHandle, installer_path: Stri
     fs::copy(&new_exe, &temp_new_exe)
         .map_err(|e| format!("Failed to copy new exe to temp: {}", e))?;
 
-    // Create updater batch script
-    let updater_script = temp_dir.join("update-app.bat");
+    // Create updater PowerShell script
+    let updater_script = temp_dir.join("update-app.ps1");
 
-    // Convert paths to strings for batch script
+    // Convert paths to strings for PowerShell script
     let new_exe_str = temp_new_exe.to_string_lossy();
     let current_exe_str = current_exe.to_string_lossy();
 
     let script_content = format!(
-        r#"@echo off
-REM Wait for the current app to close
-timeout /t 2 /nobreak > nul
+        r#"# Wait for the current app to close
+Start-Sleep -Seconds 2
 
-REM Replace old exe with new exe
-copy /Y "{new_exe}" "{current_exe}"
+# Replace old exe with new exe
+Copy-Item -Path "{new_exe}" -Destination "{current_exe}" -Force
 
-REM Start the updated app (quotes around the path)
-start "" "{current_exe}"
+# Start the updated app
+Start-Process "{current_exe}"
 
-REM Wait a moment for the app to start
-timeout /t 1 /nobreak > nul
-
-REM Delete temp files
-del "{new_exe}"
-(goto) 2>nul & del "%~f0"
+# Wait a moment then clean up
+Start-Sleep -Seconds 1
+Remove-Item "{new_exe}" -Force -ErrorAction SilentlyContinue
+Remove-Item $MyInvocation.MyCommand.Path -Force -ErrorAction SilentlyContinue
 "#,
         new_exe = new_exe_str,
         current_exe = current_exe_str
@@ -330,9 +327,13 @@ del "{new_exe}"
     fs::write(&updater_script, script_content)
         .map_err(|e| format!("Failed to create updater script: {}", e))?;
 
-    // Launch updater script in background
-    Command::new(&updater_script)
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW flag
+    // Launch updater script in background using PowerShell
+    Command::new("powershell")
+        .args(&[
+            "-WindowStyle", "Hidden",
+            "-ExecutionPolicy", "Bypass",
+            "-File", &updater_script.to_string_lossy()
+        ])
         .spawn()
         .map_err(|e| format!("Failed to launch updater: {}", e))?;
 

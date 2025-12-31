@@ -232,7 +232,7 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
 // -------------------- Auto-Update Commands --------------------
 
 const CURRENT_VERSION: &str = "1.0.0";
-const UPDATE_SHARE_PATH: &str = r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES";
+const UPDATE_SHARE_PATH: &str = r"C:\Users\Tavis\Documents\WALKTHROUGH_UPDATES";
 
 #[tauri::command]
 fn get_current_version() -> String {

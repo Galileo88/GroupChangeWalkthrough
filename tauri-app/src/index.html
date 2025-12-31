@@ -183,7 +183,7 @@
       }
     }
   </style>
-  <script type="module">
+  <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
@@ -196,7 +196,7 @@
 
       try {
         // Check if Tauri API is available
-        if (!window.__TAURI__?.updater) {
+        if (!window.__TAURI__ || !window.__TAURI__.updater) {
           status.textContent = 'Updater API not available';
           button.disabled = false;
           return;
@@ -206,13 +206,10 @@
         status.textContent = 'Checking for updates...';
         progressBar.style.display = 'none';
 
-        // Access Tauri API when function is called
-        const { check } = window.__TAURI__.updater;
-        const { relaunch } = window.__TAURI__.process;
+        // Access Tauri updater API
+        const update = await window.__TAURI__.updater.check();
 
-        const update = await check();
-
-        if (update?.available) {
+        if (update && update.available) {
           status.textContent = `Update available: ${update.version}. Downloading...`;
           progressBar.style.display = 'block';
 
@@ -240,8 +237,13 @@
           });
 
           // Relaunch the application to apply the update
-          setTimeout(() => {
-            relaunch();
+          status.textContent = 'Restarting application...';
+          setTimeout(async () => {
+            try {
+              await window.__TAURI_INTERNALS__.invoke('plugin:process|restart');
+            } catch (e) {
+              status.textContent = 'Update installed! Please restart the application manually.';
+            }
           }, 1000);
 
         } else {
@@ -255,10 +257,6 @@
         progressBar.style.display = 'none';
       }
     }
-
-    // Make function globally accessible
-    window.checkForUpdates = checkForUpdates;
-    window.navigateToWalkthrough = navigateToWalkthrough;
   </script>
 </head>
 <body>

@@ -44,6 +44,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: tauri-app
           tagName: ${{ github.ref_name }}
@@ -62,6 +64,10 @@ jobs:
             ### Auto-Update
 
             This version includes automatic update checking. When a new version is available, you'll see an "Update Available" button on the main page. Click it to automatically download and install the update.
+
+            ### Security
+
+            This release is cryptographically signed. The updater will verify the signature before installing.
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

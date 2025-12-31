@@ -43,7 +43,7 @@
       "endpoints": [
         "https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVCMTNFMzdDMzAzNUQ1RDMKUldUVDFUVXdmT01UVy90SEhLY1hyWTE5VjJIN0duL09VZWlIVGtmK0F0elUxUkd2SjJlUXB2c0EK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIxRkU5NzMwOEExMjc1NjkKUldScGRSS0tNSmYrc1RmVlpZTW1kb3ZWWGIzdXo1dk51QmhTUStIUmlOZUF6Q2s2ZVdiOTlubzkK",
       "windows": {
         "installMode": "passive"
       }

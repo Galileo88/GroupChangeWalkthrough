@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0",
-  "notes": "Initial release - Provider Enrollment Walkthrough desktop application",
-  "pub_date": "2024-12-30T22:00:00Z",
+  "version": "1.0.1",
+  "notes": "Release v1.0.1 - UPDATE_NOTES_HERE",
+  "pub_date": "2024-12-31T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.0/Provider.Enrollment.Walkthrough_1.0.0_x64-setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTK3dOcEtsbDNzNUkxYU15UG1LNklDMnFlOEtndzh4MFB5Vk9mbVlKazZncmxCbmdwMVQvMDh5cGFIaW1Ca3hpSkUzUjVMZE9sU01ubmhBRnIyNUhLNEg3VnVUR1ZWUVFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3MTM2MzQ3CWZpbGU6UHJvdmlkZXIgRW5yb2xsbWVudCBXYWxrdGhyb3VnaF8xLjAuMF94NjQtc2V0dXAuZXhlCnZSMDdUS1BSd3piSnRidnBOWnMzN1VnM0FLWUN1dm03L3l5ZVRENjc4c1NNRzlrOG1XTW1LTmRkekFsVUtmdDEyc1BoYm1DKzJkNnVXSitBQ0NLVUNBPT0K"
+      "url": "https://github.com/Galileo88/GroupChangeWalkthrough/releases/download/v1.0.1/Provider.Enrollment.Walkthrough_1.0.1_x64-setup.exe",
+      "signature": "PASTE_YOUR_V1.0.1_SIGNATURE_HERE"
     }
   }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "provider-enrollment-walkthrough"
-version = "1.0.0"
+version = "1.0.1"
 description = "Provider Enrollment Walkthrough Desktop Application"
 authors = ["you"]
 edition = "2021"

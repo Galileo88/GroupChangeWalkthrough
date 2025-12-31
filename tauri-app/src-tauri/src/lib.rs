@@ -33,7 +33,7 @@ struct PwoState {
 #[derive(Debug, Serialize, Deserialize)]
 struct VersionInfo {
     version: String,
-    installer_filename: String,
+    exe_filename: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -265,7 +265,7 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
     let update_available = version_info.version != CURRENT_VERSION;
 
     let installer_path = if update_available {
-        Some(update_path.join(&version_info.installer_filename).to_string_lossy().to_string())
+        Some(update_path.join(&version_info.exe_filename).to_string_lossy().to_string())
     } else {
         None
     };
@@ -279,38 +279,60 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 }
 
 #[tauri::command]
-async fn download_and_install_update(installer_path: String) -> Result<String, String> {
-    let installer = PathBuf::from(&installer_path);
+async fn download_and_install_update(app: tauri::AppHandle, installer_path: String) -> Result<String, String> {
+    let new_exe = PathBuf::from(&installer_path);
 
-    // Verify installer exists
-    if !installer.exists() {
-        return Err(format!("Installer not found at: {}", installer_path));
+    // Verify new exe exists
+    if !new_exe.exists() {
+        return Err(format!("Update file not found at: {}", installer_path));
     }
 
-    // Copy installer to temp directory
+    // Get current exe path
+    let current_exe = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current exe path: {}", e))?;
+
+    // Copy new exe to temp directory
     let temp_dir = std::env::temp_dir();
-    let temp_installer = temp_dir.join(
-        installer.file_name()
-            .ok_or_else(|| "Invalid installer filename".to_string())?
+    let temp_new_exe = temp_dir.join("provider-enrollment-walkthrough-update.exe");
+
+    fs::copy(&new_exe, &temp_new_exe)
+        .map_err(|e| format!("Failed to copy new exe to temp: {}", e))?;
+
+    // Create updater batch script
+    let updater_script = temp_dir.join("update-app.bat");
+    let script_content = format!(
+        r#"@echo off
+REM Wait for the current app to close
+timeout /t 2 /nobreak > nul
+
+REM Replace old exe with new exe
+copy /Y "{new_exe}" "{current_exe}"
+
+REM Delete temp files
+del "{temp_exe}"
+del "%~f0"
+
+REM Start the updated app
+start "" "{current_exe}"
+"#,
+        new_exe = temp_new_exe.display(),
+        current_exe = current_exe.display(),
+        temp_exe = temp_new_exe.display()
     );
 
-    fs::copy(&installer, &temp_installer)
-        .map_err(|e| format!("Failed to copy installer: {}", e))?;
+    fs::write(&updater_script, script_content)
+        .map_err(|e| format!("Failed to create updater script: {}", e))?;
 
-    // Run installer silently using msiexec with /passive flag
-    // /passive shows progress bar but no user interaction required
-    // /norestart prevents automatic restart
-    let _installer_process = Command::new("msiexec")
-        .args(&[
-            "/i",
-            &temp_installer.to_string_lossy(),
-            "/passive",
-            "/norestart"
-        ])
+    // Launch updater script in background
+    Command::new("cmd")
+        .args(&["/C", "start", "/MIN", &updater_script.to_string_lossy()])
         .spawn()
-        .map_err(|e| format!("Failed to launch installer: {}", e))?;
+        .map_err(|e| format!("Failed to launch updater: {}", e))?;
 
-    Ok(format!("Update installation started. The app will update and you may need to restart."))
+    // Exit the app to allow update
+    app.exit(0);
+
+    Ok("Update started".to_string())
 }
 
 // ============================================================

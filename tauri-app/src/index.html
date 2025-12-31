@@ -238,7 +238,8 @@
         `A new version (${updateInfo.latest_version}) is available!\n\n` +
         `Current version: ${updateInfo.current_version}\n` +
         `New version: ${updateInfo.latest_version}\n\n` +
-        `The update will install silently. Click OK to proceed.`
+        `The app will close, update, and restart automatically.\n\n` +
+        `Click OK to proceed.`
       );
 
       if (!confirmed) {
@@ -250,18 +251,12 @@
         const updateButton = document.getElementById('updateButton');
         const updateButtonText = document.getElementById('updateButtonText');
         updateButton.disabled = true;
-        updateButtonText.textContent = 'Installing Update...';
+        updateButtonText.textContent = 'Updating...';
 
-        // Start the update
+        // Start the update (app will close automatically)
         await invoke('download_and_install_update', {
           installerPath: updateInfo.installer_path
         });
-
-        alert('Update installation has started! The installer will run in the background. Please wait for it to complete, then restart the application.');
-
-        // Reset button state
-        updateButton.disabled = false;
-        await checkForUpdates();
 
       } catch (error) {
         console.error('Failed to install update:', error);

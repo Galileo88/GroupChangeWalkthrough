@@ -19,58 +19,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
 
-    .update-section {
-      margin-top: 2rem;
-      text-align: center;
-    }
-
-    .update-button {
-      background: var(--gainwell-cyan);
-      color: var(--gainwell-dark);
-      padding: 0.75rem 2rem;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-    }
-
-    .update-button:hover:not(:disabled) {
-      background: #00ccaa;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 229, 180, 0.4);
-    }
-
-    .update-button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .update-status {
-      margin-top: 1rem;
-      color: white;
-      font-size: 0.875rem;
-      min-height: 1.5rem;
-    }
-
-    .progress-bar {
-      width: 100%;
-      max-width: 400px;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      margin: 1rem auto;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--gainwell-cyan);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
     .tile {
       background: white;
       border-radius: 12px;
@@ -187,76 +135,6 @@
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
-
-    async function checkForUpdates() {
-      const button = document.getElementById('update-button');
-      const status = document.getElementById('update-status');
-      const progressBar = document.getElementById('progress-bar');
-      const progressFill = document.getElementById('progress-fill');
-
-      try {
-        // Check if Tauri API is available
-        if (!window.__TAURI__ || !window.__TAURI__.updater) {
-          status.textContent = 'Updater API not available';
-          button.disabled = false;
-          return;
-        }
-
-        button.disabled = true;
-        status.textContent = 'Checking for updates...';
-        progressBar.style.display = 'none';
-
-        // Access Tauri updater API
-        const update = await window.__TAURI__.updater.check();
-
-        if (update && update.available) {
-          status.textContent = `Update available: ${update.version}. Downloading...`;
-          progressBar.style.display = 'block';
-
-          // Download and install the update
-          let downloaded = 0;
-          let contentLength = 0;
-
-          await update.downloadAndInstall((event) => {
-            switch (event.event) {
-              case 'Started':
-                contentLength = event.data.contentLength;
-                status.textContent = 'Download started...';
-                break;
-              case 'Progress':
-                downloaded += event.data.chunkLength;
-                const percentage = (downloaded / contentLength) * 100;
-                progressFill.style.width = `${percentage}%`;
-                status.textContent = `Downloading: ${Math.round(percentage)}%`;
-                break;
-              case 'Finished':
-                progressFill.style.width = '100%';
-                status.textContent = 'Download complete! Installing and restarting...';
-                break;
-            }
-          });
-
-          // Relaunch the application to apply the update
-          status.textContent = 'Restarting application...';
-          setTimeout(async () => {
-            try {
-              await window.__TAURI_INTERNALS__.invoke('plugin:process|restart');
-            } catch (e) {
-              status.textContent = 'Update installed! Please restart the application manually.';
-            }
-          }, 1000);
-
-        } else {
-          status.textContent = 'You are already on the latest version!';
-          button.disabled = false;
-        }
-      } catch (error) {
-        console.error('Update error:', error);
-        status.textContent = `Error checking for updates: ${error}`;
-        button.disabled = false;
-        progressBar.style.display = 'none';
-      }
-    }
   </script>
 </head>
 <body>
@@ -336,17 +214,6 @@
       <div class="tile disabled">
         <span class="coming-soon">Coming Soon</span>
       </div>
-    </div>
-
-    <!-- Update Section -->
-    <div class="update-section">
-      <button id="update-button" class="update-button" onclick="checkForUpdates()">
-        Check for Updates
-      </button>
-      <div id="progress-bar" class="progress-bar" style="display: none;">
-        <div id="progress-fill" class="progress-fill"></div>
-      </div>
-      <div id="update-status" class="update-status"></div>
     </div>
 
     <!-- Footer -->

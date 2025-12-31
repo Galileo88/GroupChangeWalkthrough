@@ -86,60 +86,6 @@
       letter-spacing: 0.05em;
     }
 
-    .update-button {
-      background: white;
-      border-radius: 8px;
-      padding: 0.75rem 1.5rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      font-size: 0.875rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .update-button.available {
-      background: var(--gainwell-cyan);
-      color: var(--gainwell-dark);
-      border: 2px solid var(--gainwell-cyan);
-    }
-
-    .update-button.available:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 229, 180, 0.3);
-    }
-
-    .update-button.unavailable {
-      background: #e5e7eb;
-      color: #9ca3af;
-      cursor: not-allowed;
-      border: 2px solid #e5e7eb;
-    }
-
-    .update-badge {
-      background: #ef4444;
-      color: white;
-      padding: 0.125rem 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.625rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.7;
-      }
-    }
-
     .logo-container {
       display: flex;
       align-items: center;
@@ -186,94 +132,9 @@
     }
   </style>
   <script>
-    const { invoke } = window.__TAURI__.core;
-
-    let updateInfo = null;
-
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
-
-    async function checkForUpdates() {
-      try {
-        const result = await invoke('check_for_updates');
-        updateInfo = result;
-
-        const updateButton = document.getElementById('updateButton');
-        const updateButtonText = document.getElementById('updateButtonText');
-        const updateBadge = document.getElementById('updateBadge');
-        const updateButtonContainer = document.getElementById('updateButtonContainer');
-
-        // Show the button container
-        updateButtonContainer.style.display = 'block';
-
-        if (result.update_available) {
-          // Update available
-          updateButton.className = 'update-button available';
-          updateButtonText.textContent = 'New Update Available';
-          updateBadge.textContent = result.latest_version;
-          updateBadge.style.display = 'inline-block';
-          updateButton.onclick = handleUpdateClick;
-        } else {
-          // No update available
-          updateButton.className = 'update-button unavailable';
-          updateButtonText.textContent = 'No Updates Available';
-          updateBadge.style.display = 'none';
-          updateButton.onclick = null;
-        }
-      } catch (error) {
-        console.error('Failed to check for updates:', error);
-        // Hide button if check fails
-        document.getElementById('updateButtonContainer').style.display = 'none';
-      }
-    }
-
-    async function handleUpdateClick() {
-      if (!updateInfo || !updateInfo.update_available) {
-        return;
-      }
-
-      // Ask user to confirm
-      const confirmed = confirm(
-        `A new version (${updateInfo.latest_version}) is available!\n\n` +
-        `Current version: ${updateInfo.current_version}\n` +
-        `New version: ${updateInfo.latest_version}\n\n` +
-        `The app will close, update, and restart automatically.\n\n` +
-        `Click OK to proceed.`
-      );
-
-      if (!confirmed) {
-        return;
-      }
-
-      try {
-        // Disable button and show loading state
-        const updateButton = document.getElementById('updateButton');
-        const updateButtonText = document.getElementById('updateButtonText');
-        updateButton.disabled = true;
-        updateButtonText.textContent = 'Updating...';
-
-        // Start the update (app will close automatically)
-        await invoke('download_and_install_update', {
-          installerPath: updateInfo.installer_path
-        });
-
-      } catch (error) {
-        console.error('Failed to install update:', error);
-        alert('Failed to install update: ' + error);
-
-        // Reset button state
-        const updateButton = document.getElementById('updateButton');
-        const updateButtonText = document.getElementById('updateButtonText');
-        updateButton.disabled = false;
-        updateButtonText.textContent = 'New Update Available';
-      }
-    }
-
-    // Check for updates when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-      checkForUpdates();
-    });
   </script>
 </head>
 <body>
@@ -285,14 +146,6 @@
 
     <!-- Main Title -->
     <h1 class="header-title">Pick Your Application Type</h1>
-
-    <!-- Update Button -->
-    <div id="updateButtonContainer" style="display: none;">
-      <button id="updateButton" class="update-button unavailable">
-        <span id="updateButtonText">No Updates Available</span>
-        <span id="updateBadge" class="update-badge" style="display: none;"></span>
-      </button>
-    </div>
 
     <!-- 4x4 Grid of Tiles -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

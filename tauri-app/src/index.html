@@ -200,13 +200,10 @@
         const result = await window.__TAURI__.core.invoke('check_for_updates');
 
         if (result.includes('Update available')) {
-          statusDiv.textContent = result;
+          statusDiv.innerHTML = result + ' <a href="https://github.com/Galileo88/GroupChangeWalkthrough/releases/latest" target="_blank" style="color: #00e5b4; text-decoration: underline; font-weight: 600;">Download Update</a>';
           statusDiv.className = 'update-status update-available';
-
-          // Show install button instead of modal
-          button.textContent = 'Install Update';
           button.disabled = false;
-          button.onclick = installUpdate;
+          button.textContent = 'Check for Updates';
         } else {
           statusDiv.textContent = result;
           statusDiv.className = 'update-status update-current';
@@ -218,33 +215,6 @@
         statusDiv.className = 'update-status update-error';
         button.disabled = false;
         button.textContent = 'Check for Updates';
-      }
-    }
-
-    async function installUpdate() {
-      const button = document.getElementById('update-button');
-      const statusDiv = document.getElementById('update-status');
-
-      try {
-        button.disabled = true;
-        button.textContent = 'Installing...';
-        statusDiv.textContent = 'Downloading and installing update...';
-        statusDiv.className = 'update-status update-available';
-
-        const installResult = await window.__TAURI__.core.invoke('download_and_install_update');
-        statusDiv.textContent = installResult;
-
-        if (installResult.includes('Please restart')) {
-          statusDiv.className = 'update-status update-success';
-          button.textContent = 'Restart to Complete';
-          button.disabled = false;
-        }
-      } catch (error) {
-        statusDiv.textContent = 'Error installing update: ' + error;
-        statusDiv.className = 'update-status update-error';
-        button.textContent = 'Check for Updates';
-        button.disabled = false;
-        button.onclick = checkForUpdates;
       }
     }
   </script>

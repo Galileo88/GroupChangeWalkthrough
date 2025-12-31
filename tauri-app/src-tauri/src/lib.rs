@@ -219,7 +219,10 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
 
 #[tauri::command]
 async fn check_for_updates(app: tauri::AppHandle) -> Result<bool, String> {
-    let update = app.updater()
+    let updater = app.updater()
+        .map_err(|e| format!("Failed to get updater: {}", e))?;
+
+    let update = updater
         .check()
         .await
         .map_err(|e| format!("Failed to check for updates: {}", e))?;
@@ -229,7 +232,10 @@ async fn check_for_updates(app: tauri::AppHandle) -> Result<bool, String> {
 
 #[tauri::command]
 async fn download_and_install_update(app: tauri::AppHandle) -> Result<String, String> {
-    let update = app.updater()
+    let updater = app.updater()
+        .map_err(|e| format!("Failed to get updater: {}", e))?;
+
+    let update = updater
         .check()
         .await
         .map_err(|e| format!("Failed to check for updates: {}", e))?;

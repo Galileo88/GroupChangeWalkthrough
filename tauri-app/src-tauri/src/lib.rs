@@ -220,10 +220,28 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
 #[tauri::command]
 async fn check_for_updates(app: tauri::AppHandle) -> Result<String, String> {
     let update = app.updater()
-        .map_err(|e| format!("Failed to get updater: {}", e))?
+        .map_err(|e| {
+            let error_msg = format!("{}", e);
+            if error_msg.contains("404") || error_msg.contains("Not Found") {
+                "No releases found. Please create a GitHub release with update files.".to_string()
+            } else if error_msg.contains("minisign") {
+                "Update check failed: Invalid signature data. This usually means no releases are published yet.".to_string()
+            } else {
+                format!("Failed to check for updates: {}", e)
+            }
+        })?
         .check()
         .await
-        .map_err(|e| format!("Failed to check for updates: {}", e))?;
+        .map_err(|e| {
+            let error_msg = format!("{}", e);
+            if error_msg.contains("404") || error_msg.contains("Not Found") {
+                "No releases found. Please create a GitHub release with update files.".to_string()
+            } else if error_msg.contains("minisign") {
+                "No releases available yet. The app will check for updates once releases are published.".to_string()
+            } else {
+                format!("Failed to check for updates: {}", e)
+            }
+        })?;
 
     if let Some(update) = update {
         let version = update.version;

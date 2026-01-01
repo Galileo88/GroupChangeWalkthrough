@@ -5,6 +5,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
@@ -29,9 +30,26 @@ struct PwoState {
     has_outreach: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct VersionInfo {
+    version: String,
+    exe_filename: String,
+}
+
+#[derive(Debug, Serialize)]
+struct UpdateCheckResult {
+    update_available: bool,
+    current_version: String,
+    latest_version: String,
+    exe_path: Option<String>,
+}
+
 // ============================================================
 // HELPER FUNCTIONS
 // ============================================================
+
+const CURRENT_VERSION: &str = "1.0.0";
+const UPDATE_SHARE_PATH: &str = r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES";
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Use network path for PWO state storage
@@ -214,6 +232,113 @@ async fn save_file_to_pwo_folder(app: tauri::AppHandle, pwo_number: String, cont
     Ok(format!("Copy saved to PWO folder: {}", file_path.display()))
 }
 
+// -------------------- Auto-Update Commands --------------------
+
+#[tauri::command]
+fn get_current_version() -> String {
+    CURRENT_VERSION.to_string()
+}
+
+#[tauri::command]
+async fn check_for_updates() -> Result<UpdateCheckResult, String> {
+    let update_path = PathBuf::from(UPDATE_SHARE_PATH);
+    let version_file = update_path.join("version.json");
+
+    // Check if version file exists
+    if !version_file.exists() {
+        return Ok(UpdateCheckResult {
+            update_available: false,
+            current_version: CURRENT_VERSION.to_string(),
+            latest_version: CURRENT_VERSION.to_string(),
+            exe_path: None,
+        });
+    }
+
+    // Read and parse version file
+    let version_json = fs::read_to_string(&version_file)
+        .map_err(|e| format!("Failed to read version file: {}", e))?;
+
+    let version_info: VersionInfo = serde_json::from_str(&version_json)
+        .map_err(|e| format!("Failed to parse version file: {}", e))?;
+
+    // Compare versions (simple string comparison)
+    let update_available = version_info.version != CURRENT_VERSION;
+
+    let exe_path = if update_available {
+        Some(update_path.join(&version_info.exe_filename).to_string_lossy().to_string())
+    } else {
+        None
+    };
+
+    Ok(UpdateCheckResult {
+        update_available,
+        current_version: CURRENT_VERSION.to_string(),
+        latest_version: version_info.version,
+        exe_path,
+    })
+}
+
+#[tauri::command]
+async fn download_and_install_update(app: tauri::AppHandle, exe_path: String) -> Result<String, String> {
+    let new_exe = PathBuf::from(&exe_path);
+
+    // Verify new exe exists
+    if !new_exe.exists() {
+        return Err(format!("Update file not found at: {}", exe_path));
+    }
+
+    // Get current exe path
+    let current_exe = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current exe path: {}", e))?;
+
+    // Copy new exe to temp directory
+    let temp_dir = std::env::temp_dir();
+    let temp_new_exe = temp_dir.join("provider-enrollment-walkthrough-update.exe");
+
+    fs::copy(&new_exe, &temp_new_exe)
+        .map_err(|e| format!("Failed to copy new exe to temp: {}", e))?;
+
+    // Create updater batch script
+    let updater_script = temp_dir.join("updater.bat");
+    let script_content = format!(
+        r#"@echo off
+echo Waiting for application to close...
+timeout /t 2 /nobreak > nul
+
+echo Replacing application...
+move /y "{}" "{}"
+if errorlevel 1 (
+    echo Failed to replace application
+    pause
+    exit /b 1
+)
+
+echo Starting updated application...
+start "" "{}"
+
+echo Cleaning up...
+del "%~f0"
+"#,
+        temp_new_exe.to_string_lossy().replace('/', "\\"),
+        current_exe.to_string_lossy().replace('/', "\\"),
+        current_exe.to_string_lossy().replace('/', "\\")
+    );
+
+    fs::write(&updater_script, script_content)
+        .map_err(|e| format!("Failed to create updater script: {}", e))?;
+
+    // Launch updater script
+    Command::new("cmd")
+        .args(["/C", "start", "/min", updater_script.to_string_lossy().as_ref()])
+        .spawn()
+        .map_err(|e| format!("Failed to launch updater: {}", e))?;
+
+    // Exit the app to allow update
+    app.exit(0);
+
+    Ok("Update started".to_string())
+}
+
 // ============================================================
 // APPLICATION INITIALIZATION
 // ============================================================
@@ -231,7 +356,10 @@ pub fn run() {
             get_save_location,
             open_url,
             save_file_dialog,
-            save_file_to_pwo_folder
+            save_file_to_pwo_folder,
+            get_current_version,
+            check_for_updates,
+            download_and_install_update
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

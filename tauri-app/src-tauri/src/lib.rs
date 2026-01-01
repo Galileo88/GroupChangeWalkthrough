@@ -95,13 +95,15 @@ fn convert_onedrive_link_to_direct_download(share_link: &str) -> String {
 fn download_file_from_url(url: &str, destination: &PathBuf) -> Result<(), String> {
     let direct_url = convert_onedrive_link_to_direct_download(url);
 
-    // Build a client that follows redirects (enabled by default)
+    // Build a client that follows redirects with proper headers for GitHub
     let client = reqwest::blocking::Client::builder()
         .redirect(reqwest::redirect::Policy::limited(10))
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
         .build()
         .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
 
     let response = client.get(&direct_url)
+        .header("Accept", "application/octet-stream, application/zip, */*")
         .send()
         .map_err(|e| format!("Failed to download file: {}", e))?;
 
@@ -134,10 +136,19 @@ fn download_file_from_url(url: &str, destination: &PathBuf) -> Result<(), String
 
     // Check if it looks like a zip file (starts with PK signature)
     if bytes.len() < 4 || &bytes[0..2] != b"PK" {
+        // Try to get first 100 bytes as string for debugging
+        let preview = if bytes.len() > 100 {
+            String::from_utf8_lossy(&bytes[0..100]).to_string()
+        } else {
+            String::from_utf8_lossy(&bytes).to_string()
+        };
+
         return Err(format!(
-            "Download failed: File is not a valid zip archive (got {} bytes, content-type: {}). \
-            The OneDrive sharing link may not be working correctly.",
-            bytes.len(), content_type
+            "Download failed: File is not a valid zip archive.\n\
+            Got {} bytes, content-type: {}\n\
+            File starts with: {}\n\
+            This usually means the download URL returned HTML instead of the file.",
+            bytes.len(), content_type, preview
         ));
     }
 

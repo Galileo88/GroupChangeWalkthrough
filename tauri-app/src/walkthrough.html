@@ -4199,7 +4199,7 @@
             .update-badge::after {
               content: attr(data-tooltip);
               position: absolute;
-              bottom: 100%;
+              top: 100%;
               right: 50%;
               transform: translateX(50%);
               background: rgba(0, 0, 0, 0.8);
@@ -4212,7 +4212,7 @@
               opacity: 0;
               pointer-events: none;
               transition: opacity 0.2s ease;
-              margin-bottom: 8px;
+              margin-top: 8px;
             }
 
             .update-badge:hover::after {

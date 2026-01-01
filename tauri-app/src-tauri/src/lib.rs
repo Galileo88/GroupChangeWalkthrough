@@ -329,7 +329,8 @@ fn get_current_version() -> String {
 #[tauri::command]
 async fn check_for_updates() -> Result<UpdateCheckResult, String> {
     // Download version.json from the configured URL
-    let response = reqwest::blocking::get(VERSION_JSON_URL)
+    let response = reqwest::get(VERSION_JSON_URL)
+        .await
         .map_err(|e| format!("Failed to check for updates: {}", e))?;
 
     if !response.status().is_success() {
@@ -337,6 +338,7 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
     }
 
     let version_json = response.text()
+        .await
         .map_err(|e| format!("Failed to read version info: {}", e))?;
 
     let version_info: VersionInfo = serde_json::from_str(&version_json)

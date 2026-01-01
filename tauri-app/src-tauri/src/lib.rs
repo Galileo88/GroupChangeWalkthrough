@@ -282,26 +282,20 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 async fn download_and_install_update(app: tauri::AppHandle, exe_path: String) -> Result<String, String> {
     let new_exe = PathBuf::from(&exe_path);
 
-    // Verify new exe exists
+    // Verify new exe exists on network share
     if !new_exe.exists() {
         return Err(format!("Update file not found at: {}", exe_path));
     }
 
-    // Get current exe path
+    // Get current exe path (where the app is running from, e.g., desktop)
     let current_exe = std::env::current_exe()
         .map_err(|e| format!("Failed to get current exe path: {}", e))?;
 
     // Get the current process ID
     let current_pid = std::process::id();
 
-    // Copy new exe to temp directory
+    // Create PowerShell updater script in temp
     let temp_dir = std::env::temp_dir();
-    let temp_new_exe = temp_dir.join("provider-enrollment-walkthrough-update.exe");
-
-    fs::copy(&new_exe, &temp_new_exe)
-        .map_err(|e| format!("Failed to copy new exe to temp: {}", e))?;
-
-    // Create PowerShell updater script (more reliable than batch)
     let updater_script = temp_dir.join("updater.ps1");
     let script_content = format!(
         r#"# Wait for the application to close
@@ -320,7 +314,7 @@ while ($attempts -lt $maxAttempts) {{
     $attempts++
 }}
 
-# Replace the exe
+# Replace the exe directly from network share to current location
 try {{
     Copy-Item -Path "{new_exe}" -Destination "{current_exe}" -Force
     Write-Host "Update installed successfully"
@@ -333,13 +327,12 @@ try {{
 # Start the updated application
 Start-Process -FilePath "{current_exe}"
 
-# Clean up temp files
+# Clean up updater script
 Start-Sleep -Seconds 2
-Remove-Item -Path "{new_exe}" -Force -ErrorAction SilentlyContinue
 Remove-Item -Path $PSCommandPath -Force -ErrorAction SilentlyContinue
 "#,
         pid = current_pid,
-        new_exe = temp_new_exe.to_string_lossy().replace('\\', "\\\\"),
+        new_exe = new_exe.to_string_lossy().replace('\\', "\\\\"),
         current_exe = current_exe.to_string_lossy().replace('\\', "\\\\")
     );
 

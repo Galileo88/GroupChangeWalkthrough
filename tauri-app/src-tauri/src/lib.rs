@@ -281,14 +281,14 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 #[tauri::command]
 async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, current_version: String, latest_version: String) -> Result<String, String> {
     // Show confirmation dialog on the backend
+    let message = format!(
+        "Current version: {}\nNew version: {}\n\nThe application will restart to apply the update.",
+        current_version, latest_version
+    );
+
     let confirmed = app.dialog()
-        .message(format!(
-            "Current version: {}\nNew version: {}\n\nThe application will restart to apply the update.",
-            current_version, latest_version
-        ))
+        .message(message)
         .title("Update Available")
-        .ok_button_label("Update Now")
-        .cancel_button_label("Cancel")
         .blocking_show();
 
     if !confirmed {

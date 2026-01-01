@@ -49,7 +49,35 @@ struct UpdateCheckResult {
 // ============================================================
 
 const CURRENT_VERSION: &str = "1.0.0";
-const UPDATE_SHARE_PATH: &str = r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES";
+
+fn get_update_path() -> Result<PathBuf, String> {
+    // Try to find OneDrive folder
+    // First try OneDrive Business (company OneDrive)
+    if let Ok(userprofile) = std::env::var("USERPROFILE") {
+        let onedrive_business = PathBuf::from(&userprofile)
+            .join("OneDrive - Gainwell Technologies")
+            .join("WALKTHROUGH_UPDATES");
+
+        if onedrive_business.exists() {
+            return Ok(onedrive_business);
+        }
+
+        // Try personal OneDrive
+        let onedrive_personal = PathBuf::from(&userprofile)
+            .join("OneDrive")
+            .join("WALKTHROUGH_UPDATES");
+
+        if onedrive_personal.exists() {
+            return Ok(onedrive_personal);
+        }
+
+        // If neither exists, return the personal OneDrive path anyway
+        // (it will be created or the check will fail gracefully)
+        return Ok(onedrive_personal);
+    }
+
+    Err("Could not determine OneDrive path".to_string())
+}
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Use network path for PWO state storage
@@ -241,7 +269,7 @@ fn get_current_version() -> String {
 
 #[tauri::command]
 async fn check_for_updates() -> Result<UpdateCheckResult, String> {
-    let update_path = PathBuf::from(UPDATE_SHARE_PATH);
+    let update_path = get_update_path()?;
     let version_file = update_path.join("version.json");
 
     // Check if version file exists

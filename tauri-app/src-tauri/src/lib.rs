@@ -4,6 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::fs::File;
+use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::process::Command;
 use tauri::Manager;
@@ -33,7 +35,8 @@ struct PwoState {
 #[derive(Debug, Serialize, Deserialize)]
 struct VersionInfo {
     version: String,
-    exe_filename: String,
+    #[serde(rename = "file location")]
+    file_location: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -41,7 +44,7 @@ struct UpdateCheckResult {
     update_available: bool,
     current_version: String,
     latest_version: String,
-    exe_path: Option<String>,
+    download_url: Option<String>,
 }
 
 // ============================================================
@@ -49,7 +52,91 @@ struct UpdateCheckResult {
 // ============================================================
 
 const CURRENT_VERSION: &str = "1.0.0";
-const UPDATE_SHARE_PATH: &str = r"C:\Users\Tavis\Documents\WALKTHROUGH_UPDATES";
+// TODO: Replace with your actual version.json hosting URL (can be OneDrive, GitHub, etc.)
+// The version.json should contain: {"version": "1.0.5", "file location": "https://1drv.ms/u/..."}
+const VERSION_JSON_URL: &str = "https://raw.githubusercontent.com/yourusername/updates/main/version.json";
+
+fn convert_onedrive_link_to_direct_download(share_link: &str) -> String {
+    // OneDrive share links need "&download=1" appended for direct download
+    if share_link.contains("1drv.ms") || share_link.contains("onedrive.live.com") {
+        if share_link.contains('?') {
+            format!("{}&download=1", share_link)
+        } else {
+            format!("{}?download=1", share_link)
+        }
+    } else {
+        share_link.to_string()
+    }
+}
+
+fn download_file_from_url(url: &str, destination: &PathBuf) -> Result<(), String> {
+    let direct_url = convert_onedrive_link_to_direct_download(url);
+
+    let response = reqwest::blocking::get(&direct_url)
+        .map_err(|e| format!("Failed to download file: {}", e))?;
+
+    if !response.status().is_success() {
+        return Err(format!("Download failed with status: {}", response.status()));
+    }
+
+    let bytes = response.bytes()
+        .map_err(|e| format!("Failed to read download bytes: {}", e))?;
+
+    let mut file = File::create(destination)
+        .map_err(|e| format!("Failed to create file: {}", e))?;
+
+    file.write_all(&bytes)
+        .map_err(|e| format!("Failed to write file: {}", e))?;
+
+    Ok(())
+}
+
+fn extract_zip(zip_path: &PathBuf, extract_to: &PathBuf) -> Result<PathBuf, String> {
+    let file = File::open(zip_path)
+        .map_err(|e| format!("Failed to open zip file: {}", e))?;
+
+    let mut archive = zip::ZipArchive::new(file)
+        .map_err(|e| format!("Failed to read zip archive: {}", e))?;
+
+    fs::create_dir_all(extract_to)
+        .map_err(|e| format!("Failed to create extraction directory: {}", e))?;
+
+    let mut exe_path: Option<PathBuf> = None;
+
+    for i in 0..archive.len() {
+        let mut file = archive.by_index(i)
+            .map_err(|e| format!("Failed to read file from archive: {}", e))?;
+
+        let outpath = match file.enclosed_name() {
+            Some(path) => extract_to.join(path),
+            None => continue,
+        };
+
+        if file.name().ends_with('/') {
+            fs::create_dir_all(&outpath)
+                .map_err(|e| format!("Failed to create directory: {}", e))?;
+        } else {
+            if let Some(p) = outpath.parent() {
+                if !p.exists() {
+                    fs::create_dir_all(p)
+                        .map_err(|e| format!("Failed to create parent directory: {}", e))?;
+                }
+            }
+            let mut outfile = File::create(&outpath)
+                .map_err(|e| format!("Failed to create output file: {}", e))?;
+
+            std::io::copy(&mut file, &mut outfile)
+                .map_err(|e| format!("Failed to extract file: {}", e))?;
+
+            // Track the .exe file
+            if outpath.extension().and_then(|s| s.to_str()) == Some("exe") {
+                exe_path = Some(outpath);
+            }
+        }
+    }
+
+    exe_path.ok_or_else(|| "No .exe file found in the zip archive".to_string())
+}
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Use network path for PWO state storage
@@ -241,22 +328,16 @@ fn get_current_version() -> String {
 
 #[tauri::command]
 async fn check_for_updates() -> Result<UpdateCheckResult, String> {
-    let update_path = PathBuf::from(UPDATE_SHARE_PATH);
-    let version_file = update_path.join("version.json");
+    // Download version.json from the configured URL
+    let response = reqwest::blocking::get(VERSION_JSON_URL)
+        .map_err(|e| format!("Failed to check for updates: {}", e))?;
 
-    // Check if version file exists
-    if !version_file.exists() {
-        return Ok(UpdateCheckResult {
-            update_available: false,
-            current_version: CURRENT_VERSION.to_string(),
-            latest_version: CURRENT_VERSION.to_string(),
-            exe_path: None,
-        });
+    if !response.status().is_success() {
+        return Err(format!("Failed to fetch version info: {}", response.status()));
     }
 
-    // Read and parse version file
-    let version_json = fs::read_to_string(&version_file)
-        .map_err(|e| format!("Failed to read version file: {}", e))?;
+    let version_json = response.text()
+        .map_err(|e| format!("Failed to read version info: {}", e))?;
 
     let version_info: VersionInfo = serde_json::from_str(&version_json)
         .map_err(|e| format!("Failed to parse version file: {}", e))?;
@@ -264,8 +345,8 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
     // Compare versions (simple string comparison)
     let update_available = version_info.version != CURRENT_VERSION;
 
-    let exe_path = if update_available {
-        Some(update_path.join(&version_info.exe_filename).to_string_lossy().to_string())
+    let download_url = if update_available {
+        Some(version_info.file_location.clone())
     } else {
         None
     };
@@ -274,21 +355,30 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
         update_available,
         current_version: CURRENT_VERSION.to_string(),
         latest_version: version_info.version,
-        exe_path,
+        download_url,
     })
 }
 
 #[tauri::command]
-async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, _current_version: String, _latest_version: String) -> Result<String, String> {
-    // Confirmation is now handled by custom dialog in frontend
-    let new_exe = PathBuf::from(&exe_path);
+async fn download_and_install_update(app: tauri::AppHandle, download_url: String, _current_version: String, _latest_version: String) -> Result<String, String> {
+    // Get Downloads folder path
+    let downloads_dir = dirs::download_dir()
+        .ok_or_else(|| "Could not find Downloads folder".to_string())?;
 
-    // Verify new exe exists on network share
-    if !new_exe.exists() {
-        return Err(format!("Update file not found at: {}", exe_path));
-    }
+    // Download zip to Downloads folder
+    let zip_filename = format!("provider-enrollment-update-{}.zip", chrono::Utc::now().timestamp());
+    let zip_path = downloads_dir.join(&zip_filename);
 
-    // Get current exe path (where the app is running from, e.g., desktop)
+    download_file_from_url(&download_url, &zip_path)?;
+
+    // Extract zip to temp folder
+    let temp_dir = std::env::temp_dir();
+    let extract_folder_name = format!("provider-enrollment-update-{}", chrono::Utc::now().timestamp());
+    let extract_path = temp_dir.join(&extract_folder_name);
+
+    let extracted_exe = extract_zip(&zip_path, &extract_path)?;
+
+    // Get current exe path (where the app is running from)
     let current_exe = std::env::current_exe()
         .map_err(|e| format!("Failed to get current exe path: {}", e))?;
 
@@ -296,7 +386,6 @@ async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, _c
     let current_pid = std::process::id();
 
     // Create PowerShell updater script in temp
-    let temp_dir = std::env::temp_dir();
     let updater_script = temp_dir.join("updater.ps1");
     let script_content = format!(
         r#"# Wait for the application to close
@@ -315,9 +404,9 @@ while ($attempts -lt $maxAttempts) {{
     $attempts++
 }}
 
-# Replace the exe directly from network share to current location
+# Replace the exe from extracted location to current location
 try {{
-    Copy-Item -Path "{new_exe}" -Destination "{current_exe}" -Force
+    Copy-Item -Path "{extracted_exe}" -Destination "{current_exe}" -Force
     Write-Host "Update installed successfully"
 }} catch {{
     Write-Host "Error installing update: $_"
@@ -328,13 +417,19 @@ try {{
 # Start the updated application
 Start-Process -FilePath "{current_exe}"
 
-# Clean up updater script
+# Clean up downloaded zip and extracted folder
 Start-Sleep -Seconds 2
+Remove-Item -Path "{zip_path}" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "{extract_path}" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Clean up updater script
 Remove-Item -Path $PSCommandPath -Force -ErrorAction SilentlyContinue
 "#,
         pid = current_pid,
-        new_exe = new_exe.to_string_lossy().replace('\\', "\\\\"),
-        current_exe = current_exe.to_string_lossy().replace('\\', "\\\\")
+        extracted_exe = extracted_exe.to_string_lossy().replace('\\', "\\\\"),
+        current_exe = current_exe.to_string_lossy().replace('\\', "\\\\"),
+        zip_path = zip_path.to_string_lossy().replace('\\', "\\\\"),
+        extract_path = extract_path.to_string_lossy().replace('\\', "\\\\")
     );
 
     fs::write(&updater_script, script_content)

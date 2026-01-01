@@ -161,6 +161,79 @@
     .update-button:disabled:hover {
       transform: none;
     }
+
+    /* Custom Update Dialog */
+    .update-dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .update-dialog-overlay.show {
+      display: flex;
+    }
+
+    .update-dialog {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .update-dialog h2 {
+      margin: 0 0 1rem 0;
+      color: var(--gainwell-teal);
+      font-size: 1.5rem;
+    }
+
+    .update-dialog p {
+      margin: 0 0 1.5rem 0;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .update-dialog-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .update-dialog-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .update-dialog-btn-primary {
+      background: var(--gainwell-cyan);
+      color: white;
+    }
+
+    .update-dialog-btn-primary:hover {
+      background: #00c99c;
+    }
+
+    .update-dialog-btn-secondary {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+
+    .update-dialog-btn-secondary:hover {
+      background: #d1d5db;
+    }
   </style>
   <script>
     function navigateToWalkthrough() {
@@ -179,7 +252,7 @@
           updateButton.textContent = 'Update Available';
           updateButton.disabled = false;
         } else {
-          updateButton.textContent = 'Update Available';
+          updateButton.textContent = 'No Updates Available';
           updateButton.disabled = true;
         }
       } catch (error) {
@@ -188,22 +261,40 @@
       }
     }
 
-    async function handleUpdate() {
+    function showUpdateDialog() {
       if (!updateInfo || !updateInfo.update_available) {
         return;
       }
 
+      // Show custom dialog
+      document.getElementById('updateCurrentVersion').textContent = updateInfo.current_version;
+      document.getElementById('updateNewVersion').textContent = updateInfo.latest_version;
+      document.getElementById('updateDialogOverlay').classList.add('show');
+    }
+
+    function hideUpdateDialog() {
+      document.getElementById('updateDialogOverlay').classList.remove('show');
+    }
+
+    async function confirmUpdate() {
+      hideUpdateDialog();
+
       try {
-        // Confirmation dialog is now handled on the backend
+        // Call backend to perform update (without showing dialog there)
         await window.__TAURI__.core.invoke('download_and_install_update', {
           exePath: updateInfo.exe_path,
           currentVersion: updateInfo.current_version,
           latestVersion: updateInfo.latest_version
         });
       } catch (error) {
-        // Error could be user cancellation or actual failure
         console.error('Update error:', error);
+        alert('Failed to install update: ' + error);
       }
+    }
+
+    // Keep handleUpdate for backward compatibility with button onclick
+    function handleUpdate() {
+      showUpdateDialog();
     }
 
     // Check for updates when page loads
@@ -225,7 +316,7 @@
     <!-- Update Button (positioned above tiles, to the left) -->
     <div class="mb-6">
       <button id="updateButton" class="update-button" onclick="handleUpdate()" disabled>
-        Update Available
+        No Updates Available
       </button>
     </div>
 
@@ -301,6 +392,22 @@
     <!-- Footer -->
     <div class="text-center mt-12 text-white opacity-75 text-sm">
       <p>&copy; 2024 Gainwell Technologies. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- Custom Update Dialog -->
+  <div id="updateDialogOverlay" class="update-dialog-overlay">
+    <div class="update-dialog">
+      <h2>Update Available</h2>
+      <p>
+        <strong>Current version:</strong> <span id="updateCurrentVersion"></span><br>
+        <strong>New version:</strong> <span id="updateNewVersion"></span>
+      </p>
+      <p>The application will restart to apply the update.</p>
+      <div class="update-dialog-buttons">
+        <button class="update-dialog-btn update-dialog-btn-secondary" onclick="hideUpdateDialog()">Cancel</button>
+        <button class="update-dialog-btn update-dialog-btn-primary" onclick="confirmUpdate()">Update Now</button>
+      </div>
     </div>
   </div>
 </body>

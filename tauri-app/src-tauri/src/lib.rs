@@ -280,25 +280,7 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 
 #[tauri::command]
 async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, current_version: String, latest_version: String) -> Result<String, String> {
-    // Get the main window to center the dialog
-    let window = app.get_webview_window("main")
-        .ok_or("Main window not found")?;
-
-    // Show confirmation dialog centered on the main window
-    let message = format!(
-        "Current version: {}\nNew version: {}\n\nThe application will restart to apply the update.",
-        current_version, latest_version
-    );
-
-    let confirmed = window.dialog()
-        .message(message)
-        .title("Update Available")
-        .blocking_show();
-
-    if !confirmed {
-        return Err("Update cancelled by user".to_string());
-    }
-
+    // Confirmation is now handled by custom dialog in frontend
     let new_exe = PathBuf::from(&exe_path);
 
     // Verify new exe exists on network share

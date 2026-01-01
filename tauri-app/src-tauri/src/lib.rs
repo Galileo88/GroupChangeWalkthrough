@@ -5,7 +5,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
 use tauri::Manager;
@@ -54,7 +54,7 @@ struct UpdateCheckResult {
 const CURRENT_VERSION: &str = "1.0.0";
 // TODO: Replace with your actual version.json hosting URL (can be OneDrive, GitHub, etc.)
 // The version.json should contain: {"version": "1.0.5", "file location": "https://1drv.ms/u/..."}
-const VERSION_JSON_URL: &str = "https://raw.githubusercontent.com/yourusername/updates/main/version.json";
+const VERSION_JSON_URL: &str = "https://raw.githubusercontent.com/Galileo88/GroupChangeWalkthrough/refs/heads/main/version.json";
 
 fn convert_onedrive_link_to_direct_download(share_link: &str) -> String {
     // OneDrive share links need "&download=1" appended for direct download

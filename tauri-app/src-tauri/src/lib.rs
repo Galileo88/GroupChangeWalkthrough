@@ -282,56 +282,75 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 async fn download_and_install_update(app: tauri::AppHandle, exe_path: String) -> Result<String, String> {
     let new_exe = PathBuf::from(&exe_path);
 
-    // Verify new exe exists
+    // Verify new exe exists on network share
     if !new_exe.exists() {
         return Err(format!("Update file not found at: {}", exe_path));
     }
 
-    // Get current exe path
+    // Get current exe path (where the app is running from, e.g., desktop)
     let current_exe = std::env::current_exe()
         .map_err(|e| format!("Failed to get current exe path: {}", e))?;
 
-    // Copy new exe to temp directory
+    // Get the current process ID
+    let current_pid = std::process::id();
+
+    // Create PowerShell updater script in temp
     let temp_dir = std::env::temp_dir();
-    let temp_new_exe = temp_dir.join("provider-enrollment-walkthrough-update.exe");
-
-    fs::copy(&new_exe, &temp_new_exe)
-        .map_err(|e| format!("Failed to copy new exe to temp: {}", e))?;
-
-    // Create updater batch script
-    let updater_script = temp_dir.join("updater.bat");
+    let updater_script = temp_dir.join("updater.ps1");
     let script_content = format!(
-        r#"@echo off
-echo Waiting for application to close...
-timeout /t 2 /nobreak > nul
+        r#"# Wait for the application to close
+Start-Sleep -Seconds 3
 
-echo Replacing application...
-move /y "{}" "{}"
-if errorlevel 1 (
-    echo Failed to replace application
-    pause
-    exit /b 1
-)
+# Wait for process to fully exit
+$processId = {pid}
+$maxAttempts = 10
+$attempts = 0
+while ($attempts -lt $maxAttempts) {{
+    $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
+    if ($null -eq $process) {{
+        break
+    }}
+    Start-Sleep -Seconds 1
+    $attempts++
+}}
 
-echo Starting updated application...
-start "" "{}"
+# Replace the exe directly from network share to current location
+try {{
+    Copy-Item -Path "{new_exe}" -Destination "{current_exe}" -Force
+    Write-Host "Update installed successfully"
+}} catch {{
+    Write-Host "Error installing update: $_"
+    Read-Host "Press Enter to exit"
+    exit 1
+}}
 
-echo Cleaning up...
-del "%~f0"
+# Start the updated application
+Start-Process -FilePath "{current_exe}"
+
+# Clean up updater script
+Start-Sleep -Seconds 2
+Remove-Item -Path $PSCommandPath -Force -ErrorAction SilentlyContinue
 "#,
-        temp_new_exe.to_string_lossy().replace('/', "\\"),
-        current_exe.to_string_lossy().replace('/', "\\"),
-        current_exe.to_string_lossy().replace('/', "\\")
+        pid = current_pid,
+        new_exe = new_exe.to_string_lossy().replace('\\', "\\\\"),
+        current_exe = current_exe.to_string_lossy().replace('\\', "\\\\")
     );
 
     fs::write(&updater_script, script_content)
         .map_err(|e| format!("Failed to create updater script: {}", e))?;
 
-    // Launch updater script
-    Command::new("cmd")
-        .args(["/C", "start", "/min", updater_script.to_string_lossy().as_ref()])
+    // Launch PowerShell script in hidden window
+    Command::new("powershell.exe")
+        .args([
+            "-WindowStyle", "Hidden",
+            "-ExecutionPolicy", "Bypass",
+            "-File", updater_script.to_string_lossy().as_ref()
+        ])
         .spawn()
         .map_err(|e| format!("Failed to launch updater: {}", e))?;
+
+    // Give the script a moment to start before exiting
+    std::thread::sleep(std::time::Duration::from_millis(500));
 
     // Exit the app to allow update
     app.exit(0);

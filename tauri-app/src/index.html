@@ -252,7 +252,7 @@
           updateButton.textContent = 'Update Available';
           updateButton.disabled = false;
         } else {
-          updateButton.textContent = 'Update Available';
+          updateButton.textContent = 'No Updates Available';
           updateButton.disabled = true;
         }
       } catch (error) {
@@ -316,7 +316,7 @@
     <!-- Update Button (positioned above tiles, to the left) -->
     <div class="mb-6">
       <button id="updateButton" class="update-button" onclick="handleUpdate()" disabled>
-        Update Available
+        No Updates Available
       </button>
     </div>
 

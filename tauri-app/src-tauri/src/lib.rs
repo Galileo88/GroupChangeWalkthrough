@@ -49,7 +49,7 @@ struct UpdateCheckResult {
 // ============================================================
 
 const CURRENT_VERSION: &str = "1.0.0";
-const UPDATE_SHARE_PATH: &str = r"C:\Users\Tavis\Documents\WALKTHROUGH_UPDATES";
+const UPDATE_SHARE_PATH: &str = r"\\njtrfs1pv01.nj.core.him\shared\Provider Services\Enrollment\WALKTHROUGH_UPDATES";
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Use network path for PWO state storage

@@ -282,7 +282,7 @@
       try {
         // Call backend to perform update (without showing dialog there)
         await window.__TAURI__.core.invoke('download_and_install_update', {
-          exePath: updateInfo.exe_path,
+          downloadUrl: updateInfo.download_url,
           currentVersion: updateInfo.current_version,
           latestVersion: updateInfo.latest_version
         });

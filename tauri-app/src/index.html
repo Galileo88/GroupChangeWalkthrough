@@ -194,23 +194,15 @@
       }
 
       try {
-        // Use Tauri's native dialog for better reliability
-        const confirmed = await window.__TAURI__.dialog.confirm(
-          `Current version: ${updateInfo.current_version}\nNew version: ${updateInfo.latest_version}\n\nThe application will restart to apply the update.`,
-          { title: 'Update Available', kind: 'info' }
-        );
-
-        if (confirmed) {
-          try {
-            await window.__TAURI__.core.invoke('download_and_install_update', {
-              exePath: updateInfo.exe_path
-            });
-          } catch (error) {
-            await window.__TAURI__.dialog.message('Failed to install update: ' + error, { title: 'Update Error', kind: 'error' });
-          }
-        }
+        // Confirmation dialog is now handled on the backend
+        await window.__TAURI__.core.invoke('download_and_install_update', {
+          exePath: updateInfo.exe_path,
+          currentVersion: updateInfo.current_version,
+          latestVersion: updateInfo.latest_version
+        });
       } catch (error) {
-        console.error('Dialog error:', error);
+        // Error could be user cancellation or actual failure
+        console.error('Update error:', error);
       }
     }
 

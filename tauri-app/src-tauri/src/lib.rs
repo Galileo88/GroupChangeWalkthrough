@@ -48,7 +48,7 @@ struct UpdateCheckResult {
 // HELPER FUNCTIONS
 // ============================================================
 
-const CURRENT_VERSION: &str = "1.0.1";
+const CURRENT_VERSION: &str = "1.0.0";
 const UPDATE_SHARE_PATH: &str = r"C:\Users\Tavis\Documents\WALKTHROUGH_UPDATES";
 
 fn get_app_data_dir(_app: &tauri::AppHandle) -> Result<PathBuf, String> {

@@ -130,11 +130,86 @@
         font-size: 1.5rem;
       }
     }
+
+    .update-button {
+      background: var(--gainwell-cyan);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 229, 180, 0.3);
+      font-size: 0.875rem;
+      display: inline-block;
+    }
+
+    .update-button:hover:not(:disabled) {
+      background: #00c99c;
+      box-shadow: 0 4px 8px rgba(0, 229, 180, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .update-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+
+    .update-button:disabled:hover {
+      transform: none;
+    }
   </style>
   <script>
     function navigateToWalkthrough() {
       window.location.href = 'walkthrough.html';
     }
+
+    let updateInfo = null;
+
+    async function checkForUpdates() {
+      try {
+        const result = await window.__TAURI__.core.invoke('check_for_updates');
+        updateInfo = result;
+
+        const updateButton = document.getElementById('updateButton');
+        if (result.update_available) {
+          updateButton.textContent = 'Update Available';
+          updateButton.disabled = false;
+        } else {
+          updateButton.textContent = 'Update Available';
+          updateButton.disabled = true;
+        }
+      } catch (error) {
+        console.error('Failed to check for updates:', error);
+        document.getElementById('updateButton').disabled = true;
+      }
+    }
+
+    async function handleUpdate() {
+      if (!updateInfo || !updateInfo.update_available) {
+        return;
+      }
+
+      const message = `A new update is available!\n\nCurrent version: ${updateInfo.current_version}\nNew version: ${updateInfo.latest_version}\n\nThe application will restart to apply the update. Continue?`;
+
+      if (confirm(message)) {
+        try {
+          await window.__TAURI__.core.invoke('download_and_install_update', {
+            exePath: updateInfo.exe_path
+          });
+        } catch (error) {
+          alert('Failed to install update: ' + error);
+        }
+      }
+    }
+
+    // Check for updates when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+      checkForUpdates();
+    });
   </script>
 </head>
 <body>
@@ -146,6 +221,13 @@
 
     <!-- Main Title -->
     <h1 class="header-title">Pick Your Application Type</h1>
+
+    <!-- Update Button (positioned above tiles, to the left) -->
+    <div class="mb-6">
+      <button id="updateButton" class="update-button" onclick="handleUpdate()" disabled>
+        Update Available
+      </button>
+    </div>
 
     <!-- 4x4 Grid of Tiles -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

@@ -234,6 +234,59 @@
     .update-dialog-btn-secondary:hover {
       background: #d1d5db;
     }
+
+    /* Update Badge */
+    .update-button-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .update-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .update-badge.hidden {
+      display: none;
+    }
+
+    /* Tooltip for badge */
+    .update-badge::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      right: 50%;
+      transform: translateX(50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: normal;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      margin-bottom: 8px;
+    }
+
+    .update-badge:hover::after {
+      opacity: 1;
+    }
   </style>
   <script>
     function navigateToWalkthrough() {
@@ -248,16 +301,21 @@
         updateInfo = result;
 
         const updateButton = document.getElementById('updateButton');
+        const updateBadge = document.getElementById('updateBadge');
+
         if (result.update_available) {
-          updateButton.textContent = 'Update Available';
+          updateButton.textContent = 'Update';
           updateButton.disabled = false;
+          updateBadge.classList.remove('hidden');
         } else {
-          updateButton.textContent = 'No Updates Available';
+          updateButton.textContent = 'Update';
           updateButton.disabled = true;
+          updateBadge.classList.add('hidden');
         }
       } catch (error) {
         console.error('Failed to check for updates:', error);
         document.getElementById('updateButton').disabled = true;
+        document.getElementById('updateBadge').classList.add('hidden');
       }
     }
 
@@ -315,9 +373,12 @@
 
     <!-- Update Button (positioned above tiles, to the left) -->
     <div class="mb-6">
-      <button id="updateButton" class="update-button" onclick="handleUpdate()" disabled>
-        No Updates Available
-      </button>
+      <div class="update-button-container">
+        <button id="updateButton" class="update-button" onclick="handleUpdate()" disabled>
+          Update
+        </button>
+        <div id="updateBadge" class="update-badge hidden" data-tooltip="New version available">!</div>
+      </div>
     </div>
 
     <!-- 4x4 Grid of Tiles -->

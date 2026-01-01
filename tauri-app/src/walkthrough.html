@@ -175,6 +175,7 @@
         return localStorage.getItem('theme') !== 'light';
       });
       const [openDropdown, setOpenDropdown] = useState(null);
+      const [updateAvailable, setUpdateAvailable] = useState(false);
 
       // -------------------- Field Name Mapping --------------------
       // Maps field names to human-readable labels for outreach notes
@@ -205,6 +206,22 @@
           localStorage.setItem('theme', 'light');
         }
       }, [isDarkMode]);
+
+      // -------------------- Update Check Effect --------------------
+      React.useEffect(() => {
+        const checkForUpdates = async () => {
+          try {
+            const result = await window.__TAURI__.core.invoke('check_for_updates');
+            setUpdateAvailable(result.update_available);
+          } catch (error) {
+            console.error('Failed to check for updates:', error);
+          }
+        };
+
+        if (window.__TAURI__) {
+          checkForUpdates();
+        }
+      }, []);
 
       // -------------------- Auto-save Effect --------------------
       // Debounced auto-save when critical state changes
@@ -4153,6 +4170,58 @@
             html.dark .dropdown-menu {
               scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
             }
+
+            /* Update Badge */
+            .version-display {
+              position: relative;
+            }
+
+            .update-badge {
+              position: absolute;
+              top: -8px;
+              right: -8px;
+              background: #ef4444;
+              color: white;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              font-size: 0.75rem;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              cursor: pointer;
+              z-index: 10;
+            }
+
+            .update-badge.hidden {
+              display: none;
+            }
+
+            /* Tooltip for badge */
+            .update-badge::after {
+              content: attr(data-tooltip);
+              position: absolute;
+              bottom: 100%;
+              right: 50%;
+              transform: translateX(50%);
+              background: rgba(0, 0, 0, 0.8);
+              color: white;
+              padding: 0.5rem 0.75rem;
+              border-radius: 6px;
+              font-size: 0.75rem;
+              font-weight: normal;
+              white-space: nowrap;
+              opacity: 0;
+              pointer-events: none;
+              transition: opacity 0.2s ease;
+              margin-bottom: 8px;
+            }
+
+            .update-badge:hover::after {
+              opacity: 1;
+            }
           `}</style>
 
           {/* Dark Mode Toggle */}
@@ -4172,6 +4241,7 @@
                 {/* Version Display */}
                 <div className="version-display">
                   v{VERSION}
+                  <div className={`update-badge ${!updateAvailable ? 'hidden' : ''}`} data-tooltip="New version available">!</div>
                 </div>
                 <h1 className="title-font text-4xl font-bold mb-2">
                   {currentPageData.title}

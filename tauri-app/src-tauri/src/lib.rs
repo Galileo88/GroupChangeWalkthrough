@@ -279,7 +279,7 @@ async fn check_for_updates() -> Result<UpdateCheckResult, String> {
 }
 
 #[tauri::command]
-async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, current_version: String, latest_version: String) -> Result<String, String> {
+async fn download_and_install_update(app: tauri::AppHandle, exe_path: String, _current_version: String, _latest_version: String) -> Result<String, String> {
     // Confirmation is now handled by custom dialog in frontend
     let new_exe = PathBuf::from(&exe_path);
 

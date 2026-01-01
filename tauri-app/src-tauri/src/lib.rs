@@ -57,30 +57,89 @@ const CURRENT_VERSION: &str = "1.0.0";
 const VERSION_JSON_URL: &str = "https://raw.githubusercontent.com/yourusername/updates/main/version.json";
 
 fn convert_onedrive_link_to_direct_download(share_link: &str) -> String {
-    // OneDrive share links need "&download=1" appended for direct download
-    if share_link.contains("1drv.ms") || share_link.contains("onedrive.live.com") {
-        if share_link.contains('?') {
-            format!("{}&download=1", share_link)
-        } else {
-            format!("{}?download=1", share_link)
+    // For OneDrive sharing links, we need to modify the URL for direct download
+
+    // Method 1: If it's already a full onedrive.live.com URL
+    if share_link.contains("onedrive.live.com") {
+        // Replace 'redir' or 'embed' with 'download' if present
+        let modified = share_link
+            .replace("/redir?", "/download?")
+            .replace("/embed?", "/download?");
+
+        // If no query params yet, add ?download=1
+        if !modified.contains("/download?") {
+            if modified.contains('?') {
+                return format!("{}&download=1", modified);
+            } else {
+                return format!("{}?download=1", modified);
+            }
         }
-    } else {
-        share_link.to_string()
+        return modified;
     }
+
+    // Method 2: For 1drv.ms short links, append download parameter
+    // These will redirect to onedrive.live.com, so we add the parameter
+    // that will be preserved through the redirect
+    if share_link.contains("1drv.ms") {
+        if share_link.contains('?') {
+            return format!("{}&download=1", share_link);
+        } else {
+            return format!("{}?download=1", share_link);
+        }
+    }
+
+    // For other URLs, return as-is
+    share_link.to_string()
 }
 
 fn download_file_from_url(url: &str, destination: &PathBuf) -> Result<(), String> {
     let direct_url = convert_onedrive_link_to_direct_download(url);
 
-    let response = reqwest::blocking::get(&direct_url)
+    // Build a client that follows redirects (enabled by default)
+    let client = reqwest::blocking::Client::builder()
+        .redirect(reqwest::redirect::Policy::limited(10))
+        .build()
+        .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
+
+    let response = client.get(&direct_url)
+        .send()
         .map_err(|e| format!("Failed to download file: {}", e))?;
 
     if !response.status().is_success() {
-        return Err(format!("Download failed with status: {}", response.status()));
+        return Err(format!("Download failed with status: {}. URL may be incorrect or not publicly accessible.", response.status()));
+    }
+
+    // Check content type - should be application/zip or application/octet-stream
+    let content_type = response.headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown");
+
+    // If we got HTML, the link probably didn't work
+    if content_type.contains("text/html") {
+        return Err(format!(
+            "Download failed: Received HTML instead of zip file. \
+            OneDrive link may not be configured for direct download. \
+            Please ensure the file is shared publicly and try using a different sharing link format."
+        ));
     }
 
     let bytes = response.bytes()
         .map_err(|e| format!("Failed to read download bytes: {}", e))?;
+
+    // Verify we got some data
+    if bytes.is_empty() {
+        return Err("Download failed: Received empty file".to_string());
+    }
+
+    // Check if it looks like a zip file (starts with PK signature)
+    if bytes.len() < 4 || &bytes[0..2] != b"PK" {
+        return Err(format!(
+            "Download failed: File is not a valid zip archive (got {} bytes, content-type: {}). \
+            The OneDrive sharing link may not be working correctly.",
+            bytes.len(), content_type
+        ));
+    }
 
     let mut file = File::create(destination)
         .map_err(|e| format!("Failed to create file: {}", e))?;
